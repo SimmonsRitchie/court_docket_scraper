@@ -37,8 +37,10 @@ def main():
     # START CHROME DRIVER
     driver = initialize.initialize_driver(base_folder_pdfs, chrome_driver_path)
 
+
     # SCRAPE DOCKET DATA FOR EACH COUNTY
     for county in config["county_list"]:
+        county = county.title() # ensures that county names are in title case, otherwise we'll get errors
         docketdata = scrape.scrape_search_results(driver, url, county)
 
         # IF THERE'S DATA THEN DOWNLOAD PDFS AND EXTRACT TEXT

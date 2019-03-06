@@ -24,7 +24,7 @@ def initialize_driver(base_folder_pdfs, chrome_driver_path):
 
     # Chrome options + initialize
     options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
+    options.add_argument('--headless') # Note: because of the way this program downloads PDFs, driver MUST be run in headless mode. Otherwise we'll get errors.
     driver = webdriver.Chrome(executable_path=chrome_driver_path,
                               chrome_options=options)  # Optional argument, if not specified will search path.
 
