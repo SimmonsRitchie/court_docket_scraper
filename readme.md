@@ -38,7 +38,7 @@ If you don't feel comfortable adjusting this setting on your personal gmail addr
 
 When you have decided on what gmail address to use. Create a file called config.py at the root of the program directory and add a dictionary called 'config':
 
-Copy and paste the text below and where indicated in caps, replace with your own values. You can enter as many destination email addresses or counties you would like to scrape as you'd like. County names are not case sensitive.:
+Copy and paste the text below and where indicated in caps, replace with your own values. You can enter as many destination email addresses or counties you would like to scrape as you'd like. County names are not case sensitive.
 
 Make sure you include the full path of chromedriver on your system (included with this repo) and not it's relative path.
 
