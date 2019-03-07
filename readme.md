@@ -58,6 +58,8 @@ Make sure you include the full path of chromedriver on your system (included wit
         'ec2': {
             "base_folder_pdfs": "",
             "base_folder_email": "",
+            "base_folder_json": "",
+            "base_folder_csv": "",
             "base_folder_text": "",
             "chrome_driver_path": ""
         }

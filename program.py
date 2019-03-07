@@ -2,14 +2,29 @@
 """
 UJC Scraper
 
+From main(), this program flows as follows:
+
+    -DELETE: existing files in 'pdfs','extracted_text','json_payload','csv_payload' and 'email_payload' directories from previous scrapes are deleted.
+    -INITIALIZE: Selenium webdriver is initialized
+
+    Program begins scraping through each county specified in array in config.py:
+
+        -SCRAPE: UJS website is accessed and basic info on today's district dockets for that county are scraped using selenium webdriver.
+        -DOWNLOAD: After scraping, PDFs of each docket are downloaded for that county.
+        -CONVERT: PDFs are converted into text and other info is extracted for that county.
+        -ADDED TO TEXT FILE: Scraped data for that county is added to a text file in preparation for being emailed at end of program run.
+        -ADDED TO CSV FILE: Scraped data for that county is also added to a CSV file.
+
+    -EXPORT TO JSON: A json file is created from the CSV file.
+    -EMAIL: The email payload text file is emailed to selected email addresses specified in config.py.
+
 Author: Daniel Simmons-Ritchie
 
 """
 
 # My modules
-from modules import delete, initialize, scrape, download, convert, email
+from modules import delete, initialize, scrape, download, convert, email, export
 from config import config
-
 
 def main():
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx" #URL for UJC website
@@ -19,12 +34,16 @@ def main():
     if config["run_mode"] == "local":
         base_folder_pdfs = "pdfs/"
         base_folder_email = "email_payload/"
+        base_folder_json = "json_payload/"
+        base_folder_csv = "csv_payload/"
         base_folder_text = "extracted_text/"
         chrome_driver_path = config["chrome_driver_path"]
 
     elif config["run_mode"] == "ec2":
         base_folder_pdfs = config["ec2"]["base_folder_pdfs"]
         base_folder_email = config["ec2"]["base_folder_email"]
+        base_folder_json = config["ec2"]["base_folder_json"]
+        base_folder_csv = config["ec2"]["base_folder_csv"]
         base_folder_text = config["ec2"]["base_folder_text"]
         chrome_driver_path = config["ec2"]["chrome_driver_path"]
 
@@ -32,7 +51,7 @@ def main():
     print("Starting scraper")
 
     # DELETE OLD FILES
-    delete.delete_temp_files(base_folder_pdfs, base_folder_email, base_folder_text)
+    delete.delete_temp_files(base_folder_pdfs, base_folder_email, base_folder_json, base_folder_csv, base_folder_text)
 
     # START CHROME DRIVER
     driver = initialize.initialize_driver(base_folder_pdfs, chrome_driver_path)
@@ -76,7 +95,10 @@ def main():
                 "Bail": bail_list,
                 "URL": docketdata.docket_url
             }
-            email.email_payload(base_folder_email, create_dict, county)
+            export.payload_generation(base_folder_email, base_folder_csv, create_dict, county)
+
+    # CREATE JSON FILE FROM CSV
+    export.convert_csv_to_json(base_folder_csv, base_folder_json)
 
     # SEND EMAIL WITH DOCKET DATA
     email.email_notification(base_folder_email, config["destination"], config["email"])

@@ -1,5 +1,5 @@
 """
-This module converts PDFs to text and then extracts important docket info from that text
+This module converts PDFs to text and then extracts important docket info from that text.
 
 """
 
