@@ -20,9 +20,9 @@ You can easily modify the program to scrape specific Pennsylvania counties. If y
 
 To run this program, you'll need python 3.6+. You'll also need a copy of 'chromedriver', which is included in this repo.
 
-You'll also need to have a number of libraries installed. This program makes heavy use of selenium for scraping, pdfminer for parsing the pdfs, and pandas for cleaning and sorting the data.
+You'll also need to have a number of python libraries installed. This program makes heavy use of selenium for scraping, pdfminer for parsing the pdfs, and pandas for cleaning and sorting the scraped data.
 
-Before running, you'll want to open up the terminal and pip install the following:
+Before running, you'll want to open up your terminal and pip install the following:
 
 selenium
 pandas
