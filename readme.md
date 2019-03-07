@@ -8,7 +8,7 @@ Hundreds of district court dockets are uploaded to the UJS portal each day. The 
 
 Unfortunately, the UJS website is slow and cumbersome. To check why a person was arrested, reporters must typically sift through scores of individual PDFs. Checking dockets for several counties can take upwards of an hour.
 
-This program takes the work out of that task. It parses all of the PDFs for selected counties, extracts the info we want (eg. charges, bail amount, DOB of individual), and then emails a list of that info to a selected email address (or addresses). The list includes links to the relevant PDFs.
+This program takes the work out of that task. It parses all of the PDFs for selected counties, extracts the info we want (eg. charges, bail amount, DOB of individual), and then emails a list of that info to a selected email address (or addresses). The list includes links to the original PDF dockets for easy reference.
 
 If any person has been charged with homicide, that will be noted in the email's subject line.
 
@@ -20,7 +20,7 @@ You can easily modify the program to scrape dockets for any Pennsylvania county 
 
 To run this program, you'll need python 3.6+. You'll also need a copy of 'chromedriver', which is included in this repo. Chromedriver is an executable used to control Chrome. It's maintained by the Chromium team.
 
-You'll also need to have a number of python libraries installed. This program makes heavy use of selenium for scraping, pdfminer for parsing the pdfs, and pandas for cleaning and sorting the scraped data.
+You'll also need to have a number of python libraries installed. This program makes heavy use of selenium, which uses chromedriver to conduct the scrape, pdfminer for parsing the pdfs, and pandas for cleaning and sorting the scraped data.
 
 Before running, you'll want to open up your terminal and pip install the following:
 
@@ -32,7 +32,7 @@ smtplib
 
 ### Configuration
 
-In order for the program to send you an email with summarized docket info, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under security settings.
+In order for the program to send emails with summarized docket info, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under security settings.
 
 If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
 
@@ -40,7 +40,7 @@ When you have decided on what gmail address to use. Create a file called config.
 
 Copy and paste the text below and where indicated in caps, replace with your own values. You can enter as many destination email addresses or counties you would like to scrape as you'd like. County names are not case sensitive.:
 
-If you clone this repo, chromedriver should be included. Make sure you include the full path of it in the area indicated below, not it's relative path.
+Make sure you include the full path of chromedriver on your system (included with this repo) and not it's relative path.
 
     config = {
         "email": {
@@ -48,9 +48,11 @@ If you clone this repo, chromedriver should be included. Make sure you include t
             'pass': 'ENTER_YOUR_PASSWORD'
         },
         "destination": [
-            "ENTER_EMAIL_DESTINATION"
+            "ENTER_EMAIL_DESTINATION_1",
+            "ENTER_EMAIL_DESTINATION_2",
+            "ENTER_EMAIL_DESTINATION 3"
         ],
-        "county_list": ["COUNTY","COUNTY","COUNTY"],
+        "county_list": ["COUNTY1","COUNTY2","COUNTY3"],
         "chrome_driver_path": "ENTER_FULL_PATH_OF_CHROME_DRIVER_ON_YOUR_LOCAL_MACHINE",
         'run_mode': 'local',
         'ec2': {
@@ -67,4 +69,4 @@ Daniel Simmons-Ritchie, reporter at the Patriot-News/PennLive.com
 
 ### Note
 
-This was the author's first major programming project so some (or a lot) of the code may be pretty wacky. It was a learning process.
+This was one of the author's first programming projects so some (or a lot) of the code may be pretty wacky. It was a learning process. If you have problems running this program, feel free to reach out.
