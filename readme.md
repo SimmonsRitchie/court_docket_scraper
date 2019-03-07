@@ -1,6 +1,8 @@
-# PENNSYLVANIA COURT DOCKET SCRAPER
+# Pa court docket scraper
 
 This program scrapes PDFs from Pennsylvania's Unified Judicial System [web portal](https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx) and emails a list to a chosen email address.
+
+## Motivation
 
 Hundreds of district court dockets are uploaded to this portal each day. The district courts are the first step in Pa.'s judicial system and so our reporters check these dockets each day in search of new arrests that might be newsworthy.
 
@@ -10,23 +12,33 @@ This program takes the work out of that task. It parses all of the PDFs for sele
 
 If any person has been charged with homicide, that will be noted in the email's subject line.
 
-You can easily modify the program to scrape specific Pennsylvania counties. If you have access to an EC2 server, you can also use crontabs to run this program each day.
+You can easily modify the program to scrape specific Pennsylvania counties. If you have access to an EC2 instance, you can also use crontabs to run this program each day automatically.
 
 ## Getting started
 
 ### Prerequisites
 
-To run, you'll need python 3.6. You'll also need a copy of 'chromedriver', which is included in this repo.
+To run this program, you'll need python 3.6+. You'll also need a copy of 'chromedriver', which is included in this repo.
+
+You'll also need to have a number of libraries installed. This program makes heavy use of selenium for scraping, pdfminer for parsing the pdfs, and pandas for cleaning and sorting the data.
+
+Before running, you'll want to open up the terminal and pip install the following:
+
+selenium
+pandas
+pdfminer
+email.mime.text
+smtplib
 
 ### Configuration
 
-In order for the program to send you an email with summarized docket info, you'll need a gmail account. This account does the actual sending. You'll likely need to make sure that your gmail settings allow "Less secure app access". You can find this under security settings.
+In order for the program to send you an email with summarized docket info, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "Less secure app access". You can find this under security settings.
 
 If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
 
 When you have decided on what gmail address to use. Create a file called config.py at the root of the program directory and add a dictionary called 'config':
 
-Where indicated in caps, replace with your own values:
+Copy and paste the text below and where indicated in caps, replace with your own values. You can enter as many destination email addresses or counties you would like to scrape as you'd like. County names are not case sensitive.:
 
     config = {
         "email": {

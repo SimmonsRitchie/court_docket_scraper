@@ -5,10 +5,6 @@ This module handles sending auto email. It also converts dockets into an email f
 #load email modules
 import smtplib
 from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 
 
 #Load other modules
