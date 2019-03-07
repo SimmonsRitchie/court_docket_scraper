@@ -29,8 +29,8 @@ from config import config
 def main():
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx" #URL for UJC website
 
-    # If running local/ec2 mode then change directories accordingly.
-    # I did this because when the program runs on an EC2 server with crontabs it needs full paths.
+    # Depending on config["run_mode"] change paths of output folders accordingly.
+    # This is specified because program ran into problems without full paths when run on my EC2 instance with crontabs.
     if config["run_mode"] == "local":
         base_folder_pdfs = "pdfs/"
         base_folder_email = "email_payload/"
