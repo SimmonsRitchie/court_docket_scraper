@@ -12,7 +12,7 @@ import pandas as pd
 import os
 
 # Load my modules
-from my_modules import misc
+from modules import misc
 
 
 def email_payload(base_folder_email, create_dict, county):

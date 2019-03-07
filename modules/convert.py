@@ -8,10 +8,7 @@ This module converts PDFs to text and then extracts important docket info from t
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
-# From PDFInterpreter import both PDFResourceManager and PDFPageInterpreter
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.pdfdevice import PDFDevice
-# Import this to raise exception whenever text extraction from PDF is not allowed
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
@@ -21,7 +18,7 @@ import re
 from collections import namedtuple
 
 # My modules
-from my_modules import misc
+from modules import misc
 
 # Collections
 ParsedData = namedtuple("ParsedData", ('charge','bail'))

@@ -7,7 +7,7 @@ import os
 import time
 
 # My modules
-from my_modules import misc
+from modules import misc
 
 
 def download_pdf(driver, docket_url, docket_num, base_folder_pdfs):

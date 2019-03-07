@@ -14,7 +14,7 @@ from collections import namedtuple
 
 
 # My modules
-from my_modules import misc
+from modules import misc
 
 # Named tuple
 DocketData = namedtuple("DocketData", ('case', 'docket_num', 'filing_date', 'dob','docket_url'))

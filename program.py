@@ -7,7 +7,7 @@ Author: Daniel Simmons-Ritchie
 """
 
 # My modules
-from my_modules import delete, initialize, scrape, download, convert, email
+from modules import delete, initialize, scrape, download, convert, email
 from config import config
 
 

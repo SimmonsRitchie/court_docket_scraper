@@ -1,4 +1,4 @@
-# Pa court docket scraper
+# Pa. court docket scraper
 
 This program scrapes PDFs from Pennsylvania's Unified Judicial System [web portal](https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx) and emails summarized info about those dockets to selected email addresses.
 
