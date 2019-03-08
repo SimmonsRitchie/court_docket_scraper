@@ -99,6 +99,10 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     df.rename(columns=lambda x: misc.camel_case_convert(x), inplace=True)
     print("Reformatted")
 
+    # REMOVE NAN
+    # If we don't remove NaNs we'll get invalid JSON
+    df = df.fillna("")
+
     # CONVERT DATAFRAME TO JSON
     print("Creating new dictionary so we can include metadata with JSON payload...")
     date_scrape = datetime.now().replace(microsecond=0).isoformat() # Metadata field: current time
