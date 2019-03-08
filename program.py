@@ -20,7 +20,11 @@ This is the main file for the program. From main(), the program performs the fol
     -EXPORT TO JSON: A json file is created from the CSV file (which now has scraped data from all counties).
     -EMAIL: The email payload text file is emailed to selected email addresses specified in config.py.
 
-NOTE: This was one of the author's earliest programming projects so some (or a lot) of the code might be a little wacky or redundant.
+NOTE1: This was one of the author's earliest programming projects so some (or a lot) of the code might be a little wacky
+or redundant.
+
+NOTE2: Due to the way this program downloads PDFs, it was designed to run in headless mode (ie. without a browser window
+visible). Attempting to run it in non-headless mode may cause it to crash.
 
 """
 
@@ -58,10 +62,11 @@ def main():
     # START CHROME DRIVER
     driver = initialize.initialize_driver(base_folder_pdfs, chrome_driver_path)
 
+    # GET COUNTIES TO SCRAPE
+    county_list = [x.title() for x in config["county_list"]] # Counties need to be in title case otherwise we'll get errors during scrape
 
     # SCRAPE DOCKET DATA FOR EACH COUNTY
-    for county in config["county_list"]:
-        county = county.title() # ensures that county names are in title case, otherwise we'll get errors
+    for county in county_list:
         docketdata = scrape.scrape_search_results(driver, url, county)
 
         # IF THERE'S DATA THEN DOWNLOAD PDFS AND EXTRACT TEXT
@@ -100,7 +105,7 @@ def main():
             export.payload_generation(base_folder_email, base_folder_csv, create_dict, county)
 
     # CREATE JSON FILE FROM CSV
-    export.convert_csv_to_json(base_folder_csv, base_folder_json)
+    export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
 
     # SEND EMAIL WITH DOCKET DATA
     email.email_notification(base_folder_email, config["destination"], config["email"])
