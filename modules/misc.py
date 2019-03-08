@@ -64,3 +64,19 @@ def formatted_yesterday_date_name():
     yesterday = datetime.now() - timedelta(1)
     yesterday = yesterday.strftime('%a, %b %-d %Y')
     return yesterday
+
+
+def currency_convert(x):
+    if str(x) == "nan":
+        x = ""
+        return x
+    elif type(x) == float or type(x) == int:
+        x = '${:,.0f}'.format(x)
+        return x
+    else:
+        return ""
+
+def camel_case_convert(item):
+    item = item.title().replace(" ","").replace("_","").replace("-","") #removing all '_', '-', and spaces
+    item = item[0].lower() + item[1:] if item else ''
+    return item

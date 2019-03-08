@@ -11,6 +11,8 @@ import os
 from datetime import datetime
 
 def payload_generation(base_folder_email, base_folder_csv, create_dict, county):
+
+    # CONVERTING DATA INTO PANDAS DATAFRAME FOR SORTING AND FORMATTING
     print("Turning saved data on {} county dockets into Pandas dataframe".format(county))
     pd.set_option('display.max_colwidth', -1)
     df = pd.DataFrame.from_dict(create_dict)
@@ -22,7 +24,7 @@ def payload_generation(base_folder_email, base_folder_csv, create_dict, county):
     print("Sorting dockets by bail amount, descending order")
     df = df.sort_values(by='Bail', ascending=False)
     print("Reformatting bail amount in currency format")
-    df['Bail'] = df['Bail'].apply(currency_convert)
+    df['Bail'] = df['Bail'].apply(misc.currency_convert)
 
 
     # CREATE EMAIL PAYLOAD OR ADD DATA TO EXISTING EMAIL PAYLOAD
@@ -46,55 +48,67 @@ def payload_generation(base_folder_email, base_folder_csv, create_dict, county):
 
     # CREATE CSV PAYLOAD OR ADD DATA TO EXISTING CSV PAYLOAD
     print("Saving dataframe as CSV file")
+
     print("Adding 'county' field to dataframe")
-    df.insert(0, 'County', county)
+    df.insert(0, 'county', county)
+    print("Added")
+
+    print("Changing headers to lowercase and replacing spaces so export data is cleaner")
+    df.columns = df.columns.str.lower().str.replace(" ","_")
+    print("Headers reformatted")
+
     print("Converting date fields to ISO format")
-    df["DOB"] = pd.to_datetime(df["DOB"]).dt.strftime("%Y-%m-%d")
-    df["Filing date"] = pd.to_datetime(df["Filing date"]).dt.strftime("%Y-%m-%d")
+    df["dob"] = pd.to_datetime(df["dob"]).dt.strftime("%Y-%m-%d")
+    df["filing_date"] = pd.to_datetime(df["filing_date"]).dt.strftime("%Y-%m-%d")
     print("Dates converted")
-    print("Writing file...")
+
+    print("Writing CSV file...")
     csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
     if os.path.exists(csv_payload_path):
-        print("Existing csv file found")
-        print("loading existing csv as dataframe...")
+        print("Existing CSV file found")
+        print("loading existing CSV as dataframe...")
         df_from_csv = pd.read_csv(csv_payload_path)
         print("Combining dataframes...")
         df_combined = pd.concat([df_from_csv, df])
-        print("Saving new dataframe as csv...")
+        print("Saving new dataframe as CSV...")
         df_combined.to_csv(csv_payload_path, index=False)
-        print("New csv created")
+        print("New CSV created")
     else:
         df.to_csv(csv_payload_path, index=False)
-        print("csv created")
+        print("CSV created")
 
 
-def currency_convert(x):
-    if str(x) == "nan":
-        x = ""
-        return x
-    elif type(x) == float or type(x) == int:
-        x = '${:,.0f}'.format(x)
-        return x
-    else:
-        return ""
 
+def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
+    print("Converting CSV to JSON")
 
-def convert_csv_to_json(base_folder_csv, base_folder_json):
-    print("Converting csv to JSON")
+    # GET PATHS
     print("Getting path names...")
     csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
     json_payload_path = misc.json_payload_path_generator(base_folder_json)
     print("Got path names")
+
+    # CONVERT CSV TO DATAFRAME
     print("Loading CSV file as pandas dataframe...")
     df = pd.read_csv(csv_payload_path)
     print("Dataframe created")
-    print("Creating new dictionary to append metadata to JSON payload...")
-    cases_dict = df.to_dict(orient='records') # This is our actual data from the scrape
-    county_list = df["County"].unique().tolist() # Creating metadata field: list of all counties we scraped
-    date_scrape = datetime.now().replace(microsecond=0).isoformat() # Creating metadata field: current time
+
+    # CHANGE HEADERS TO CAMEL CASE
+    # Doing this just to make final JSON file more javascript friendly
+    print("Reformatting headers in camel case")
+    df.rename(columns=lambda x: misc.camel_case_convert(x), inplace=True)
+    print("Reformatted")
+
+    # CONVERT DATAFRAME TO JSON
+    print("Creating new dictionary so we can include metadata with JSON payload...")
+    date_scrape = datetime.now().replace(microsecond=0).isoformat() # Metadata field: current time
+    selected_counties = county_list # Metadata field: list of all counties that were SELECTED by user to be scraped
+    returned_counties = df["county"].unique().tolist() # Metadata field: list of all counties RETURNED in scraped data
+    cases_dict = df.to_dict(orient='records') # Data: this is our actual data from the scrape, each case will be a single object in a big array
     final_dict = {
-        "date-scrape": date_scrape,
-        "county_list": county_list,
+        "scrapeDatetime": date_scrape,
+        "countiesSelectedForScrape": selected_counties,
+        "countiesReturnedFromScrape": returned_counties,
         "cases": cases_dict
     }
     print("New dictionary created")
