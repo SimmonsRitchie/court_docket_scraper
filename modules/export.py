@@ -8,7 +8,7 @@ from modules import misc
 import pandas as pd
 import json
 import os
-
+from datetime import datetime
 
 def payload_generation(base_folder_email, base_folder_csv, create_dict, county):
     print("Turning saved data on {} county dockets into Pandas dataframe".format(county))
@@ -81,10 +81,24 @@ def currency_convert(x):
 
 def convert_csv_to_json(base_folder_csv, base_folder_json):
     print("Converting csv to JSON")
-    print("Loading CSV file as pandas dataframe")
+    print("Getting path names...")
     csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
     json_payload_path = misc.json_payload_path_generator(base_folder_json)
+    print("Got path names")
+    print("Loading CSV file as pandas dataframe...")
     df = pd.read_csv(csv_payload_path)
+    print("Dataframe created")
+    print("Creating new dictionary to append metadata to JSON payload...")
+    cases_dict = df.to_dict(orient='records') # This is our actual data from the scrape
+    county_list = df["County"].unique().tolist() # Creating metadata field: list of all counties we scraped
+    date_scrape = datetime.now().replace(microsecond=0).isoformat() # Creating metadata field: current time
+    final_dict = {
+        "date-scrape": date_scrape,
+        "county_list": county_list,
+        "cases": cases_dict
+    }
+    print("New dictionary created")
+    print("Exporting dictionary as JSON file...")
     with open(json_payload_path, "w") as write_file:
-        json.dump(df.to_dict(orient='records'), write_file, indent=4)
-    print("Conversion to JSON complete")
+        json.dump(final_dict, write_file, indent=4)
+    print("Export complete")

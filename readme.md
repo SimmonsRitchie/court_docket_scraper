@@ -12,6 +12,8 @@ This program takes the work out of that task. It parses all of the PDFs for sele
 
 If any person has been charged with homicide, that will be noted in the email's subject line.
 
+To make it easier to analyze scraped dockets or to use it in a web app, the program will also generate CSV and JSON files.
+
 You can easily modify the program to scrape dockets for any Pennsylvania county you would like. If you have access to an EC2 instance, you can also use crontabs to run this program each day or several times per day automatically.
 
 ## Getting started
@@ -64,6 +66,12 @@ Make sure you include the full path of chromedriver on your system (included wit
             "chrome_driver_path": ""
         }
     }
+
+### Run
+
+When you've set up the config file and installed the needed libraries, the program should be ready to run.
+
+From the terminal, cd into the program's directory and then type 'python program.py'
 
 ### Authors
 

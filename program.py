@@ -1,24 +1,26 @@
 
 """
-UJC Scraper
+NAME: Pa. court docket scraper
+AUTHOR: Daniel Simmons-Ritchie
 
-From main(), this program flows as follows:
+ABOUT:
+This is the main file for the program. From main(), the program performs the following actions.
 
-    -DELETE: existing files in 'pdfs','extracted_text','json_payload','csv_payload' and 'email_payload' directories from previous scrapes are deleted.
-    -INITIALIZE: Selenium webdriver is initialized
+    -DELETE: files from earlier scrapes are delated (ie. all files in 'pdfs','extracted_text','json_payload','csv_payload' folders).
+    -INITIALIZE: Selenium webdriver is initialized.
 
-    Program begins scraping through each county specified in array in config.py:
+    Program begins looping through each county specified in the county_list in config.py and does the following:
 
-        -SCRAPE: UJS website is accessed and basic info on today's district dockets for that county are scraped using selenium webdriver.
+        -SCRAPE: UJS website is accessed using selenium and basic info on today's district dockets for that county are scraped from search results.
         -DOWNLOAD: After scraping, PDFs of each docket are downloaded for that county.
-        -CONVERT: PDFs are converted into text and other info is extracted for that county.
-        -ADDED TO TEXT FILE: Scraped data for that county is added to a text file in preparation for being emailed at end of program run.
-        -ADDED TO CSV FILE: Scraped data for that county is also added to a CSV file.
+        -CONVERT: PDFs are converted into text and other info is extracted for that county's dockets (eg. bail, charges).
+        -DATA ADDED TO TEXT FILE: Scraped data for that county is added to a HTML formatted text file in preparation for being emailed at end of program run.
+        -DATA ADDED TO CSV FILE: Scraped data for that county is added to a CSV file.
 
-    -EXPORT TO JSON: A json file is created from the CSV file.
+    -EXPORT TO JSON: A json file is created from the CSV file (which now has scraped data from all counties).
     -EMAIL: The email payload text file is emailed to selected email addresses specified in config.py.
 
-Author: Daniel Simmons-Ritchie
+NOTE: This was one of the author's earliest programming projects so some (or a lot) of the code might be a little wacky or redundant.
 
 """
 
@@ -29,7 +31,7 @@ from config import config
 def main():
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx" #URL for UJC website
 
-    # Depending on config["run_mode"] change paths of output folders accordingly.
+    # Depending on value of config["run_mode"] change paths of output folders accordingly.
     # This is specified because program ran into problems without full paths when run on my EC2 instance with crontabs.
     if config["run_mode"] == "local":
         base_folder_pdfs = "pdfs/"
