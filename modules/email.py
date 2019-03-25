@@ -20,7 +20,10 @@ def email_notification(base_folder_email, email_list, login_info):
     #Table_top and table_bottom create a big table that nests the tables from email payload
     #This was used after encountering weird issues where tables overlapped in email
     table_top = '<table border="0">'
-    intro = "<tr><td><p style='font-size:20px'>The following criminal dockets were filed in district courts yesterday.</p>"
+    intro = "<tr><td style='font-size:20px'>" \
+            "<p>The following criminal cases were filed in district courts yesterday.</p>" \
+            "<p style='margin-bottom:20px;'>You can also view these cases online <a href='https://s3.amazonaws.com/court-dockets/index.html'>here</a>.</p>"\
+            "</td></tr>"
     email_payload_path = misc.email_payload_path_generator(base_folder_email)
     outro = "<tr><td>See errors in this email? Contact simmons-ritchie@pennlive.com</tr></td>"
     table_bottom = "</table>"
