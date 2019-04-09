@@ -55,6 +55,7 @@ Make sure you include the full path of chromedriver on your system (included wit
             "ENTER_EMAIL_DESTINATION 3"
         ],
         "county_list": ["COUNTY1","COUNTY2","COUNTY3"],
+        "desired_scrape_date": "yesterday", # enter "today" to scrape today's dockets
         "chrome_driver_path": "ENTER_FULL_PATH_OF_CHROME_DRIVER_ON_YOUR_LOCAL_MACHINE",
         'run_mode': 'local',
         'ec2': {
@@ -66,6 +67,8 @@ Make sure you include the full path of chromedriver on your system (included wit
             "chrome_driver_path": ""
         }
     }
+
+Note: Because the UJS website takes a while to upload new dockets, it's recommended that you set "desired_scrape_date" to "yesterday" if you want to capture most of that day's dockets. 
 
 ### Run
 
