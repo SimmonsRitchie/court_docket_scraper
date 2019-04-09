@@ -20,9 +20,9 @@ from modules import misc
 DocketData = namedtuple("DocketData", ('case', 'docket_num', 'filing_date', 'dob','docket_url'))
 
 
-def scrape_search_results(driver, url, county):
+def scrape_search_results(driver, url, county, scrape_date):
     #Variables
-    startdate = misc.yesterday_date()
+    startdate = scrape_date
     enddate = startdate
 
 

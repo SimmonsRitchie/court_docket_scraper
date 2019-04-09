@@ -54,6 +54,10 @@ def yesterday_date():
     yesterday = datetime.now() - timedelta(1)
     return yesterday.strftime('%m%d%Y')
 
+def today_date():
+    today = datetime.now()
+    return today.strftime('%m%d%Y')
+
 
 def formatted_yesterday_date():
     yesterday = datetime.now() - timedelta(1)

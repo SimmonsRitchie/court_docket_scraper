@@ -105,12 +105,12 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
 
     # CONVERT DATAFRAME TO JSON
     print("Creating new dictionary so we can include metadata with JSON payload...")
-    date_scrape = datetime.now().replace(microsecond=0).isoformat() # Metadata field: current time
+    date_and_time_of_scrape = datetime.now().replace(microsecond=0).isoformat() # Metadata field: current time
     selected_counties = county_list # Metadata field: list of all counties that were SELECTED by user to be scraped
     returned_counties = df["county"].unique().tolist() # Metadata field: list of all counties RETURNED in scraped data
     cases_dict = df.to_dict(orient='records') # Data: this is our actual data from the scrape, each case will be a single object in a big array
     final_dict = {
-        "scrapeDatetime": date_scrape,
+        "scrapeDatetime": date_and_time_of_scrape,
         "countiesSelectedForScrape": selected_counties,
         "countiesReturnedFromScrape": returned_counties,
         "cases": cases_dict
@@ -120,3 +120,4 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     with open(json_payload_path, "w") as write_file:
         json.dump(final_dict, write_file, indent=4)
     print("Export complete")
+    return date_and_time_of_scrape
