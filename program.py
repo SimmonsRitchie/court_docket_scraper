@@ -113,7 +113,7 @@ def main():
     date_and_time_of_scrape = export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
 
     # SEND EMAIL WITH DOCKET DATA
-    email.email_notification(base_folder_email, destination_email_addresses, my_email_login, date_and_time_of_scrape, desired_scrape_date, desired_scrape_date_literal)
+    email.email_notification(base_folder_email, destination_email_addresses, my_email_login, date_and_time_of_scrape, desired_scrape_date_literal)
 
     # CLOSE PROGRAM
     print("Closing program")
