@@ -29,12 +29,13 @@ visible). Attempting to run it in non-headless mode may cause it to crash.
 """
 
 # My modules
-from modules import delete, initialize, scrape, download, convert, email, export
+from modules import delete, initialize, scrape, download, convert, email, export, misc
 from config import config
 
 def main():
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx" #URL for UJC website
 
+    # GET DIRECTORY PATHS
     # Depending on value of config["run_mode"] change paths of output folders accordingly.
     # This is specified because program ran into problems without full paths when run on my EC2 instance with crontabs.
     if config["run_mode"] == "local":
@@ -53,21 +54,25 @@ def main():
         base_folder_text = config["ec2"]["base_folder_text"]
         chrome_driver_path = config["ec2"]["chrome_driver_path"]
 
+    # GET OTHER INFO FROM CONFIG FILE
+    county_list = [x.title() for x in config["county_list"]] # Counties need to be in title case otherwise we'll get errors during scrape
+    destination_email_addresses = config["destination"] # This is a list of email addresses
+    my_email_login = config["email"] # This is an object with keys 'username' and 'pass'
+    desired_scrape_date = misc.today_date() if config["desired_scrape_date"] == "today" else misc.yesterday_date()
+    desired_scrape_date_literal = config["desired_scrape_date"]
 
     print("Starting scraper")
 
     # DELETE OLD FILES
-    delete.delete_temp_files(base_folder_pdfs, base_folder_email, base_folder_json, base_folder_csv, base_folder_text)
+    list_of_folders_to_delete = [base_folder_pdfs, base_folder_email, base_folder_json, base_folder_csv,base_folder_text]
+    delete.delete_temp_files(list_of_folders_to_delete)
 
     # START CHROME DRIVER
     driver = initialize.initialize_driver(base_folder_pdfs, chrome_driver_path)
 
-    # GET COUNTIES TO SCRAPE
-    county_list = [x.title() for x in config["county_list"]] # Counties need to be in title case otherwise we'll get errors during scrape
-
     # SCRAPE DOCKET DATA FOR EACH COUNTY
     for county in county_list:
-        docketdata = scrape.scrape_search_results(driver, url, county)
+        docketdata = scrape.scrape_search_results(driver, url, county, desired_scrape_date)
 
         # IF THERE'S DATA THEN DOWNLOAD PDFS AND EXTRACT TEXT
         if docketdata:
@@ -105,10 +110,10 @@ def main():
             export.payload_generation(base_folder_email, base_folder_csv, create_dict, county)
 
     # CREATE JSON FILE FROM CSV
-    export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
+    date_and_time_of_scrape = export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
 
     # SEND EMAIL WITH DOCKET DATA
-    email.email_notification(base_folder_email, config["destination"], config["email"])
+    email.email_notification(base_folder_email, destination_email_addresses, my_email_login, date_and_time_of_scrape, desired_scrape_date_literal)
 
     # CLOSE PROGRAM
     print("Closing program")
