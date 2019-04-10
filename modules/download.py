@@ -26,8 +26,10 @@ def download_pdf(driver, docket_url, docket_num, base_folder_pdfs):
 
     # Waiting a small amount of time and checking to see whether file exists every few milliseconds.
     # This addresses issue where program was attemping to rename file before it had finished downloading.
+    # This is a hacky workaround but Stack Overflow suggests that it's one way to deal with how Selenium downloads files. In future,
+    # may need to replace this with a proper async solution.
     counter = 0
-    while counter < 30 and not os.path.exists(old_name):
+    while counter < 120 and not os.path.exists(old_name):
         print("Waiting for file to appear... {}".format(counter))
         time.sleep(0.1)
         counter += 1
