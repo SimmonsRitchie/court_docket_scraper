@@ -3,7 +3,7 @@ This module handles the conversion of docket data to JSON.
 
 """
 
-from modules import misc
+from modules import misc, style
 
 import pandas as pd
 import json
@@ -15,11 +15,17 @@ def payload_generation(base_folder_email, base_folder_csv, data_in_dictionary_fo
     # CONVERTING DATA INTO PANDAS DATAFRAME FOR SORTING AND FORMATTING
     df = convert_dictionary_into_dataframe(data_in_dictionary_format, county)
 
+    # SET STYLES FOR EMAIL PAYLOAD
+    df_styled = df.style \
+        .set_table_styles(style.table_style) \
+        .set_table_attributes(style.table_attribs) \
+        .format({'URL': style.make_clickable})
+
     # CREATE EMAIL PAYLOAD OR ADD DATA TO EXISTING EMAIL PAYLOAD
     email_payload_path = misc.email_payload_path_generator(base_folder_email)
     row_count = df.shape[0] # count of cases
     intro = "{} in {} County:".format(row_count, county)
-    convert_dataframe_to_html(df, intro, email_payload_path, include_index=False, render=False) # Set render to True if using Pandas styles
+    convert_dataframe_to_html(df_styled, intro, email_payload_path, include_index=False, render=True) # Set render to True if using Pandas styles
 
     # CREATE CSV PAYLOAD
     csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
@@ -42,14 +48,31 @@ def convert_dictionary_into_dataframe(data_in_dictionary_format, county):
     return df
 
 
-def convert_dataframe_to_html(df, intro, email_payload_path,include_index, render):
+def convert_dataframe_to_html(df, table_header_contents, email_payload_path,include_index, render):
     print("Saving dataframe as text file for email payload")
+
     if render:
-        html = df.render()
+        if not include_index:
+            df = df
+        html_dataframe = df.render()
     else:
-        html = df.to_html(index=include_index)
-    intro_wrapped_with_html = "<tr><td><p style='font-size:20px; margin-top:10px;'>{}</p></td></tr>".format(intro)
-    html_payload = intro_wrapped_with_html + "<tr><td>" + html + "</td></tr>"
+        html_dataframe = df.to_html(index=include_index)
+
+    # WRAP TABLE HEADER WITH HTML
+    # table header top
+    with open("email_template/table_header.html", "r") as fin:
+        table_header_top = fin.read()
+    # table header bottom
+    table_header_bottom = "</span></div>"
+    # unite
+    table_header_with_html = table_header_top + table_header_contents + table_header_bottom
+
+    # JOIN INTRO WITH BODY
+    html_payload = table_header_with_html + html_dataframe
+
+    # WRAP HTML PAYLOAD WITH DIV
+    html_payload = '<div class="datatable_container">' + html_payload + '</div>'
+
     if os.path.exists(email_payload_path):
         with open(email_payload_path, "a") as fin:
             print("Existing text file found: Adding dataframe")
