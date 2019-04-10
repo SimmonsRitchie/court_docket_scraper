@@ -41,7 +41,13 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
     parser = PDFParser(fp)
 
     # Store the parsed content in PDFDocument object
-    document = PDFDocument(parser, password)
+    try:
+        document = PDFDocument(parser, password)
+    except:
+        print("/\/\/\/\/\/\/\/\/")
+        print("ERROR: Something went wrong when attempting to convert PDF - file may be damaged or corrupted")
+        print("Returning no extracted text for docket {}".format(docket_num))
+        return extracted_text
 
     # Check if document is extractable, if not abort
     if not document.is_extractable:

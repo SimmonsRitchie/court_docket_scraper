@@ -20,8 +20,8 @@ This is the main file for the program. From main(), the program performs the fol
     -EXPORT TO JSON: A json file is created from the CSV file (which now has scraped data from all counties).
     -EMAIL: The email payload text file is emailed to selected email addresses specified in config.py.
 
-NOTE1: This was one of the author's earliest programming projects so some (or a lot) of the code might be a little wacky
-or redundant.
+NOTE1: This was one of the author's earliest coding projects. Some of the code is a bit wacky or redundant
+(in particular the use of collections in the 'scrape' module).
 
 NOTE2: Due to the way this program downloads PDFs, it was designed to run in headless mode (ie. without a browser window
 visible). Attempting to run it in non-headless mode may cause it to crash.
@@ -74,7 +74,7 @@ def main():
     for county in county_list:
         docketdata = scrape.scrape_search_results(driver, url, county, desired_scrape_date)
 
-        # IF THERE'S DATA THEN DOWNLOAD PDFS AND EXTRACT TEXT
+        # IF THERE'S DATA THEN DOWNLOAD PDF AND EXTRACT TEXT FOR EACH DOCKET
         if docketdata:
             charges_list = []
             bail_list = []
@@ -98,16 +98,18 @@ def main():
                 print(parseddata.charge)
                 print(parseddata.bail)
 
-            # CREATE DICTIONARY OF ALL DOCKET DATA FOR EMAIL
-            create_dict = {
-                "Name": docketdata.case,
-                "Filing date": docketdata.filing_date,
-                "DOB": docketdata.dob,
-                "Charges": charges_list,
-                "Bail": bail_list,
-                "URL": docketdata.docket_url
-            }
-            export.payload_generation(base_folder_email, base_folder_csv, create_dict, county)
+        # CREATE DICT OF DATA - DATA IS STORED AS LIST OF VALUES FOR EACH KEY
+        data_in_dictionary_format = {
+        "Name": docketdata.case,
+        "Filing date": docketdata.filing_date,
+        "DOB": docketdata.dob,
+        "Charges": charges_list,
+        "Bail": bail_list,
+        "URL": docketdata.docket_url
+        }
+
+        # CONVERT LIST OF DICTS INTO HTML FOR EMAIL PAYLOAD (ALSO CREATES CSV)
+        export.payload_generation(base_folder_email, base_folder_csv, data_in_dictionary_format, county)
 
     # CREATE JSON FILE FROM CSV
     date_and_time_of_scrape = export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
