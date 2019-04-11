@@ -32,7 +32,7 @@ def email_notification(base_folder_email, destination_email_addresses, my_email_
     # ACCESS GMAIL AND SEND
     fromaddr = "dsr.newsalert@gmail.com"
     recipients = destination_email_addresses
-    message['From'] = 'NewsAlert <dsr.newsalert@gmail.com>'
+    message['From'] = "Pa Court Report <dsr.newsalert@gmail.com>"
     message['To'] = ", ".join(recipients)
     message['Subject'] = subject
 
@@ -55,9 +55,24 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
         html_head = fin.read()
     with open("email_template/html_body_top.html", "r") as fin:
         html_body = fin.read()
+
+    # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
+    # mobile tease top
+    with open("email_template/mobile_tease_top.html", "r") as fin:
+        mobile_tease_top = fin.read()
+    # mobile tease content
+    mobile_tease_content = "The latest midstate court cases scraped from AOPC's website."
+    # mobile tease bottom + start of main email container div
+    with open("email_template/mobile_tease_bottom.html", "r") as fin:
+        mobile_tease_bottom = fin.read()
+    mobile_tease = mobile_tease_top + mobile_tease_content + mobile_tease_bottom
+
+    # GENERATE MAIN DIV AND MAIN TABLE
     with open("email_template/table_top.html", "r") as fin:
         table_top = fin.read()
-    html_top = html_head + html_body + table_top
+
+    # COMBINE TOP HTML TOGETHER
+    html_top = html_head + html_body + mobile_tease + table_top
 
     # GENERATE HEADER
     with open("email_template/header.html", "r") as fin:
@@ -116,7 +131,7 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
     html_bottom = "</div></center></table></body></html>"
 
     # JOIN IT ALL TOGETHER
-    msg_content = html_top + header + intro + email_body + footer + html_bottom
+    msg_content = html_top + mobile_tease + header + intro + email_body + footer + html_bottom
     message = MIMEText(msg_content, 'html')
 
     print("HTML payload generated")
@@ -144,3 +159,4 @@ def create_subject_line(base_folder_email, desired_scrape_date_literal, formatte
     print("Subject line generated")
 
     return subject
+

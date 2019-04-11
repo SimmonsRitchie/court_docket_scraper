@@ -53,7 +53,7 @@ def convert_dataframe_to_html(df, table_header_contents, email_payload_path,incl
 
     if render:
         if not include_index:
-            df = df
+            df = df.hide_index()
         html_dataframe = df.render()
     else:
         html_dataframe = df.to_html(index=include_index)
