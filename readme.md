@@ -32,6 +32,8 @@ pdfminer
 email.mime.text
 smtplib
 
+Make sure your version of Pandas is 0.23 or higher otherwise you may encounter errors.
+
 ### Configuration
 
 In order for the program to send emails with summarized docket info, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under security settings.

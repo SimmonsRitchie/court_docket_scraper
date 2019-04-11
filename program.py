@@ -26,6 +26,9 @@ NOTE1: This was one of the author's earliest coding projects. Some of the code i
 NOTE2: Due to the way this program downloads PDFs, it was designed to run in headless mode (ie. without a browser window
 visible). Attempting to run it in non-headless mode may cause it to crash.
 
+NOTE3: Make sure you have version 0.23 or higher of Pandas installed. This program makes use of .hide_index() on styled dataframes,
+a relatively new feature.
+
 """
 
 # My modules
@@ -54,8 +57,10 @@ def main():
         base_folder_text = config["ec2"]["base_folder_text"]
         chrome_driver_path = config["ec2"]["chrome_driver_path"]
 
-    # GET OTHER INFO FROM CONFIG FILE
-    county_list = [x.title() for x in config["county_list"]] # Counties need to be in title case otherwise we'll get errors during scrape
+    # GET COUNTIES TO SCRAPE
+    county_list = [x.title() for x in config["county_list"]] # Counties are transformed into title case, otherwise we'll get errors during scrape
+
+    # GET OTHER CONFIG INFO
     destination_email_addresses = config["destination"] # This is a list of email addresses
     my_email_login = config["email"] # This is an object with keys 'username' and 'pass'
     desired_scrape_date = misc.today_date() if config["desired_scrape_date"] == "today" else misc.yesterday_date()
@@ -115,7 +120,8 @@ def main():
     date_and_time_of_scrape = export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
 
     # SEND EMAIL WITH DOCKET DATA
-    email.email_notification(base_folder_email, destination_email_addresses, my_email_login, date_and_time_of_scrape, desired_scrape_date_literal)
+    email.email_notification(base_folder_email, destination_email_addresses, my_email_login,
+                             date_and_time_of_scrape, desired_scrape_date_literal, county_list)
 
     # CLOSE PROGRAM
     print("Closing program")
