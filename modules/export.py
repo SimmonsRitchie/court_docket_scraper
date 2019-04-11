@@ -10,7 +10,8 @@ import json
 import os
 from datetime import datetime
 
-def payload_generation(base_folder_email, base_folder_csv, data_in_dictionary_format, county):
+def payload_generation(base_folder_email, base_folder_csv, base_folder_email_template,
+                       data_in_dictionary_format, county):
 
     # CONVERTING DATA INTO PANDAS DATAFRAME FOR SORTING AND FORMATTING
     df = convert_dictionary_into_dataframe(data_in_dictionary_format, county)
@@ -25,7 +26,8 @@ def payload_generation(base_folder_email, base_folder_csv, data_in_dictionary_fo
     email_payload_path = misc.email_payload_path_generator(base_folder_email)
     row_count = df.shape[0] # count of cases
     intro = "{} in {} County:".format(row_count, county)
-    convert_dataframe_to_html(df_styled, intro, email_payload_path, include_index=False, render=True) # Set render to True if using Pandas styles
+    convert_dataframe_to_html(df_styled, intro, email_payload_path, base_folder_email_template,
+                              include_index=False, render=True) # Set render to True if using Pandas styles
 
     # CREATE CSV PAYLOAD
     csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
@@ -48,7 +50,8 @@ def convert_dictionary_into_dataframe(data_in_dictionary_format, county):
     return df
 
 
-def convert_dataframe_to_html(df, table_header_contents, email_payload_path,include_index, render):
+def convert_dataframe_to_html(df, table_header_contents, email_payload_path, base_folder_email_template,
+                              include_index, render):
     print("Saving dataframe as text file for email payload")
 
     if render:
@@ -60,7 +63,8 @@ def convert_dataframe_to_html(df, table_header_contents, email_payload_path,incl
 
     # WRAP TABLE HEADER WITH HTML
     # table header top
-    with open("email_template/table_header.html", "r") as fin:
+    table_header_path = misc.email_template_path_generator(base_folder_email_template, "table_header.html")
+    with open(table_header_path, "r") as fin:
         table_header_top = fin.read()
     # table header bottom
     table_header_bottom = "</span></div>"
