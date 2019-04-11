@@ -36,12 +36,23 @@ def json_payload_path_generator(base_folder_json):
     json_payload_path = os.path.join(base_folder_json,json_filename)
     return json_payload_path
 
+
 def csv_payload_path_generator(base_folder_csv):
     check_directory_exists(base_folder_csv)
     csv_filename = "dockets.csv"
     csv_payload_path = os.path.join(base_folder_csv,csv_filename)
     return csv_payload_path
 
+
+def email_template_path_generator(base_folder_email_template, filename):
+    return os.path.join(base_folder_email_template, filename)
+
+
+def final_email_path_generator(base_folder_final_email):
+    check_directory_exists(base_folder_final_email)
+    final_email_filename = "email.html"
+    final_email_path = os.path.join(base_folder_final_email, final_email_filename)
+    return final_email_path
 
 
 def check_directory_exists(base_folder):

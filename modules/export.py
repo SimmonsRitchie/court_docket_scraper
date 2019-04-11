@@ -160,4 +160,9 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     return date_and_time_of_scrape
 
 
-
+def save_copy_of_final_email(base_folder_final_email, msg_content):
+    final_email_path = misc.final_email_path_generator(base_folder_final_email)
+    with open(final_email_path, "w") as fout:
+        print("Saving copy of email for testing and debugging purposes")
+        fout.write(msg_content)
+        print("File saved")
