@@ -119,7 +119,8 @@ def main():
         }
 
         # CONVERT LIST OF DICTS INTO HTML FOR EMAIL PAYLOAD (ALSO CREATES CSV)
-        export.payload_generation(base_folder_email, base_folder_csv, data_in_dictionary_format, county)
+        export.payload_generation(base_folder_email, base_folder_csv, base_folder_email_template,
+                                  data_in_dictionary_format, county)
 
     # CREATE JSON FILE FROM CSV
     date_and_time_of_scrape = export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
