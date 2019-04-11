@@ -49,7 +49,6 @@ def email_notification(base_folder_email, destination_email_addresses, my_email_
 def create_final_email_payload(base_folder_email, desired_scrape_date_literal, formatted_date, formatted_time, yesterday_date):
     print("Generating final HTML payload")
 
-
     # GENERATE HTML HEAD AND BODY TOP
     with open("email_template/html_head.html", "r") as fin:
         html_head = fin.read()
@@ -61,7 +60,7 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
     with open("email_template/mobile_tease_top.html", "r") as fin:
         mobile_tease_top = fin.read()
     # mobile tease content
-    mobile_tease_content = "The latest midstate court cases scraped from AOPC's website."
+    mobile_tease_content = "Here are the latest criminal cases filed in central Pa. courts."
     # mobile tease bottom + start of main email container div
     with open("email_template/mobile_tease_bottom.html", "r") as fin:
         mobile_tease_bottom = fin.read()
@@ -136,6 +135,7 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
 
     print("HTML payload generated")
     return message
+
 
 
 def create_subject_line(base_folder_email, desired_scrape_date_literal, formatted_date, yesterday_date):
