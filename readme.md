@@ -66,6 +66,8 @@ Make sure you include the full path of chromedriver on your system (included wit
             "base_folder_json": "",
             "base_folder_csv": "",
             "base_folder_text": "",
+            "base_folder_email_template": "",
+            "base_folder_final_email": "",
             "chrome_driver_path": ""
         }
     }

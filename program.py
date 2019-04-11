@@ -48,6 +48,7 @@ def main():
         base_folder_csv = "csv_payload/"
         base_folder_text = "extracted_text/"
         base_folder_email_template = "email_template/"
+        base_folder_final_email = "email_final/"
         chrome_driver_path = config["chrome_driver_path"]
 
     elif config["run_mode"] == "ec2":
@@ -57,6 +58,7 @@ def main():
         base_folder_csv = config["ec2"]["base_folder_csv"]
         base_folder_text = config["ec2"]["base_folder_text"]
         base_folder_email_template = config["ec2"]["base_folder_email_template"]
+        base_folder_final_email = config["ec2"]["base_folder_final_email"]
         chrome_driver_path = config["ec2"]["chrome_driver_path"]
 
     # GET COUNTIES TO SCRAPE
@@ -71,7 +73,8 @@ def main():
     print("Starting scraper")
 
     # DELETE OLD FILES
-    list_of_folders_to_delete = [base_folder_pdfs, base_folder_email, base_folder_json, base_folder_csv,base_folder_text]
+    list_of_folders_to_delete = [base_folder_pdfs, base_folder_email, base_folder_json, base_folder_csv,
+                                 base_folder_text, base_folder_final_email]
     delete.delete_temp_files(list_of_folders_to_delete)
 
     # START CHROME DRIVER
@@ -122,8 +125,9 @@ def main():
     date_and_time_of_scrape = export.convert_csv_to_json(base_folder_csv, base_folder_json, county_list)
 
     # SEND EMAIL WITH DOCKET DATA
-    email.email_notification(base_folder_email, base_folder_email_template, destination_email_addresses,
-                             my_email_login, date_and_time_of_scrape, desired_scrape_date_literal, county_list)
+    email.email_notification(base_folder_email, base_folder_email_template, base_folder_final_email,
+                             destination_email_addresses, my_email_login, date_and_time_of_scrape,
+                             desired_scrape_date_literal, county_list)
 
     # CLOSE PROGRAM
     print("Closing program")

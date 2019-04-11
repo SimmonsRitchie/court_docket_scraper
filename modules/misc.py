@@ -48,6 +48,13 @@ def email_template_path_generator(base_folder_email_template, filename):
     return os.path.join(base_folder_email_template, filename)
 
 
+def final_email_path_generator(base_folder_final_email):
+    check_directory_exists(base_folder_final_email)
+    final_email_filename = "email.html"
+    final_email_path = os.path.join(base_folder_final_email, final_email_filename)
+    return final_email_path
+
+
 def check_directory_exists(base_folder):
     directory = os.path.dirname(base_folder)
     if not os.path.exists(directory):
