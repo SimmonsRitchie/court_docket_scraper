@@ -8,12 +8,12 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta
 
 # Load my modules
-from modules import misc
+from modules import misc, export
 
 
 
-def email_notification(base_folder_email, destination_email_addresses, my_email_login,
-                       date_and_time_of_scrape, desired_scrape_date_literal, county_list):
+def email_notification(base_folder_email, base_folder_email_template, base_folder_final_email, destination_email_addresses,
+                       my_email_login, date_and_time_of_scrape, desired_scrape_date_literal, county_list):
 
     print("Sending email...")
 
@@ -25,8 +25,9 @@ def email_notification(base_folder_email, destination_email_addresses, my_email_
     yesterday_date = (datetime.now() - timedelta(1)).strftime("%a, %b %-d %Y")
 
     # GENERATE EMAIL HTML
-    message = create_final_email_payload(base_folder_email, desired_scrape_date_literal, formatted_date,
-                                         formatted_time, yesterday_date, county_list)
+    message = create_final_email_payload(base_folder_email, base_folder_email_template, base_folder_final_email,
+                                         desired_scrape_date_literal, formatted_date, formatted_time, yesterday_date,
+                                         county_list)
 
     # GENERATE SUBJECT LINE
     subject = create_subject_line(base_folder_email, desired_scrape_date_literal, formatted_date, yesterday_date, county_list)
@@ -48,20 +49,35 @@ def email_notification(base_folder_email, destination_email_addresses, my_email_
     print("Email sent!")
 
 
-def create_final_email_payload(base_folder_email, desired_scrape_date_literal, formatted_date, formatted_time,
-                               yesterday_date, county_list):
-
+def create_final_email_payload(base_folder_email, base_folder_email_template, base_folder_final_email,
+                               desired_scrape_date_literal, formatted_date, formatted_time, yesterday_date,
+                               county_list):
+    # FINAL EMAIL PAYLOAD
+    # This function fuses our scraped data with snippets of HTML to create our final email payload
     print("Generating final HTML payload")
 
+    # GET PATHS OF EMAIL COMPONENTS
+    # First creating a list of all our email template components
+    email_components = ["html_head", "html_body_top", "mobile_tease_top","mobile_tease_bottom","table_top","header",
+                        "intro_top","email_body_top","footer_top"]
+    # Creating blank dictionary to act as a look-up table
+    email_paths = {}
+    # Looping over email components to create dict of paths
+    for component in email_components:
+        filename = component + ".html"
+        path_to_item = misc.email_template_path_generator(base_folder_email_template,filename)
+        email_paths[component] = path_to_item
+
+
     # GENERATE HTML HEAD AND BODY TOP
-    with open("email_template/html_head.html", "r") as fin:
+    with open(email_paths["html_head"], "r") as fin:
         html_head = fin.read()
-    with open("email_template/html_body_top.html", "r") as fin:
+    with open(email_paths["html_body_top"], "r") as fin:
         html_body = fin.read()
 
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
     # mobile tease top
-    with open("email_template/mobile_tease_top.html", "r") as fin:
+    with open(email_paths["mobile_tease_top"], "r") as fin:
         mobile_tease_top = fin.read()
     # mobile tease content
     if len(county_list) == 1:
@@ -69,24 +85,24 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
     else:
         mobile_tease_content = "Here are the latest criminal cases filed in central Pa. courts."
     # mobile tease bottom + start of main email container div
-    with open("email_template/mobile_tease_bottom.html", "r") as fin:
+    with open(email_paths["mobile_tease_bottom"], "r") as fin:
         mobile_tease_bottom = fin.read()
     mobile_tease = mobile_tease_top + mobile_tease_content + mobile_tease_bottom
 
     # GENERATE MAIN DIV AND MAIN TABLE
-    with open("email_template/table_top.html", "r") as fin:
+    with open(email_paths["table_top"], "r") as fin:
         table_top = fin.read()
 
     # COMBINE TOP HTML TOGETHER
     html_top = html_head + html_body + mobile_tease + table_top
 
     # GENERATE HEADER
-    with open("email_template/header.html", "r") as fin:
+    with open(email_paths["header"], "r") as fin:
         header = fin.read()
 
     # GENERATE INTRO
     # intro top
-    with open("email_template/intro_top.html", "r") as fin:
+    with open(email_paths["intro_top"], "r") as fin:
         intro_container_top = fin.read()
     # intro header and contents
     # we provide different intros if only one county was chosen for scrape
@@ -116,7 +132,7 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
 
     # GENERATE EMAIL BODY
     # email body top
-    with open("email_template/email_body_top.html", "r") as fin:
+    with open(email_paths["email_body_top"], "r") as fin:
         email_body_top = fin.read()
     # email body contents
     email_payload_path = misc.email_payload_path_generator(base_folder_email)
@@ -130,7 +146,7 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
 
     # GENERATE FOOTER
     # footer top
-    with open("email_template/footer_top.html", "r") as fin:
+    with open(email_paths["footer_top"], "r") as fin:
         footer_top = fin.read()
     # footer contents
     footer_contents = "<p>This information was scraped at {} on {}</p>\
@@ -149,6 +165,9 @@ def create_final_email_payload(base_folder_email, desired_scrape_date_literal, f
     # JOIN IT ALL TOGETHER
     msg_content = html_top + mobile_tease + header + intro + email_body + footer + html_bottom
     message = MIMEText(msg_content, 'html')
+
+    # SAVE A COPY OF FINAL EMAIL FOR TESTING AND DEBUGGING PURPOSES
+    export.save_copy_of_final_email(base_folder_final_email, msg_content)
 
     print("HTML payload generated")
     return message
