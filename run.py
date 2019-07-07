@@ -28,8 +28,10 @@ NOTE3: Make sure you have version 0.23 or higher of Pandas installed. This progr
 a relatively new feature.
 
 """
+# Third party libs
 import os
 import json
+# Project modules
 from modules import delete, initialize, scrape, download, convert, email, export, misc
 
 
@@ -51,14 +53,12 @@ def main():
     destination_email_addresses = json.loads(os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
     sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
     sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
-    target_scrape_date = os.environ.get("TARGET_SCRAPE_DATE")
+    target_scrape_date = misc.today_date() if os.environ.get("TARGET_SCRAPE_DATE").lower() == "today" else misc.yesterday_date()
 
     # REFORMAT COUNTY LIST
     county_list = [
         x.title() for x in county_list
     ]  # Counties are transformed into title case, otherwise we'll get errors during scrape
-
-    print("Starting scraper")
 
     # DELETE OLD FILES
     list_of_folders_to_delete = [

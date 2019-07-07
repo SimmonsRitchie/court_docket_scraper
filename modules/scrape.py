@@ -2,30 +2,26 @@
 This module searches for court dockets on the UJC website, goes through each result, extracts docket info and the URL for each docket
 """
 
-# Load selenium modules
-
+# Third party libs
 from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
 from selenium.webdriver.support.ui import Select
-
-# Other modules
 import sys
 import time
-from collections import namedtuple
-
-
-# My modules
-from modules import misc
-
-# Named tuple
-DocketData = namedtuple(
-    "DocketData", ("case", "docket_num", "filing_date", "dob", "docket_url")
-)
 
 
 def scrape_search_results(driver, url, county, scrape_date):
+
+    ########################################################################
+    #                     INPUT SEARCH
+    ########################################################################
+
+    """
+    We begin our search by accessing the UJS website's search page, entering required fields, then hitting submit.
+    """
+
     # Variables
     startdate = scrape_date
     enddate = startdate
@@ -74,12 +70,6 @@ def scrape_search_results(driver, url, county, scrape_date):
 
         # Starting loop that searches through all courts in county
         print("Scraping search results...")
-        # Creating lists to store docket info from search results
-        docketnum_list = []
-        case_list = []
-        filing_date_list = []
-        dob_list = []
-        docket_url_list = []
     except NoSuchElementException:
         print("ERROR: Something went wrong while looking for input fields")
         print("USJ page might be down for maintenance")
@@ -88,42 +78,62 @@ def scrape_search_results(driver, url, county, scrape_date):
         driver.quit()
         sys.exit(1)
 
+    ########################################################################
+    #                     SCRAPE SEARCH RESULTS
+    ########################################################################
+
+    """
+    We now use a series of nested loops to scrape the search results:
+    
+    -> Loop1: Cycle through all district courts
+    --> Loop2: Cycle through all result pages for each district court
+    ---> Loop3: Cycle through all rows on each results page
+    
+    Loops break when no further courts/pages/rows are found.
+    """
+
+    # Payload
+    docket_list = []
+
+    # LOOP 1: DISTRICT COURTS
     search_courts_loop = True
-    court = 1
-    while search_courts_loop is True:
+    court = 1 # district court counter
+    while search_courts_loop:
         try:
-            # selecting court
+            # select district court
             print("Selecting court: {}".format(court))
-            time.sleep(3)
+            time.sleep(3) # we use sleep to give UJS website time to load
             input_court = Select(
                 driver.find_element_by_xpath(
                     '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
                 )
             )
-            # input_court.select_by_value(str(court))
             input_court.select_by_index(court)
 
-            # Submit form
+            # submit form
             print("Submitting form")
             driver.find_element_by_xpath(
                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_btnSearch"]'
             ).click()
-
-            # Adding 1 to court index
             court += 1
+
+            # LOOP 2: RESULTS PAGES FOR EACH COURT
             print("Beginning page search loop")
             search_pages_loop = True
-            page_count = 1
-            while search_pages_loop is True:
+            page_count = 1 # page result counter
+            while search_pages_loop:
                 time.sleep(4)
+
+                # LOOP 3: ROWS FOR EACH RESULTS PAGE
                 search_rows_loop = True
-                row_count = 1
+                row_count = 1 # row counter
                 print("Searching page {}...".format(page_count))
-                while search_rows_loop is True:
+                while search_rows_loop:
                     print("Searching row {}...".format(row_count))
                     row_count += 1
-                    # Xpaths in some columns use leading zeros. Variable below is used to capture these.
-                    xpath_subelement = str("%02d" % (row_count,))
+                    xpath_subelement = str("%02d" % (row_count,)) # Xpaths in some columns use leading zeros. We use this amend these xpaths.
+
+                    # Checking whether row exists
                     try:
                         docketnum = driver.find_element_by_xpath(
                             "/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr["
@@ -131,6 +141,7 @@ def scrape_search_results(driver, url, county, scrape_date):
                             + "]/td[2]"
                         )
                         clean_docketnum = docketnum.text
+
                         # If docketnum is a criminal docket then capture information
                         if "-CR-" in clean_docketnum:
                             print("Criminal case FOUND - saving")
@@ -162,38 +173,46 @@ def scrape_search_results(driver, url, county, scrape_date):
                             )
                             clean_docket_url = docket_url.get_attribute("href")
 
-                            print("Docket num: {}".format(clean_docketnum))
-                            print("Caption: {}".format(clean_caption))
-                            print("DOB: {}".format(clean_dob))
-                            print("Filing date: {}".format(clean_filing_date))
-                            print("URL: {}".format(clean_docket_url))
+                            docket = {
+                                "docket_num": clean_docketnum,
+                                "caption": clean_caption,
+                                "dob": clean_dob,
+                                "filing_date": clean_filing_date,
+                                "url": clean_docket_url,
+                            }
 
-                            docketnum_list.append(clean_docketnum)
-                            case_list.append(clean_caption)
-                            filing_date_list.append(clean_filing_date)
-                            dob_list.append(clean_dob)
-                            docket_url_list.append(clean_docket_url)
+                            # Display docket info
+                            for key, value in docket.items():
+                                print(f"{key.upper()}: {value}")
+
+                            docket_list.append(docket) # Add docket to payload
+
+                        # if not a criminal docket then move on to next row.
                         else:
                             print("Not a criminal case")
+
+                    # No row found: End row search loop
                     except NoSuchElementException:
                         print("No row found")
-                        break
+                        break # End row search loop
                     except StaleElementReferenceException:
-                        print("ERROR: Tried to find element but it's become stale")
+                        print("ERROR: Tried to find element but it has become stale")
+
+                # Checking whether there are more pages
                 try:
-                    # Attempting to click next page if it exists
                     print("Checking if there are more pages...")
                     next_page = str(page_count + 1)
                     driver.find_element_by_link_text(next_page).click()
                     print("More pages FOUND - going to next page")
-                    # Adding to page counter
                     page_count += 1
+
+                # No pages found: End page search loop
                 except NoSuchElementException:
                     print("No further pages found")
                     break
+
+        # No further court found: End court search loop
         except NoSuchElementException:
             print("No more courts found")
             break
-    return DocketData(
-        case_list, docketnum_list, filing_date_list, dob_list, docket_url_list
-    )
+    return docket_list
