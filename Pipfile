@@ -1,0 +1,37 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+black = "*"
+
+[packages]
+beautifulsoup4 = "==4.6.0"
+certifi = "==2018.4.16"
+chardet = "==3.0.4"
+fake-useragent = "==0.1.10"
+idna = "==2.6"
+inflect = "==1.0.0"
+numpy = "==1.14.3"
+pandas = "==0.24.2"
+pycryptodome = "==3.6.1"
+python-dateutil = "==2.7.3"
+pytz = "==2018.4"
+requests = "==2.18.4"
+selenium = "==3.12.0"
+six = "==1.11.0"
+twilio = "==6.16.2"
+urllib3 = "==1.22"
+cx_Freeze = "==5.1.1"
+Jinja2 = "==2.10.1"
+MarkupSafe = "==1.1.1"
+"pdfminer.six" = "==20170720"
+PyJWT = "==1.6.4"
+PySocks = "==1.6.8"
+
+[requires]
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

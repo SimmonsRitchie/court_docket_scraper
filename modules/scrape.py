@@ -2,9 +2,12 @@
 This module searches for court dockets on the UJC website, goes through each result, extracts docket info and the URL for each docket
 """
 
-#Load selenium modules
+# Load selenium modules
 
-from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    StaleElementReferenceException,
+)
 from selenium.webdriver.support.ui import Select
 
 # Other modules
@@ -17,26 +20,29 @@ from collections import namedtuple
 from modules import misc
 
 # Named tuple
-DocketData = namedtuple("DocketData", ('case', 'docket_num', 'filing_date', 'dob','docket_url'))
+DocketData = namedtuple(
+    "DocketData", ("case", "docket_num", "filing_date", "dob", "docket_url")
+)
 
 
 def scrape_search_results(driver, url, county, scrape_date):
-    #Variables
+    # Variables
     startdate = scrape_date
     enddate = startdate
-
 
     # Opening webpage
     print("Opening USC website")
     driver.get(url)
 
     try:
-        #selecting search type
+        # selecting search type
         print("Selecting search type")
-        input_searchtype = Select(driver.find_element_by_xpath(
-            '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_ddlSearchType"]'
-        ))
-        input_searchtype.select_by_visible_text('Date Filed')
+        input_searchtype = Select(
+            driver.find_element_by_xpath(
+                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_ddlSearchType"]'
+            )
+        )
+        input_searchtype.select_by_visible_text("Date Filed")
 
         # selecting start date
         print("Entering start date: {}".format(startdate))
@@ -59,9 +65,11 @@ def scrape_search_results(driver, url, county, scrape_date):
         print("###########")
         print("Beginning search of dockets in {} County".format(county.upper()))
         print("")
-        input_county = Select(driver.find_element_by_xpath(
-            '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCounty"]'
-        ))
+        input_county = Select(
+            driver.find_element_by_xpath(
+                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCounty"]'
+            )
+        )
         input_county.select_by_visible_text(county)
 
         # Starting loop that searches through all courts in county
@@ -75,11 +83,10 @@ def scrape_search_results(driver, url, county, scrape_date):
     except NoSuchElementException:
         print("ERROR: Something went wrong while looking for input fields")
         print("USJ page might be down for maintenance")
-        print('Close Chrome')
+        print("Close Chrome")
         print("Closing program")
         driver.quit()
         sys.exit(1)
-
 
     search_courts_loop = True
     court = 1
@@ -88,9 +95,11 @@ def scrape_search_results(driver, url, county, scrape_date):
             # selecting court
             print("Selecting court: {}".format(court))
             time.sleep(3)
-            input_court = Select(driver.find_element_by_xpath(
-                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
-            ))
+            input_court = Select(
+                driver.find_element_by_xpath(
+                    '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
+                )
+            )
             # input_court.select_by_value(str(court))
             input_court.select_by_index(court)
 
@@ -113,33 +122,43 @@ def scrape_search_results(driver, url, county, scrape_date):
                 while search_rows_loop is True:
                     print("Searching row {}...".format(row_count))
                     row_count += 1
-                    #Xpaths in some columns use leading zeros. Variable below is used to capture these.
+                    # Xpaths in some columns use leading zeros. Variable below is used to capture these.
                     xpath_subelement = str("%02d" % (row_count,))
                     try:
                         docketnum = driver.find_element_by_xpath(
-                            '/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr[' + str(row_count) + ']/td[2]'
+                            "/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr["
+                            + str(row_count)
+                            + "]/td[2]"
                         )
                         clean_docketnum = docketnum.text
                         # If docketnum is a criminal docket then capture information
                         if "-CR-" in clean_docketnum:
                             print("Criminal case FOUND - saving")
                             caption = driver.find_element_by_xpath(
-                                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl' + xpath_subelement + '_Label2"]'
+                                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl'
+                                + xpath_subelement
+                                + '_Label2"]'
                             )
                             clean_caption = caption.text
 
                             filing_date = driver.find_element_by_xpath(
-                                '/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr[' + str(row_count) + ']/td[5]'
+                                "/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr["
+                                + str(row_count)
+                                + "]/td[5]"
                             )
                             clean_filing_date = filing_date.text
 
                             dob = driver.find_element_by_xpath(
-                                '/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr[' + str(row_count) + ']/td[12]/table/tbody/tr/td/span'
+                                "/html/body/form/div[3]/div[2]/table/tbody/tr/td/div[2]/div/div[3]/div/table/tbody/tr[1]/td/div/div[2]/table/tbody/tr["
+                                + str(row_count)
+                                + "]/td[12]/table/tbody/tr/td/span"
                             )
                             clean_dob = dob.text
 
                             docket_url = driver.find_element_by_xpath(
-                                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl' + str(xpath_subelement) + '_ucPrintControl_printMenun1"]/td/table/tbody/tr/td/a'
+                                '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl'
+                                + str(xpath_subelement)
+                                + '_ucPrintControl_printMenun1"]/td/table/tbody/tr/td/a'
                             )
                             clean_docket_url = docket_url.get_attribute("href")
 
@@ -162,12 +181,12 @@ def scrape_search_results(driver, url, county, scrape_date):
                     except StaleElementReferenceException:
                         print("ERROR: Tried to find element but it's become stale")
                 try:
-                    #Attempting to click next page if it exists
+                    # Attempting to click next page if it exists
                     print("Checking if there are more pages...")
                     next_page = str(page_count + 1)
                     driver.find_element_by_link_text(next_page).click()
                     print("More pages FOUND - going to next page")
-                    #Adding to page counter
+                    # Adding to page counter
                     page_count += 1
                 except NoSuchElementException:
                     print("No further pages found")
@@ -175,6 +194,6 @@ def scrape_search_results(driver, url, county, scrape_date):
         except NoSuchElementException:
             print("No more courts found")
             break
-    return DocketData(case_list,docketnum_list,filing_date_list,dob_list,docket_url_list)
-
-
+    return DocketData(
+        case_list, docketnum_list, filing_date_list, dob_list, docket_url_list
+    )

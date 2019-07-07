@@ -12,7 +12,7 @@ from modules import misc
 
 def download_pdf(driver, docket_url, docket_num, base_folder_pdfs):
     misc.check_directory_exists(base_folder_pdfs)
-    old_name = os.path.join(base_folder_pdfs,"MDJReport.pdf")
+    old_name = os.path.join(base_folder_pdfs, "MDJReport.pdf")
     new_name = misc.pdf_path_generator(base_folder_pdfs, docket_num)
     print("Downloading docket sheet PDF for: {}".format(docket_num))
     print("URL: {}".format(docket_url))

@@ -21,15 +21,15 @@ from collections import namedtuple
 from modules import misc
 
 # Collections
-ParsedData = namedtuple("ParsedData", ('charge','bail'))
-
-
+ParsedData = namedtuple("ParsedData", ("charge", "bail"))
 
 
 def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
     print("Converting pdf to text...")
     pdf_path = misc.pdf_path_generator(base_folder_pdfs, docket_num)
-    extracted_text_path = misc.extracted_text_path_generator(base_folder_text, docket_num)
+    extracted_text_path = misc.extracted_text_path_generator(
+        base_folder_text, docket_num
+    )
 
     password = ""
     extracted_text = ""
@@ -45,7 +45,9 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
         document = PDFDocument(parser, password)
     except:
         print("/\/\/\/\/\/\/\/\/")
-        print("ERROR: Something went wrong when attempting to convert PDF - file may be damaged or corrupted")
+        print(
+            "ERROR: Something went wrong when attempting to convert PDF - file may be damaged or corrupted"
+        )
         print("Returning no extracted text for docket {}".format(docket_num))
         return extracted_text
 
@@ -91,39 +93,44 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
 
 
 def parse_extracted_text(text):
-        try:
-            print("Attempting to extract charges from text with Regex...")
-            pattern = re.compile(
-                r'(Grade Description\n)((F|F1|F2|F3|M|M1|M2|M3|S)?\n)*(.*?)(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled Date)',
-                re.DOTALL)
-            match = pattern.search(text)
-            charges = match.group(4)
-            print("Charges found:")
-            print()
-            print(charges)
-            print()
-            #Replacing newline characters
-            charges = charges.replace("\n", "; ")
-            charges = charges[0:100]
-        except AttributeError:
-            print("Error: Something went wrong with charge parsing for that docket")
-            charges = "None found (check docket)"
-        try:
-            print("Attempting to extract bail from text with Regex...")
-            pattern = re.compile(r'(Amount\n)\$(.*)\.00', re.DOTALL)
-            match = pattern.search(text)
-            bail = match.group(2)
-            print("Bail found:")
-            print()
-            print(bail)
-            print()
-            # Removing newline characters
-            bail = bail[0:15]
-            bail = bail.replace("\n", "").replace(",", "")
-        except AttributeError:
-            print("Error: None found or something went wrong with bail parsing for that docket")
-            bail = "None found"
-        except ValueError:
-            print("Error: None found or something went wrong with bail parsing for that docket")
-            bail = "None found"
-        return ParsedData(charges,bail)
+    try:
+        print("Attempting to extract charges from text with Regex...")
+        pattern = re.compile(
+            r"(Grade Description\n)((F|F1|F2|F3|M|M1|M2|M3|S)?\n)*(.*?)(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled Date)",
+            re.DOTALL,
+        )
+        match = pattern.search(text)
+        charges = match.group(4)
+        print("Charges found:")
+        print()
+        print(charges)
+        print()
+        # Replacing newline characters
+        charges = charges.replace("\n", "; ")
+        charges = charges[0:100]
+    except AttributeError:
+        print("Error: Something went wrong with charge parsing for that docket")
+        charges = "None found (check docket)"
+    try:
+        print("Attempting to extract bail from text with Regex...")
+        pattern = re.compile(r"(Amount\n)\$(.*)\.00", re.DOTALL)
+        match = pattern.search(text)
+        bail = match.group(2)
+        print("Bail found:")
+        print()
+        print(bail)
+        print()
+        # Removing newline characters
+        bail = bail[0:15]
+        bail = bail.replace("\n", "").replace(",", "")
+    except AttributeError:
+        print(
+            "Error: None found or something went wrong with bail parsing for that docket"
+        )
+        bail = "None found"
+    except ValueError:
+        print(
+            "Error: None found or something went wrong with bail parsing for that docket"
+        )
+        bail = "None found"
+    return ParsedData(charges, bail)

@@ -2,45 +2,49 @@
 Module sets CSS styles
 """
 table_style = [
-            {
-                'selector': 'td',
-                'props': [
-                    ('padding', '0.3em'),
-                    ('border', '1px solid black'),
-                    # ('font-size', '1em'),
-                    ('font-weight', '200'),
-                    # ('font-family', 'Helvetica'),
-                    ('text-align', 'center'),
-                    ('line-height','normal'),
-                    ('border', '1px solid #21406F')
-                ]
-            },
-            {
-                'selector': 'th',
-                'props': [
-                    ('padding', '0.3em'),
-                    ('background-color', '#21406F'),
-                    # ('font-size', '1em'),
-                    ('font-weight', '600'),
-                    # ('font-family', 'Helvetica'),
-                    ('color', 'white'),
-                    ('border', '1px solid #21406F'),
-                    ('text-transform','lowercase')
-                ]
-            }
-        ]
+    {
+        "selector": "td",
+        "props": [
+            ("padding", "0.3em"),
+            ("border", "1px solid black"),
+            # ('font-size', '1em'),
+            ("font-weight", "200"),
+            # ('font-family', 'Helvetica'),
+            ("text-align", "center"),
+            ("line-height", "normal"),
+            ("border", "1px solid #21406F"),
+        ],
+    },
+    {
+        "selector": "th",
+        "props": [
+            ("padding", "0.3em"),
+            ("background-color", "#21406F"),
+            # ('font-size', '1em'),
+            ("font-weight", "600"),
+            # ('font-family', 'Helvetica'),
+            ("color", "white"),
+            ("border", "1px solid #21406F"),
+            ("text-transform", "lowercase"),
+        ],
+    },
+]
 
 table_attribs = 'style="border-collapse:collapse; border:solid 1px black;"'
 
-def make_clickable(val):
-    return '<a href="{}">{}</a>'.format(val,"VIEW")
 
-formats = {'TOTAL DAYS WITH NO CASES (%)': '{:.1%}'}
-formats = {'URL': '{:.1%}'}
+def make_clickable(val):
+    return '<a href="{}">{}</a>'.format(val, "VIEW")
+
+
+formats = {"TOTAL DAYS WITH NO CASES (%)": "{:.1%}"}
+formats = {"URL": "{:.1%}"}
+
 
 def highlight(s):
-    color = '#efefef'
-    return 'background-color: %s' % color
+    color = "#efefef"
+    return "background-color: %s" % color
+
 
 def color_negative_red(val):
     """
@@ -48,9 +52,8 @@ def color_negative_red(val):
     the css property `'color: red'` for negative
     strings, black otherwise.
     """
-    color = 'red' if val == 0 else 'black'
-    return 'color: %s' % color
-
+    color = "red" if val == 0 else "black"
+    return "color: %s" % color
 
 
 """

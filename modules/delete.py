@@ -19,6 +19,9 @@ def delete_temp_files(list_of_folders_to_delete):
                 rmtree(path_of_folder)
                 print("Successfully deleted the directory and all files inside")
             except OSError:
-                print("Deletion of the directory %s failed for some reason" % path_of_folder)
+                print(
+                    "Deletion of the directory %s failed for some reason"
+                    % path_of_folder
+                )
         else:
             print("No folder named {} detected".format(folder))
