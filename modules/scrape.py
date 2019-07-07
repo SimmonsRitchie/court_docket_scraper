@@ -2,7 +2,7 @@
 This module searches for court dockets on the UJC website, goes through each result, extracts docket info and the URL for each docket
 """
 
-# Third party libs
+# inbuilt or third party libs
 from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
@@ -174,8 +174,9 @@ def scrape_search_results(driver, url, county, scrape_date):
                             clean_docket_url = docket_url.get_attribute("href")
 
                             docket = {
+                                "county": county,
                                 "docket_num": clean_docketnum,
-                                "caption": clean_caption,
+                                "case_caption": clean_caption,
                                 "dob": clean_dob,
                                 "filing_date": clean_filing_date,
                                 "url": clean_docket_url,

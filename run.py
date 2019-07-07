@@ -23,7 +23,7 @@ NOTE: Due to the way this program downloads PDFs, it was designed to run in head
 
 
 """
-# Third party libs
+# inbuilt or third party libs
 import os
 import json
 # Project modules
@@ -79,11 +79,11 @@ def main():
         # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
         # PDF dockets have more info than search results. We want to scrape date from those too so we can add it to our final payload.
         for count, docket in enumerate(docket_list):
-            docketnum = docket["docketnum"]
-            docketurl = docket["url"]
-            download.download_pdf(driver, docketurl, docketnum, base_folder_pdfs)
+            docket_num = docket["docket_num"]
+            docket_url = docket["url"]
+            download.download_pdf(driver, docket_url, docket_num, base_folder_pdfs)
             text = convert.convert_pdf_to_text(
-                docketnum, base_folder_pdfs, base_folder_text
+                docket_num, base_folder_pdfs, base_folder_text
             )
 
             # PARSE PDF TEXT FOR CHARGES AND BAIL, ADD VALUES TO EACH DICT
@@ -97,20 +97,19 @@ def main():
                 docket["bail"] = "error: check docket"
 
         # CONVERT DICT LIST INTO PANDAS DF
-        df = export.convert_dictionary_into_dataframe(docket_list)
+        # We convert the data to a df because it makes it easier to work with it convert it into different formats
+        df = export.convert_dict_into_df(docket_list, county)
 
         # CONVERT DF INTO HTML FOR EMAIL PAYLOAD
-
-        # CONVERT DF TO CSV
-
-        # CONVERT DICTS INTO HTML FOR EMAIL PAYLOAD + CREATE CSV
         export.payload_generation(
             base_folder_email,
-            base_folder_csv,
             base_folder_email_template,
-            docket_list,
-            county,
+            df,
+            county
         )
+
+        # CONVERT DF TO CSV
+        export.convert_df_to_csv(df, base_folder_csv)
 
     # CREATE JSON FILE FROM CSV
     date_and_time_of_scrape = export.convert_csv_to_json(

@@ -1,6 +1,7 @@
 """
-Module sets CSS styles
+This modules sets CSS styles
 """
+
 table_style = [
     {
         "selector": "td",
@@ -32,13 +33,11 @@ table_style = [
 
 table_attribs = 'style="border-collapse:collapse; border:solid 1px black;"'
 
+formats = {"URL": "{:.1%}"}
+
 
 def make_clickable(val):
     return '<a href="{}">{}</a>'.format(val, "VIEW")
-
-
-formats = {"TOTAL DAYS WITH NO CASES (%)": "{:.1%}"}
-formats = {"URL": "{:.1%}"}
 
 
 def highlight(s):

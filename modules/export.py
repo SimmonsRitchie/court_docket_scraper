@@ -3,31 +3,52 @@ This module handles the conversion of docket data to JSON.
 
 """
 
-from modules import misc, style
-
+# inbuilt or third party libs
 import pandas as pd
 import json
 import os
 from datetime import datetime
+# project modules
+from modules import misc, style
+
+
+def convert_dict_into_df(docketlist, county):
+    # SET PANDAS OPTIONS FOR PRINT DISPLAY
+    pd.set_option('display.max_columns', 20)
+    pd.set_option('display.width', 2000)
+    pd.set_option('display.max_rows', 700)
+
+    # CONVERT TO DF
+    print(
+        "Turning saved data on {} county dockets into Pandas dataframe".format(county)
+    )
+    pd.set_option("display.max_colwidth", -1)
+    df = pd.DataFrame(docketlist)
+    print("Removing duplicate rows if any exist")
+    df = df.drop_duplicates()
+    print("Convert bail column to integer type")
+    df["bail"] = df["bail"].apply(pd.to_numeric, errors="coerce")
+    print(df)
+    return df
 
 
 def payload_generation(
     base_folder_email,
-    base_folder_csv,
     base_folder_email_template,
-    data_in_dictionary_format,
+    df,
     county,
 ):
 
-    # CONVERTING DATA INTO PANDAS DATAFRAME FOR SORTING AND FORMATTING
-    df = convert_dictionary_into_dataframe(data_in_dictionary_format, county)
+    # SORTING DATA
+    print("Sorting dockets by bail amount, descending order")
+    df = df.sort_values(by="bail", ascending=False)
 
     # SET STYLES FOR EMAIL PAYLOAD
     df_styled = (
         df.style.set_table_styles(style.table_style)
         .set_table_attributes(style.table_attribs)
-        .format({"URL": style.make_clickable})
-    )
+        .format({"url": style.make_clickable})
+    ) #TODO: Format bail as currency
 
     # CREATE EMAIL PAYLOAD OR ADD DATA TO EXISTING EMAIL PAYLOAD
     email_payload_path = misc.email_payload_path_generator(base_folder_email)
@@ -41,28 +62,6 @@ def payload_generation(
         include_index=False,
         render=True,
     )  # Set render to True if using Pandas styles
-
-    # CREATE CSV PAYLOAD
-    csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
-    convert_dataframe_to_csv(df, csv_payload_path, county)
-
-
-def convert_dictionary_into_dataframe(data_in_dictionary_format, county):
-    print(
-        "Turning saved data on {} county dockets into Pandas dataframe".format(county)
-    )
-    pd.set_option("display.max_colwidth", -1)
-    df = pd.DataFrame.from_dict(data_in_dictionary_format)
-    df = df[["Name", "Filing date", "DOB", "Charges", "Bail", "URL"]]
-    print("Removing duplicate rows if any exist")
-    df = df.drop_duplicates()
-    print("Convert bail column to integer data type")
-    df["Bail"] = df["Bail"].apply(pd.to_numeric, errors="coerce")
-    print("Sorting dockets by bail amount, descending order")
-    df = df.sort_values(by="Bail", ascending=False)
-    print("Reformatting bail amount in currency format")
-    df["Bail"] = df["Bail"].apply(misc.currency_convert)
-    return df
 
 
 def convert_dataframe_to_html(
@@ -114,24 +113,25 @@ def convert_dataframe_to_html(
             print("File created")
 
 
-def convert_dataframe_to_csv(df, csv_payload_path, county):
+def convert_df_to_csv(df, base_folder_csv):
+
     print("Saving dataframe as CSV file")
 
-    print("Adding 'county' field to dataframe")
-    df.insert(0, "county", county)
-    print("Added")
+    # CREATE PATH
+    csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
 
+    # REFORMAT
     print(
-        "Changing headers to lowercase and replacing spaces so export data is cleaner"
+        "Changing headers to lowercase and replacing any spaces with underscore so export data is cleaner"
     )
     df.columns = df.columns.str.lower().str.replace(" ", "_")
     print("Headers reformatted")
-
     print("Converting date fields to ISO format")
     df["dob"] = pd.to_datetime(df["dob"]).dt.strftime("%Y-%m-%d")
     df["filing_date"] = pd.to_datetime(df["filing_date"]).dt.strftime("%Y-%m-%d")
     print("Dates converted")
 
+    # WRITE
     print("Writing CSV file...")
     if os.path.exists(csv_payload_path):
         print("Existing CSV file found")

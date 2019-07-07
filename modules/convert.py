@@ -4,7 +4,7 @@ This module converts PDFs to text and then extracts important docket info from t
 """
 
 
-# load PDF miner imports
+# inbuilt or third party libs
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
@@ -12,16 +12,9 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
-
-# Other modules
 import re
-from collections import namedtuple
-
-# My modules
+# project modules
 from modules import misc
-
-# Collections
-ParsedData = namedtuple("ParsedData", ("charge", "bail"))
 
 
 def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):

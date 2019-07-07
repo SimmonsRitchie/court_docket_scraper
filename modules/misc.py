@@ -1,7 +1,5 @@
 """
-This module stores small, reusable functions used by several other modules.
-
-Those functions include: getting dates, formatting dates, creating directory and file paths
+This module stores small, reusable functions used by other modules. Eg. getting dates, formatting dates, creating directory and file paths
 
 """
 
