@@ -93,6 +93,15 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
 
 
 def parse_extracted_text(text):
+
+    """
+    Parse texted from PDFs using regex.
+
+    :param text: Text to search
+    :return: dictionary with desired values
+    """
+
+    # parsing text file for charges
     try:
         print("Attempting to extract charges from text with Regex...")
         pattern = re.compile(
@@ -102,15 +111,14 @@ def parse_extracted_text(text):
         match = pattern.search(text)
         charges = match.group(4)
         print("Charges found:")
-        print()
-        print(charges)
-        print()
-        # Replacing newline characters
-        charges = charges.replace("\n", "; ")
-        charges = charges[0:100]
+        print("\n" + charges + "\n")
+        charges = charges.replace("\n", "; ") # Replacing newline characters so easier to display data in tabular format
+        charges = charges[0:100] # Limit size of captured text
     except AttributeError:
         print("Error: Something went wrong with charge parsing for that docket")
         charges = "None found (check docket)"
+
+    # parsing text file for bail
     try:
         print("Attempting to extract bail from text with Regex...")
         pattern = re.compile(r"(Amount\n)\$(.*)\.00", re.DOTALL)
@@ -123,14 +131,13 @@ def parse_extracted_text(text):
         # Removing newline characters
         bail = bail[0:15]
         bail = bail.replace("\n", "").replace(",", "")
-    except AttributeError:
+    except (AttributeError, ValueError):
         print(
             "Error: None found or something went wrong with bail parsing for that docket"
         )
         bail = "None found"
-    except ValueError:
-        print(
-            "Error: None found or something went wrong with bail parsing for that docket"
-        )
-        bail = "None found"
-    return ParsedData(charges, bail)
+
+    return {
+        "charges": charges,
+        "bail": bail
+    }

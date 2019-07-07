@@ -1,5 +1,5 @@
 """
-NAME: Pa. court docket scraper
+NAME: Pa Court Report
 AUTHOR: Daniel Simmons-Ritchie
 
 ABOUT:
@@ -19,13 +19,8 @@ This is the main file for the program. From main(), the program performs the fol
     -EXPORT TO JSON: A json file is created from the CSV file (which now has scraped data from all counties).
     -EMAIL: The email payload text file is emailed to selected email addresses specified in config.py.
 
-NOTE1: This was one of the author's earliest coding projects. Some of the code is a bit wacky or redundant
-(in particular the use of collections in the 'scrape' module).
+NOTE: Due to the way this program downloads PDFs, it was designed to run in headless mode (ie. without a visible browser). Attempting to run it in non-headless mode may cause it to crash.
 
-NOTE2: Due to the way this program downloads PDFs, it was designed to run in headless mode (ie. without a visible browser). Attempting to run it in non-headless mode may cause it to crash.
-
-NOTE3: Make sure you have version 0.23 or higher of Pandas installed. This program makes use of .hide_index() on styled dataframes,
-a relatively new feature.
 
 """
 # Third party libs
@@ -47,7 +42,7 @@ def main():
     base_folder_email_template = "email_template/"
     base_folder_final_email = "email_final/"
 
-    # GET ENVIRON VARIABLES
+    # GET CONFIG OPTIONS FROM ENV VARIABLES
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     destination_email_addresses = json.loads(os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
@@ -74,54 +69,46 @@ def main():
     # START CHROME DRIVER
     driver = initialize.initialize_driver(base_folder_pdfs, chrome_driver_path)
 
-    # SCRAPE DOCKET DATA FOR EACH COUNTY
+    # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
+    # We first get basic docket data, like case caption and filing date, from search results.
     for county in county_list:
-        docketdata = scrape.scrape_search_results(
+        docket_list = scrape.scrape_search_results(
             driver, url, county, target_scrape_date
         )
 
-        # IF THERE'S DATA THEN DOWNLOAD PDF AND EXTRACT TEXT FOR EACH DOCKET
-        if docketdata:
-            charges_list = []
-            bail_list = []
-            for x, y in enumerate(docketdata.docket_num):
-                docket_num = docketdata.docket_num[x]
-                docket_url = docketdata.docket_url[x]
-                download.download_pdf(driver, docket_url, docket_num, base_folder_pdfs)
-                text = convert.convert_pdf_to_text(
-                    docket_num, base_folder_pdfs, base_folder_text
-                )
+        # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
+        # PDF dockets have more info than search results. We want to scrape date from those too so we can add it to our final payload.
+        for count, docket in enumerate(docket_list):
+            docketnum = docket["docketnum"]
+            docketurl = docket["url"]
+            download.download_pdf(driver, docketurl, docketnum, base_folder_pdfs)
+            text = convert.convert_pdf_to_text(
+                docketnum, base_folder_pdfs, base_folder_text
+            )
 
-                # PARSE EXTRACTED PDF TEXT FOR CHARGES AND BAIL
-                if text:
-                    parseddata = convert.parse_extracted_text(text)
-                    charges_list.append(parseddata.charge)
-                    bail_list.append(parseddata.bail)
-                else:
-                    print("Error: no extracted text found")
-                    charges_list.append("Error: Check docket")
-                    bail_list.append("Error: check docket")
-                print("Clean version of extracted charge and bail:")
-                print(docket_num)
-                print(parseddata.charge)
-                print(parseddata.bail)
+            # PARSE PDF TEXT FOR CHARGES AND BAIL, ADD VALUES TO EACH DICT
+            if text:
+                parseddata = convert.parse_extracted_text(text)
+                docket["charges"] = parseddata["charges"]
+                docket["bail"] = parseddata["bail"]
+            else:
+                print("Error: no extracted text found")
+                docket["charges"] = "error: check docket"
+                docket["bail"] = "error: check docket"
 
-        # CREATE DICT OF DATA - DATA IS STORED AS LIST OF VALUES FOR EACH KEY
-        data_in_dictionary_format = {
-            "Name": docketdata.case,
-            "Filing date": docketdata.filing_date,
-            "DOB": docketdata.dob,
-            "Charges": charges_list,
-            "Bail": bail_list,
-            "URL": docketdata.docket_url,
-        }
+        # CONVERT DICT LIST INTO PANDAS DF
+        df = export.convert_dictionary_into_dataframe(docket_list)
 
-        # CONVERT LIST OF DICTS INTO HTML FOR EMAIL PAYLOAD (ALSO CREATES CSV)
+        # CONVERT DF INTO HTML FOR EMAIL PAYLOAD
+
+        # CONVERT DF TO CSV
+
+        # CONVERT DICTS INTO HTML FOR EMAIL PAYLOAD + CREATE CSV
         export.payload_generation(
             base_folder_email,
             base_folder_csv,
             base_folder_email_template,
-            data_in_dictionary_format,
+            docket_list,
             county,
         )
 

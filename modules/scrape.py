@@ -131,7 +131,7 @@ def scrape_search_results(driver, url, county, scrape_date):
                 while search_rows_loop:
                     print("Searching row {}...".format(row_count))
                     row_count += 1
-                    xpath_subelement = str("%02d" % (row_count,)) # Xpaths in some columns use leading zeros. We use this amend these xpaths.
+                    xpath_substring = str("%02d" % (row_count,)) # Xpaths in some columns use leading zeros so use this substring to amend those xpaths.
 
                     # Checking whether row exists
                     try:
@@ -147,7 +147,7 @@ def scrape_search_results(driver, url, county, scrape_date):
                             print("Criminal case FOUND - saving")
                             caption = driver.find_element_by_xpath(
                                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl'
-                                + xpath_subelement
+                                + xpath_substring
                                 + '_Label2"]'
                             )
                             clean_caption = caption.text
@@ -168,7 +168,7 @@ def scrape_search_results(driver, url, county, scrape_date):
 
                             docket_url = driver.find_element_by_xpath(
                                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl'
-                                + str(xpath_subelement)
+                                + str(xpath_substring)
                                 + '_ucPrintControl_printMenun1"]/td/table/tbody/tr/td/a'
                             )
                             clean_docket_url = docket_url.get_attribute("href")
