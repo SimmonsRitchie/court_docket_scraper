@@ -19,7 +19,7 @@ def email_notification(
     sender_email_address,
     sender_email_password,
     date_and_time_of_scrape,
-    desired_scrape_date_literal,
+    target_scrape_date,
     county_list,
 ):
 
@@ -38,7 +38,7 @@ def email_notification(
         base_folder_email,
         base_folder_email_template,
         base_folder_final_email,
-        desired_scrape_date_literal,
+        target_scrape_date,
         formatted_date,
         formatted_time,
         yesterday_date,
@@ -48,7 +48,7 @@ def email_notification(
     # GENERATE SUBJECT LINE
     subject = create_subject_line(
         base_folder_email,
-        desired_scrape_date_literal,
+        target_scrape_date,
         formatted_date,
         yesterday_date,
         county_list,
@@ -73,7 +73,7 @@ def create_final_email_payload(
     base_folder_email,
     base_folder_email_template,
     base_folder_final_email,
-    desired_scrape_date_literal,
+    target_scrape_date,
     formatted_date,
     formatted_time,
     yesterday_date,
@@ -151,24 +151,24 @@ def create_final_email_payload(
         intro_header = '<span class="subheading">{} county scrape</span>'.format(
             county_list[0]
         )
-        if desired_scrape_date_literal == "today":
+        if target_scrape_date == "today":
             intro_contents = "<p>The following criminal cases were filed in {} County today as of {}.</p>\
                              <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
                 county_list[0], formatted_time
             )
-        elif desired_scrape_date_literal == "yesterday":
+        elif target_scrape_date == "yesterday":
             intro_contents = "<p>The following criminal cases were filed in {} County yesterday ({}).</p>\
                             ".format(
                 county_list[0], yesterday_date
             )
     else:
-        if desired_scrape_date_literal == "today":
+        if target_scrape_date == "today":
             intro_header = '<span class="subheading">afternoon scrape</span>'
             intro_contents = "<p>The following criminal cases were filed in district courts today as of {}.</p>\
                              <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
                 formatted_time
             )
-        elif desired_scrape_date_literal == "yesterday":
+        elif target_scrape_date == "yesterday":
             intro_header = '<span class="subheading">Morning scrape</span>'
             intro_contents = "<p>The following criminal cases were filed in district courts yesterday ({}).</p>\
                         <p>You can also view a searchable list of these cases\

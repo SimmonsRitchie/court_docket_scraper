@@ -40,15 +40,24 @@ def payload_generation(
 ):
 
     # SORTING DATA
+    # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
     print("Sorting dockets by bail amount, descending order")
     df = df.sort_values(by="bail", ascending=False)
+
+    # CULLING COLUMNS + REORDERING
+    # Removing columns that aren't useful, like docket_num and county
+    df = df[["case_caption", "filing_date","dob","charges","bail","url"]]
+
+    # REFORMAT COLUMN HEADS
+    df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
+    df.columns = df.columns.str.replace("_", " ") # removing underscores for more human-readable format
 
     # SET STYLES FOR EMAIL PAYLOAD
     df_styled = (
         df.style.set_table_styles(style.table_style)
         .set_table_attributes(style.table_attribs)
-        .format({"url": style.make_clickable})
-    ) #TODO: Format bail as currency
+        .format({'url': style.make_clickable, "bail": style.currency_convert})
+    )
 
     # CREATE EMAIL PAYLOAD OR ADD DATA TO EXISTING EMAIL PAYLOAD
     email_payload_path = misc.email_payload_path_generator(base_folder_email)

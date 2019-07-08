@@ -40,6 +40,16 @@ def make_clickable(val):
     return '<a href="{}">{}</a>'.format(val, "VIEW")
 
 
+def currency_convert(value):
+    """
+    Because Pandas values are numpy objects, we determine nan values using np.isnan
+    """
+    if np.isnan(value):
+        return ""
+    else:
+        return '${:,.0f}'.format(value)
+
+
 def highlight(s):
     color = "#efefef"
     return "background-color: %s" % color

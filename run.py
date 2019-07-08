@@ -48,7 +48,8 @@ def main():
     destination_email_addresses = json.loads(os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
     sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
     sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
-    target_scrape_date = misc.today_date() if os.environ.get("TARGET_SCRAPE_DATE").lower() == "today" else misc.yesterday_date()
+    target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower() # "yesterday" or "today"
+    target_scrape_date = misc.today_date() if target_scrape_day == "today" else misc.yesterday_date() # convert to date
 
     # REFORMAT COUNTY LIST
     county_list = [
@@ -92,7 +93,7 @@ def main():
                 docket["charges"] = parseddata["charges"]
                 docket["bail"] = parseddata["bail"]
             else:
-                print("Error: no extracted text found")
+                print("Error: no extracted text found") # if no text, it likely means that there was a problem converting PDF to text
                 docket["charges"] = "error: check docket"
                 docket["bail"] = "error: check docket"
 
@@ -128,7 +129,7 @@ def main():
         sender_email_username,
         sender_email_password,
         date_and_time_of_scrape,
-        target_scrape_date,
+        target_scrape_day,
         county_list,
     )
 

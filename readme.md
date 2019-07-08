@@ -12,18 +12,18 @@ Note: ChromeDriver is included in this repo and should work on Mac without any a
 
 1. Clone this repo.
 
-2. If you don't have pipenv already installed, open the terminal and run this command:
+2. If you don't have pipenv already installed, open the terminal and run:
 
     `pip install pipenv`
 
-3.  From the terminal, cd into the project directory. Create a virtual environment using pipenv and load the project dependencies by running:
+3.  From the terminal, cd into the project directory. Create a virtual environment using pipenv and install the project dependencies by running:
 
     `pipenv install
     `
 
-3. You now need to configure the program to your specifications. Copy and rename .env.example as .env:
+3. You now need to configure the program to your specifications. Rename .env.example to .env:
 
-    `cp .env.example .env`
+    `mv .env.example .env`
 
 4. Edit .env to your desired values:
 

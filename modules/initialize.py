@@ -22,7 +22,7 @@ def initialize_driver(base_folder_pdfs, chrome_driver_path):
         "--headless"
     )  # Note: because of the way this program downloads PDFs, driver MUST be run in headless mode. Otherwise we'll get errors.
     driver = webdriver.Chrome(
-        executable_path=chrome_driver_path, chrome_options=options
+        executable_path=chrome_driver_path, options=options
     )  # Optional argument, if not specified will search path.
 
     # add missing support for chrome "send_command"  to selenium webdriver. This only works in headless mode.
