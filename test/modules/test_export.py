@@ -4,21 +4,23 @@ import tempfile
 import os
 import shutil
 from io import StringIO
+
 # fixtures
 from test.fixtures.dict_list.docket_list import docket_list
+
 # modules to test
 from modules.export import convert_dict_into_df, convert_df_to_csv
 from modules.misc import csv_payload_path_generator
 
-class TestExport(unittest.TestCase):
 
+class TestExport(unittest.TestCase):
     def test_convert_dict_into_df(self):
         """
         Test that result is a dataframe
         """
 
         df = convert_dict_into_df(docket_list, "Dauphin")
-        self.assertIsInstance(df,pd.core.frame.DataFrame)
+        self.assertIsInstance(df, pd.core.frame.DataFrame)
 
     def test_convert_df_to_csv(self):
         """
@@ -37,9 +39,7 @@ class TestExport(unittest.TestCase):
         self.assertTrue(contents)
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
 
 """

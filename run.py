@@ -26,6 +26,7 @@ NOTE: Due to the way this program downloads PDFs, it was designed to run in head
 # inbuilt or third party libs
 import os
 import json
+
 # Project modules
 from modules import delete, initialize, scrape, download, convert, email, export, misc
 
@@ -45,11 +46,17 @@ def main():
     # GET CONFIG OPTIONS FROM ENV VARIABLES
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
-    destination_email_addresses = json.loads(os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
+    destination_email_addresses = json.loads(
+        os.environ.get("DESTINATION_EMAIL_ADDRESSES")
+    )
     sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
     sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
-    target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower() # "yesterday" or "today"
-    target_scrape_date = misc.today_date() if target_scrape_day == "today" else misc.yesterday_date() # convert to date
+    target_scrape_day = os.environ.get(
+        "TARGET_SCRAPE_DATE", "yesterday"
+    ).lower()  # "yesterday" or "today"
+    target_scrape_date = (
+        misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
+    )  # convert to date
 
     # REFORMAT COUNTY LIST
     county_list = [
@@ -93,7 +100,9 @@ def main():
                 docket["charges"] = parseddata["charges"]
                 docket["bail"] = parseddata["bail"]
             else:
-                print("Error: no extracted text found") # if no text, it likely means that there was a problem converting PDF to text
+                print(
+                    "Error: no extracted text found"
+                )  # if no text, it likely means that there was a problem converting PDF to text
                 docket["charges"] = "error: check docket"
                 docket["bail"] = "error: check docket"
 
@@ -103,10 +112,7 @@ def main():
 
         # CONVERT DF INTO HTML FOR EMAIL PAYLOAD
         export.payload_generation(
-            base_folder_email,
-            base_folder_email_template,
-            df,
-            county
+            base_folder_email, base_folder_email_template, df, county
         )
 
         # CONVERT DF TO CSV

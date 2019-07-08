@@ -97,12 +97,12 @@ def scrape_search_results(driver, url, county, scrape_date):
 
     # LOOP 1: DISTRICT COURTS
     search_courts_loop = True
-    court = 1 # district court counter
+    court = 1  # district court counter
     while search_courts_loop:
         try:
             # select district court
             print("Selecting court: {}".format(court))
-            time.sleep(3) # we use sleep to give UJS website time to load
+            time.sleep(3)  # we use sleep to give UJS website time to load
             input_court = Select(
                 driver.find_element_by_xpath(
                     '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
@@ -120,18 +120,20 @@ def scrape_search_results(driver, url, county, scrape_date):
             # LOOP 2: RESULTS PAGES FOR EACH COURT
             print("Beginning page search loop")
             search_pages_loop = True
-            page_count = 1 # page result counter
+            page_count = 1  # page result counter
             while search_pages_loop:
                 time.sleep(4)
 
                 # LOOP 3: ROWS FOR EACH RESULTS PAGE
                 search_rows_loop = True
-                row_count = 1 # row counter
+                row_count = 1  # row counter
                 print("Searching page {}...".format(page_count))
                 while search_rows_loop:
                     print("Searching row {}...".format(row_count))
                     row_count += 1
-                    xpath_substring = str("%02d" % (row_count,)) # Xpaths in some columns use leading zeros so use this substring to amend those xpaths.
+                    xpath_substring = str(
+                        "%02d" % (row_count,)
+                    )  # Xpaths in some columns use leading zeros so use this substring to amend those xpaths.
 
                     # Checking whether row exists
                     try:
@@ -186,7 +188,7 @@ def scrape_search_results(driver, url, county, scrape_date):
                             for key, value in docket.items():
                                 print(f"{key.upper()}: {value}")
 
-                            docket_list.append(docket) # Add docket to payload
+                            docket_list.append(docket)  # Add docket to payload
 
                         # if not a criminal docket then move on to next row.
                         else:
@@ -195,7 +197,7 @@ def scrape_search_results(driver, url, county, scrape_date):
                     # No row found: End row search loop
                     except NoSuchElementException:
                         print("No row found")
-                        break # End row search loop
+                        break  # End row search loop
                     except StaleElementReferenceException:
                         print("ERROR: Tried to find element but it has become stale")
 

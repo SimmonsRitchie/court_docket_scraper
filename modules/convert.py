@@ -13,6 +13,7 @@ from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
 import re
+
 # project modules
 from modules import misc
 
@@ -105,8 +106,10 @@ def parse_extracted_text(text):
         charges = match.group(4)
         print("Charges found:")
         print("\n" + charges + "\n")
-        charges = charges.replace("\n", "; ") # Replacing newline characters so easier to display data in tabular format
-        charges = charges[0:100] # Limit size of captured text
+        charges = charges.replace(
+            "\n", "; "
+        )  # Replacing newline characters so easier to display data in tabular format
+        charges = charges[0:100]  # Limit size of captured text
     except AttributeError:
         print("Error: Something went wrong with charge parsing for that docket")
         charges = "None found (check docket)"
@@ -130,7 +133,4 @@ def parse_extracted_text(text):
         )
         bail = "None found"
 
-    return {
-        "charges": charges,
-        "bail": bail
-    }
+    return {"charges": charges, "bail": bail}

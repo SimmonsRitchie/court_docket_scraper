@@ -1,6 +1,8 @@
 """
 This modules sets CSS styles
 """
+import numpy as np
+
 
 table_style = [
     {
@@ -47,7 +49,7 @@ def currency_convert(value):
     if np.isnan(value):
         return ""
     else:
-        return '${:,.0f}'.format(value)
+        return "${:,.0f}".format(value)
 
 
 def highlight(s):

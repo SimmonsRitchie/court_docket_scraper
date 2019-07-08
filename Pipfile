@@ -29,6 +29,7 @@ MarkupSafe = "==1.1.1"
 "pdfminer.six" = "==20170720"
 PyJWT = "==1.6.4"
 PySocks = "==1.6.8"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"

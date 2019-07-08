@@ -8,15 +8,16 @@ import pandas as pd
 import json
 import os
 from datetime import datetime
+
 # project modules
 from modules import misc, style
 
 
 def convert_dict_into_df(docketlist, county):
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
-    pd.set_option('display.max_columns', 20)
-    pd.set_option('display.width', 2000)
-    pd.set_option('display.max_rows', 700)
+    pd.set_option("display.max_columns", 20)
+    pd.set_option("display.width", 2000)
+    pd.set_option("display.max_rows", 700)
 
     # CONVERT TO DF
     print(
@@ -32,12 +33,7 @@ def convert_dict_into_df(docketlist, county):
     return df
 
 
-def payload_generation(
-    base_folder_email,
-    base_folder_email_template,
-    df,
-    county,
-):
+def payload_generation(base_folder_email, base_folder_email_template, df, county):
 
     # SORTING DATA
     # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
@@ -46,17 +42,19 @@ def payload_generation(
 
     # CULLING COLUMNS + REORDERING
     # Removing columns that aren't useful, like docket_num and county
-    df = df[["case_caption", "filing_date","dob","charges","bail","url"]]
+    df = df[["case_caption", "filing_date", "dob", "charges", "bail", "url"]]
 
     # REFORMAT COLUMN HEADS
     df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
-    df.columns = df.columns.str.replace("_", " ") # removing underscores for more human-readable format
+    df.columns = df.columns.str.replace(
+        "_", " "
+    )  # removing underscores for more human-readable format
 
     # SET STYLES FOR EMAIL PAYLOAD
     df_styled = (
         df.style.set_table_styles(style.table_style)
         .set_table_attributes(style.table_attribs)
-        .format({'url': style.make_clickable, "bail": style.currency_convert})
+        .format({"url": style.make_clickable, "bail": style.currency_convert})
     )
 
     # CREATE EMAIL PAYLOAD OR ADD DATA TO EXISTING EMAIL PAYLOAD
