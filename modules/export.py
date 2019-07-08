@@ -27,13 +27,18 @@ def convert_dict_into_df(docketlist, county):
     df = pd.DataFrame(docketlist)
     print("Removing duplicate rows if any exist")
     df = df.drop_duplicates()
-    print("Convert bail column to integer type")
-    df["bail"] = df["bail"].apply(pd.to_numeric, errors="coerce")
-    print(df)
+    if not df.empty:  # this is to avoid pandas error if df is empty
+        print("Convert bail column to integer type")
+        df["bail"] = df["bail"].apply(pd.to_numeric, errors="coerce")
+        print(df)
     return df
 
 
-def payload_generation(base_folder_email, base_folder_email_template, df, county):
+def convert_df_to_html(df):
+
+    """
+    Takes a Pandas DF, reformats slightly, returns a DF rendered in HTML.
+    """
 
     # SORTING DATA
     # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
@@ -44,6 +49,9 @@ def payload_generation(base_folder_email, base_folder_email_template, df, county
     # Removing columns that aren't useful, like docket_num and county
     df = df[["case_caption", "filing_date", "dob", "charges", "bail", "url"]]
 
+    # REDUCE SIZE OF CHARGES COL
+    # Charges can be particularly long so trimming it for readability in email
+    df["charges"] = df["charges"].str.slice(0, 100)
     # REFORMAT COLUMN HEADS
     df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
     df.columns = df.columns.str.replace(
@@ -57,38 +65,31 @@ def payload_generation(base_folder_email, base_folder_email_template, df, county
         .format({"url": style.make_clickable, "bail": style.currency_convert})
     )
 
-    # CREATE EMAIL PAYLOAD OR ADD DATA TO EXISTING EMAIL PAYLOAD
-    email_payload_path = misc.email_payload_path_generator(base_folder_email)
-    row_count = df.shape[0]  # count of cases
-    intro = "{} in {} County:".format(row_count, county)
-    convert_dataframe_to_html(
-        df_styled,
-        intro,
-        email_payload_path,
-        base_folder_email_template,
-        include_index=False,
-        render=True,
-    )  # Set render to True if using Pandas styles
+    # RENDER DATAFRAME AS HTML
+    df_styled = df_styled.hide_index()
+    return df_styled.render()
 
 
-def convert_dataframe_to_html(
-    df,
-    table_header_contents,
-    email_payload_path,
-    base_folder_email_template,
-    include_index,
-    render,
+def save_html_county_payload(
+    county_intro, base_folder_email, base_folder_email_template, html_dataframe=""
 ):
+
+    """
+    Here we take our df of county dockets rendered in HTML, add county_intro above it, wrap it an HTML table,
+    and then wrap it in a div. We then save it.
+
+    If there is an existing HTML payload file in the project directory, we'll append this county to it.
+
+    If no dataframe is supplied, we'll replace it with an empty string. The county payload will be empty except for the
+    county_intro.
+    """
+
     print("Saving dataframe as text file for email payload")
 
-    if render:
-        if not include_index:
-            df = df.hide_index()
-        html_dataframe = df.render()
-    else:
-        html_dataframe = df.to_html(index=include_index)
+    # GET PAYLOAD PATH
+    email_payload_path = misc.email_payload_path_generator(base_folder_email)
 
-    # WRAP TABLE HEADER WITH HTML
+    # CREATE TOP OF TABLE
     # table header top
     table_header_path = misc.email_template_path_generator(
         base_folder_email_template, "table_header.html"
@@ -98,9 +99,7 @@ def convert_dataframe_to_html(
     # table header bottom
     table_header_bottom = "</span></div>"
     # unite
-    table_header_with_html = (
-        table_header_top + table_header_contents + table_header_bottom
-    )
+    table_header_with_html = table_header_top + county_intro + table_header_bottom
 
     # JOIN INTRO WITH BODY
     html_payload = table_header_with_html + html_dataframe
@@ -110,12 +109,12 @@ def convert_dataframe_to_html(
 
     if os.path.exists(email_payload_path):
         with open(email_payload_path, "a") as fin:
-            print("Existing text file found: Adding dataframe")
+            print("Existing file found: Adding newly-created HTML to payload")
             fin.write(html_payload)
             print("Dataframe added")
     else:
         with open(email_payload_path, "w") as fout:
-            print("Creating email payload text file")
+            print("No existing file found: Creating email payload file")
             fout.write(html_payload)
             print("File created")
 
@@ -155,6 +154,12 @@ def convert_df_to_csv(df, base_folder_csv):
 
 
 def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
+
+    """
+    We transform our CSV into JSON and add a few extra fields of meta data. Returned JSON uses camelcase instead of
+    python snake case.
+    """
+
     print("Converting CSV to JSON")
 
     # GET PATHS
@@ -163,35 +168,52 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     json_payload_path = misc.json_payload_path_generator(base_folder_json)
     print("Got path names")
 
-    # CONVERT CSV TO DATAFRAME
-    print("Loading CSV file as pandas dataframe...")
-    df = pd.read_csv(csv_payload_path)
-    print("Dataframe created")
-
-    # CHANGE HEADERS TO CAMEL CASE
-    # Doing this just to make final JSON file more javascript friendly
-    print("Reformatting headers in camel case")
-    df.rename(columns=lambda x: misc.camel_case_convert(x), inplace=True)
-    print("Reformatted")
-
-    # REMOVE NAN
-    # If we don't remove NaNs we'll get invalid JSON
-    df = df.fillna("")
-
-    # CONVERT DATAFRAME TO JSON
-    print("Creating new dictionary so we can include metadata with JSON payload...")
+    # GENERATE METADATA FOR JSON OUTPUT
     date_and_time_of_scrape = (
         datetime.now().replace(microsecond=0).isoformat()
     )  # Metadata field: current time
     selected_counties = (
         county_list
     )  # Metadata field: list of all counties that were SELECTED by user to be scraped
-    returned_counties = (
-        df["county"].unique().tolist()
-    )  # Metadata field: list of all counties RETURNED in scraped data
-    cases_dict = df.to_dict(
-        orient="records"
-    )  # Data: this is our actual data from the scrape, each case will be a single object in a big array
+
+    # CONVERT CSV TO DATAFRAME
+    print("Loading CSV file as pandas dataframe...")
+
+    if os.path.exists(csv_payload_path):
+
+        df = pd.read_csv(csv_payload_path)
+        print("Dataframe created")
+
+        # CHANGE HEADERS TO CAMEL CASE
+        # Doing this just to make final JSON file more javascript friendly
+        print("Reformatting headers in camel case")
+        df.rename(columns=lambda x: misc.camel_case_convert(x), inplace=True)
+        print("Reformatted")
+
+        # REMOVE NAN
+        # If we don't remove NaNs we'll get invalid JSON
+        df = df.fillna("")
+
+        # ADD METADATA FIELD
+        returned_counties = (
+            df["county"].unique().tolist()
+        )  # Metadata field: list of all counties RETURNED in scraped data
+
+        # CONVERT DF TO DICT
+        cases_dict = df.to_dict(
+            orient="records"
+        )  # Data: this is our actual data from the scrape, each case will be a single object in a big array
+    else:
+        print("No CSV found - assuming no cases returned from scrape")
+
+        # RETURN EMPTY DICT
+        cases_dict = ""
+
+        # ADD METADATA FIELD
+        returned_counties = "none"
+
+    # GENERATE JSON
+    print("Creating new dictionary so we can include metadata with JSON payload...")
     final_dict = {
         "scrapeDatetime": date_and_time_of_scrape,
         "countiesSelectedForScrape": selected_counties,
@@ -200,6 +222,7 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     }
     print("New dictionary created")
     print("Exporting dictionary as JSON file...")
+
     with open(json_payload_path, "w") as write_file:
         json.dump(final_dict, write_file, indent=4)
     print("Export complete")

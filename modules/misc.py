@@ -23,7 +23,7 @@ def extracted_text_path_generator(base_folder_text, docketnum):
 def email_payload_path_generator(base_folder_email):
     check_directory_exists(base_folder_email)
     yesterday = yesterday_date()
-    email_filename = "email_{}.txt".format(yesterday)
+    email_filename = "email_{}.html".format(yesterday)
     email_payload_path = os.path.join(base_folder_email, email_filename)
     return email_payload_path
 

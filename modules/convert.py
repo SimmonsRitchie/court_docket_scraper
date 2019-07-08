@@ -109,7 +109,7 @@ def parse_extracted_text(text):
         charges = charges.replace(
             "\n", "; "
         )  # Replacing newline characters so easier to display data in tabular format
-        charges = charges[0:100]  # Limit size of captured text
+        charges = charges[0:400]  # Limit size of captured text
     except AttributeError:
         print("Error: Something went wrong with charge parsing for that docket")
         charges = "None found (check docket)"

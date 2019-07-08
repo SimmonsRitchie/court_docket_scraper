@@ -9,7 +9,7 @@ from io import StringIO
 from test.fixtures.dict_list.docket_list import docket_list
 
 # modules to test
-from modules.export import convert_dict_into_df, convert_df_to_csv
+from modules.export import convert_dict_into_df, convert_df_to_csv, convert_df_to_html
 from modules.misc import csv_payload_path_generator
 
 
@@ -20,6 +20,14 @@ class TestExport(unittest.TestCase):
         """
 
         df = convert_dict_into_df(docket_list, "Dauphin")
+        self.assertIsInstance(df, pd.core.frame.DataFrame)
+
+    def test_convert_empty_dict_into_df(self):
+        """
+        Test that result is a dataframe
+        """
+        empty_dict = {}
+        df = convert_dict_into_df(empty_dict, "Dauphin")
         self.assertIsInstance(df, pd.core.frame.DataFrame)
 
     def test_convert_df_to_csv(self):
@@ -37,6 +45,11 @@ class TestExport(unittest.TestCase):
         # NOTE: To remove the tempfile add try-finally clause and shutil.rmtree(outfile_directory_path)
 
         self.assertTrue(contents)
+
+    def test_convert_df_to_html(self):
+        """
+        Test that file is generated
+        """
 
 
 if __name__ == "__main__":
