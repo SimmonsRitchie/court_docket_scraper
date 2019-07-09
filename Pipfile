@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 black = "*"
+prettyprint = "*"
 
 [packages]
 beautifulsoup4 = "==4.6.0"

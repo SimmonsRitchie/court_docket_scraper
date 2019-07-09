@@ -24,16 +24,7 @@ from pathlib import Path
 import json
 
 # Project modules
-from modules import (
-    initialize,
-    scrape,
-    download,
-    convert,
-    email,
-    export,
-    upload,
-    misc,
-)
+from modules import initialize, scrape, download, convert, email, export, upload, misc
 
 
 def main():
@@ -52,14 +43,21 @@ def main():
         "payload_csv": "payload_csv/",
         "payload_json": "payload_json/",
         "email_final": "email_final/",
-        "email_template": "email_template/"
+        "email_template": "email_template/",
     }
     for key, value in dirs.items():
         dirs[key] = Path(value)  # turning directory names into Path objects
 
     # LIST OF TEMP DIRS
-    temp_dirs = [dirs["pdfs"], dirs["extracted_text"],dirs["payload_email"],dirs["payload_csv"],dirs["payload_json"],
-                 dirs["email_final"]]
+    # This is a subset of dirs, which we will delete at the start of each scrape.
+    temp_dirs = [
+        dirs["pdfs"],
+        dirs["extracted_text"],
+        dirs["payload_email"],
+        dirs["payload_csv"],
+        dirs["payload_json"],
+        dirs["email_final"],
+    ]
 
     # SET PATHS
     # Some paths are generated dynamically during program run, these aren't:
@@ -70,7 +68,7 @@ def main():
         "email_final": dirs["email_final"] / "email.html",
     }
 
-    # SET CONFIG VALUES FROM ENV VARIABLES
+    # SET CONFIG VALUES FROM ENV BAR
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     destination_email_addresses = json.loads(
@@ -160,9 +158,7 @@ def main():
                 df.shape[0], county
             )  # count of cases
             html_df = export.convert_df_to_html(df)
-            export.save_html_county_payload(
-                county_intro, paths, dirs, html_df
-            )
+            export.save_html_county_payload(county_intro, paths, dirs, html_df)
 
         # IF NO DATA RETURNED FROM SCRAPE...
         else:
@@ -179,13 +175,11 @@ def main():
 
     # CREATE JSON FILE FROM CSV
     # We create a json file with some metadata about scrape.
-    date_and_time_of_scrape = export.convert_csv_to_json(
-        paths, county_list
-    )
+    date_and_time_of_scrape = export.convert_csv_to_json(paths, county_list)
 
     # OPTIONAL: UPLOAD DATA TO DATABASE
-    # if REST API env vars are set, then convert csv to json and upload to it using post request.
-    if rest_api["hostname"]:
+    # if REST API env vars are set and data exists, then convert csv to json and upload to it using post request.
+    if rest_api["hostname"] and paths["payload_csv"].is_file():
         upload.upload_to_rest_api(rest_api, paths)
 
     # SEND EMAIL WITH DOCKET DATA

@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import os
 from shutil import rmtree
 
+
 def pdf_path_gen(dir, docketnum):
     """
     We need to dynamically generate file names for downloaded PDFs We use this function so
@@ -86,11 +87,10 @@ def delete_folders_and_contents(list_of_dirs):
                 rmtree(dir)
                 print("Successfully deleted the directory and all files inside")
             except OSError:
-                print(
-                    f"Deletion of the directory {dir} failed for some reason"
-                )
+                print(f"Deletion of the directory {dir} failed for some reason")
         else:
             print("No folder named {} detected".format(dir))
+
 
 def create_folders(list_of_dirs):
     """
@@ -99,4 +99,3 @@ def create_folders(list_of_dirs):
     """
     for dir in list_of_dirs:
         dir.mkdir(parents=False, exist_ok=False)
-

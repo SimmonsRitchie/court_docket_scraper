@@ -46,11 +46,7 @@ def email_notification(
 
     # GENERATE SUBJECT LINE
     subject = create_subject_line(
-        paths,
-        target_scrape_date,
-        formatted_date,
-        yesterday_date,
-        county_list,
+        paths, target_scrape_date, formatted_date, yesterday_date, county_list
     )
 
     # ACCESS GMAIL AND SEND
@@ -109,7 +105,7 @@ def create_final_email_payload(
     parts = {}
     for component in component_list:
         path_to_component = dir_email_template / "{}.html".format(component)
-        parts["component"] = path_to_component.read_text()
+        parts[component] = path_to_component.read_text()
 
     ##########################  HTML HEAD + A BIT OF BODY TOP  ##########################################
 
@@ -124,8 +120,12 @@ def create_final_email_payload(
         )
 
     # COMBINE HTML
-    mobile_tease = parts["mobile_tease_top"] + mobile_tease_content + parts["mobile_tease_bottom"]
-    html_top = parts["html_head"] + parts["html_body_top"] + mobile_tease + parts["table_top"]
+    mobile_tease = (
+        parts["mobile_tease_top"] + mobile_tease_content + parts["mobile_tease_bottom"]
+    )
+    html_top = (
+        parts["html_head"] + parts["html_body_top"] + mobile_tease + parts["table_top"]
+    )
 
     #################################  BODY: REST OF TOP  ##########################################
 
@@ -163,7 +163,13 @@ def create_final_email_payload(
 
     # COMBINE HTML
     intro_container_bottom = "</div></td></tr>"
-    intro = parts["header"] + parts["intro_top"] + intro_header + intro_contents + intro_container_bottom
+    intro = (
+        parts["header"]
+        + parts["intro_top"]
+        + intro_header
+        + intro_contents
+        + intro_container_bottom
+    )
 
     #################################  BODY: MIDDLE  ##########################################
 
@@ -190,9 +196,7 @@ def create_final_email_payload(
     #################################  COMBINE  ##########################################
 
     # JOIN IT ALL TOGETHER
-    msg_content = (
-        html_top + intro + email_body + footer
-    )
+    msg_content = html_top + intro + email_body + footer
     message = MIMEText(msg_content, "html")
 
     # SAVE A COPY OF FINAL EMAIL FOR TESTING AND DEBUGGING PURPOSES
@@ -203,18 +207,13 @@ def create_final_email_payload(
 
 
 def create_subject_line(
-    paths,
-    desired_scrape_date_literal,
-    formatted_date,
-    yesterday_date,
-    county_list,
+    paths, desired_scrape_date_literal, formatted_date, yesterday_date, county_list
 ):
 
     print("Creating subject line")
 
     # GET PATHS
     email_payload_path = paths["payload_email"]
-
 
     # SET SUBJECT LINE
     if len(county_list) == 1:

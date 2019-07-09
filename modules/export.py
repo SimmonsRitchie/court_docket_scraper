@@ -70,9 +70,7 @@ def convert_df_to_html(df):
     return df_styled.render()
 
 
-def save_html_county_payload(
-    county_intro, paths, dirs, html_dataframe=""
-):
+def save_html_county_payload(county_intro, paths, dirs, html_dataframe=""):
 
     """
     Here we take our df of county dockets rendered in HTML, add county_intro above it, wrap it an HTML table,
@@ -227,9 +225,8 @@ def convert_csv_to_json(paths, county_list):
     return date_and_time_of_scrape
 
 
-def save_copy_of_final_email(base_folder_final_email, msg_content):
-    final_email_path = misc.final_email_path_generator(base_folder_final_email)
-    with open(final_email_path, "w") as fout:
+def save_copy_of_final_email(path_final_email, msg_content):
+    with open(path_final_email, "w") as fout:
         print("Saving copy of email for testing and debugging purposes")
         fout.write(msg_content)
         print("File saved")

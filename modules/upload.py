@@ -7,7 +7,6 @@ import requests
 import pprint as pp
 
 
-
 def upload_to_rest_api(rest_api, paths):
 
     print(
@@ -23,7 +22,9 @@ def upload_to_rest_api(rest_api, paths):
 
     # CONVERT CSV TO JSON
     print("Converting data to json...")
-    df = pd.read_csv(csv_payload_path, dtype={"docketnum":str})
+    df = pd.read_csv(csv_payload_path, dtype={"docketnum": str}) # this is to ensure docketnum is str
+    df = df.where(pd.notnull(df), None) # Replace NaN values with None so that we don't have problems with json
+    # conversion
     cases_json = df.to_dict(orient="records")
     print("data converted")
 

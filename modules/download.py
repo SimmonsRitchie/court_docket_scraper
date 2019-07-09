@@ -5,8 +5,10 @@ This module downloads dockets as PDFs and stores them in a given directory
 # Third party or inbuilt libs
 import os
 import time
+
 # Project modules
 from modules.misc import pdf_path_gen
+
 
 def download_pdf(driver, docket_url, docketnum, dirs):
 

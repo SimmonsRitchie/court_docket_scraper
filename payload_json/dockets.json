@@ -1,0 +1,153 @@
+{
+    "scrapeDatetime": "2019-07-08T21:50:13",
+    "countiesSelectedForScrape": [
+        "Dauphin",
+        "Cumberland"
+    ],
+    "countiesReturnedFromScrape": [
+        "Dauphin",
+        "Cumberland"
+    ],
+    "cases": [
+        {
+            "bail": 10000.0,
+            "caseCaption": "Comm. v. Quinn, Kyrelle",
+            "charges": "Simple Assault; Theft From A Motor Vehicle",
+            "county": "Dauphin",
+            "dob": "1995-03-08",
+            "docketnum": "MJ-12101-CR-0000440-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12101-CR-0000440-2019&dnh=u1w0F3mUA%2btOtH7A2Q%2fpcA%3d%3d"
+        },
+        {
+            "bail": 10000.0,
+            "caseCaption": "Comm. v. Disbrow, Amy",
+            "charges": "False Identification To Law Enforcement Officer; Use/Poss Of Drug Paraph; Public Drunkenness And Similar Misconduct",
+            "county": "Dauphin",
+            "dob": "1977-09-16",
+            "docketnum": "MJ-12102-CR-0000303-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12102-CR-0000303-2019&dnh=gGdTAvNyNMllWh%2bwRTg19Q%3d%3d"
+        },
+        {
+            "bail": 10000.0,
+            "caseCaption": "Comm. v. Figueroa Negron, Luis Alfredo",
+            "charges": "Simple Assault; Strangulation - Applying Pressure to Throat or Neck; Terroristic Threats W/ Int To Terrorize Another; Unlawful Restraint/ Involuntary Servitude",
+            "county": "Dauphin",
+            "dob": "1993-01-12",
+            "docketnum": "MJ-12102-CR-0000302-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12102-CR-0000302-2019&dnh=3C4XbHZ%2bVSNzGamdjtubuw%3d%3d"
+        },
+        {
+            "bail": "",
+            "caseCaption": "Comm. v. Brown, Allen S.",
+            "charges": "Robbery-Inflict Threat Imm Bod Inj",
+            "county": "Dauphin",
+            "dob": "1960-11-25",
+            "docketnum": "MJ-12102-CR-0000301-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12102-CR-0000301-2019&dnh=XHI8r1Vs5se04Bc%2bXKlskw%3d%3d"
+        },
+        {
+            "bail": "",
+            "caseCaption": "Comm. v. Allen, Elliot",
+            "charges": "Simple Assault",
+            "county": "Dauphin",
+            "dob": "1987-09-22",
+            "docketnum": "MJ-12104-CR-0000460-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12104-CR-0000460-2019&dnh=cuk8GsIa0s9agPvj9LxqOg%3d%3d"
+        },
+        {
+            "bail": 10000.0,
+            "caseCaption": "Comm. v. Stoltzfus, Logan Ray",
+            "charges": "Terroristic Threats W/ Int To Terrorize Another; Simple Assault; Harassment - Subject Other to Physical Contact; Poss Of Marijuana; Use/Poss Of Drug Paraph",
+            "county": "Dauphin",
+            "dob": "1999-03-28",
+            "docketnum": "MJ-12201-CR-0000731-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12201-CR-0000731-2019&dnh=WBKrj2Xz5NsTNM0xWDiErA%3d%3d"
+        },
+        {
+            "bail": 50000.0,
+            "caseCaption": "Comm. v. Jackson, Jasmyne Marie",
+            "charges": "Receiving Stolen Property; Marijuana-Small Amt Personal Use; Use/Poss Of Drug Paraph",
+            "county": "Dauphin",
+            "dob": "1992-07-21",
+            "docketnum": "MJ-12201-CR-0000730-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12201-CR-0000730-2019&dnh=%2ft2WGzDpVtsPQGqSwxDXnw%3d%3d"
+        },
+        {
+            "bail": 15000.0,
+            "caseCaption": "Comm. v. George, Octavia Latrice",
+            "charges": "False Identification To Law Enforcement Officer; Driv While Oper Priv Susp Or Revoked",
+            "county": "Dauphin",
+            "dob": "1991-06-28",
+            "docketnum": "MJ-12201-CR-0000729-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12201-CR-0000729-2019&dnh=DzFNzvWKBsCeGTcmHRqfWw%3d%3d"
+        },
+        {
+            "bail": 20000.0,
+            "caseCaption": "Comm. v. Sites, Jeffrey Allen",
+            "charges": "DUI: Controlled Substance - Impaired Ability - 1st ; Offense; Marijuana-Small Amt Personal Use; DUI: Gen Imp/Inc of Driving Safely - 1st Off; Obstructed Window; Turning Movements And Required Signals; Careless Driving; M; M; S; S; S",
+            "county": "Dauphin",
+            "dob": "1992-06-08",
+            "docketnum": "MJ-12201-CR-0000728-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12201-CR-0000728-2019&dnh=3xWH7zmJx%2bQWFo39Lb4aSQ%3d%3d"
+        },
+        {
+            "bail": 15000.0,
+            "caseCaption": "Comm. v. McDonald, Dewan M",
+            "charges": "Endangering Welfare of Children - ; Parent/Guardian/Other Commits Offense; DUI: Gen Imp/Inc of Driving Safely - 1st Off; Driv While Oper Priv Susp Or Revoked; Fail to use safety belt - driver and vehicle occupant; No Headlights; S; S; Bail Set:; Bail Action Type; Set; # Charge;  1 18 \u00a7 4304 \u00a7\u00a7 A1;  2 75 \u00a7 3802 \u00a7\u00a7 A1*;  3 75 \u00a7 1543 \u00a7\u00a7 A;  4 75 \u00a7 4581 \u00a7\u00a7 A2i;  5 75 \u00a7 4303 \u00a7\u00a7 A",
+            "county": "Dauphin",
+            "dob": "1991-05-09",
+            "docketnum": "MJ-12202-CR-0000227-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12202-CR-0000227-2019&dnh=c1Z31hsoHsuGw1pN5YfScw%3d%3d"
+        },
+        {
+            "bail": 100000.0,
+            "caseCaption": "Comm. v. Garcia, Gavin Xander",
+            "charges": "Possession Of Firearm Prohibited; Firearms Not To Be Carried W/O License; Receiving Stolen Property; False Identification To Law Enforcement Officer; Poss Of Marijuana; Restrictions on Alcoholic Beverages",
+            "county": "Dauphin",
+            "dob": "1998-05-06",
+            "docketnum": "MJ-12203-CR-0000256-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12203-CR-0000256-2019&dnh=k8bwH8FUemkM7HmWFhq7ww%3d%3d"
+        },
+        {
+            "bail": 15000.0,
+            "caseCaption": "Comm. v. Casilli, Alexander Joseph",
+            "charges": "Criminal Attempt - Theft By Unlaw Taking-Movable ; Prop",
+            "county": "Dauphin",
+            "dob": "1999-03-19",
+            "docketnum": "MJ-12302-CR-0000112-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12302-CR-0000112-2019&dnh=F7uPMV73CFx6LLMzDRtqUg%3d%3d"
+        },
+        {
+            "bail": 9000.0,
+            "caseCaption": "Comm. v. Kalmanovitz, Stacey May",
+            "charges": "DUI: Gen Imp/Inc of Driving Safely - 1st Off; DUI: High Rte of Alc (Bac.10 - <.16) 1st Off; Limitations on Driving on Left Side of Road; Improper Left Turn; Reckless Driving",
+            "county": "Cumberland",
+            "dob": "1985-12-14",
+            "docketnum": "MJ-09303-CR-0000209-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-09303-CR-0000209-2019&dnh=LvbcylFyltLn9mW%2blnZKvA%3d%3d"
+        },
+        {
+            "bail": 9000.0,
+            "caseCaption": "Comm. v. Walck, Stephen J.",
+            "charges": "Terroristic Threats W/ Int To Terrorize Another; Harassment - Comm. Lewd, Threatening, Etc. ; Language",
+            "county": "Cumberland",
+            "dob": "1961-05-22",
+            "docketnum": "MJ-09305-CR-0000215-2019",
+            "filingDate": "2019-07-07",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-09305-CR-0000215-2019&dnh=%2bHN6n7fdwtQJf7aLcBkYAw%3d%3d"
+        }
+    ]
+}
