@@ -5,52 +5,22 @@ This module stores small, reusable functions used by other modules. Eg. getting 
 
 from datetime import datetime, timedelta
 import os
+from shutil import rmtree
+
+def pdf_path_gen(dir, docketnum):
+    """
+    We need to dynamically generate file names for downloaded PDFs We use this function so
+    paths are always created in a consistent format.
+    """
+    return dir / "{}.pdf".format(docketnum)
 
 
-def pdf_path_generator(base_folder_pdfs, docket_num):
-    filename = "docket_{}.pdf".format(docket_num)
-    check_directory_exists(base_folder_pdfs)
-    pdf_path = os.path.join(base_folder_pdfs, filename)
-    return pdf_path
-
-
-def extracted_text_path_generator(base_folder_text, docketnum):
-    check_directory_exists(base_folder_text)
-    log_path = os.path.join(base_folder_text, "log_{}.txt".format(docketnum))
-    return log_path
-
-
-def email_payload_path_generator(base_folder_email):
-    check_directory_exists(base_folder_email)
-    yesterday = yesterday_date()
-    email_filename = "email_{}.html".format(yesterday)
-    email_payload_path = os.path.join(base_folder_email, email_filename)
-    return email_payload_path
-
-
-def json_payload_path_generator(base_folder_json):
-    check_directory_exists(base_folder_json)
-    json_filename = "dockets.json"
-    json_payload_path = os.path.join(base_folder_json, json_filename)
-    return json_payload_path
-
-
-def csv_payload_path_generator(base_folder_csv):
-    check_directory_exists(base_folder_csv)
-    csv_filename = "dockets.csv"
-    csv_payload_path = os.path.join(base_folder_csv, csv_filename)
-    return csv_payload_path
-
-
-def email_template_path_generator(base_folder_email_template, filename):
-    return os.path.join(base_folder_email_template, filename)
-
-
-def final_email_path_generator(base_folder_final_email):
-    check_directory_exists(base_folder_final_email)
-    final_email_filename = "email.html"
-    final_email_path = os.path.join(base_folder_final_email, final_email_filename)
-    return final_email_path
+def extracted_text_path_gen(dirs, docketnum):
+    """
+    We need to dynamically generate file names for downloaded PDFs We use this function so
+    paths are always created in a consistent format.
+    """
+    return dirs["extracted_text"] / "{}.txt".format(docketnum)
 
 
 def check_directory_exists(base_folder):
@@ -97,3 +67,36 @@ def camel_case_convert(item):
     )  # removing all '_', '-', and spaces
     item = item[0].lower() + item[1:] if item else ""
     return item
+
+
+def delete_folders_and_contents(list_of_dirs):
+
+    """
+    Takes a dict of directories as Path objects, deletes each one if it exists.
+
+    """
+
+    print("Checking that temp files have been deleted from previous scraper runs")
+
+    for dir in list_of_dirs:
+
+        if dir.is_dir():
+            print("Deleting {}...".format(dir))
+            try:
+                rmtree(dir)
+                print("Successfully deleted the directory and all files inside")
+            except OSError:
+                print(
+                    f"Deletion of the directory {dir} failed for some reason"
+                )
+        else:
+            print("No folder named {} detected".format(dir))
+
+def create_folders(list_of_dirs):
+    """
+    Takes a dict of directories as Path objects, creates each one
+
+    """
+    for dir in list_of_dirs:
+        dir.mkdir(parents=False, exist_ok=False)
+

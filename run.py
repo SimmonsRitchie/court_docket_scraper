@@ -5,12 +5,11 @@ AUTHOR: Daniel Simmons-Ritchie
 ABOUT:
 This is the entrypoint for the program. From main(), the program performs the following actions:
 
-    -DELETE: files from earlier scrapes are deleted (ie. all files in 'pdfs','extracted_text','json_payload',
-    'csv_payload' folders).
+    -DELETE + CREATE: temp folders from earlier scrapes are deleted and recreated
     -INITIALIZE: Selenium webdriver is initialized.
     -SCRAPE: UJS website is accessed and basic info on district dockets are scraped from search results
-    -DOWNLOAD: After initial scrape, PDFs of each docket are downloaded.
-    -CONVERT: PDFs are converted into text and other info is extracted for that county's dockets (eg. bail, charges).
+    -DOWNLOAD: After initial scrape, PDFs with more info for each docket are downloaded.
+    -CONVERT: PDFs are converted into text and other info is extracted for that county's dockets.
     -DATA EXPORT: Scraped data is turned into different formats for export.
     -UPLOAD (OPTIONAL): If REST API settings are given in .env, data will be uploaded to REST API
     -EMAIL: A summary of data is emailed to desired recipients.
@@ -18,15 +17,14 @@ This is the entrypoint for the program. From main(), the program performs the fo
 NOTE: Due to the way ChromeDriver downloads PDFs, it was designed to run in headless mode (set as default).
 Attempting to run it in non-headless mode may cause it to crash.
 
-
 """
 # inbuilt or third party libs
 import os
+from pathlib import Path
 import json
 
 # Project modules
 from modules import (
-    delete,
     initialize,
     scrape,
     download,
@@ -46,16 +44,33 @@ def main():
 
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"  # URL for UJC website
 
-    # SET DIRECTORY PATHS
-    base_folder_pdfs = "pdfs/"
-    base_folder_email = "email_payload/"
-    base_folder_json = "json_payload/"
-    base_folder_csv = "csv_payload/"
-    base_folder_text = "extracted_text/"
-    base_folder_email_template = "email_template/"
-    base_folder_final_email = "email_final/"
+    # SET DIRECTORY NAMES
+    dirs = {
+        "pdfs": "pdfs/",
+        "extracted_text": "extracted_text/",
+        "payload_email": "payload_email/",
+        "payload_csv": "payload_csv/",
+        "payload_json": "payload_json/",
+        "email_final": "email_final/",
+        "email_template": "email_template/"
+    }
+    for key, value in dirs.items():
+        dirs[key] = Path(value)  # turning directory names into Path objects
 
-    # GET CONFIG OPTIONS FROM ENV VARIABLES
+    # LIST OF TEMP DIRS
+    temp_dirs = [dirs["pdfs"], dirs["extracted_text"],dirs["payload_email"],dirs["payload_csv"],dirs["payload_json"],
+                 dirs["email_final"]]
+
+    # SET PATHS
+    # Some paths are generated dynamically during program run, these aren't:
+    paths = {
+        "payload_email": dirs["payload_email"] / "email.html",
+        "payload_csv": dirs["payload_csv"] / "dockets.csv",
+        "payload_json": dirs["payload_json"] / "dockets.json",
+        "email_final": dirs["email_final"] / "email.html",
+    }
+
+    # SET CONFIG VALUES FROM ENV VARIABLES
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     destination_email_addresses = json.loads(
@@ -70,7 +85,7 @@ def main():
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
 
-    # OPTIONAL: REST API VARS
+    # OPTIONAL: SET REST API VALUES
     # These vars are used to upload data to REST API. If .env vars are blank, we'll ignore.
     rest_api = {
         "hostname": os.environ.get("REST_API_HOSTNAME"),
@@ -87,27 +102,22 @@ def main():
     ]  # Counties are transformed into title case, otherwise we'll get errors during scrape
 
     ########################################################################
-    #                                 DELETE
+    #                          DELETE + CREATE
     ########################################################################
 
     # DELETE OLD FILES
-    # To avoid complications, we delete all temp folders created from previous scrapes.
-    list_of_folders_to_delete = [
-        base_folder_pdfs,
-        base_folder_email,
-        base_folder_json,
-        base_folder_csv,
-        base_folder_text,
-        base_folder_final_email,
-    ]
-    delete.delete_temp_files(list_of_folders_to_delete)
+    # To avoid complications, we delete any temp folders that may have been created from previous scrapes.
+    misc.delete_folders_and_contents(temp_dirs)
+
+    # CREATE TEMP DIRECTORIES
+    misc.create_folders(temp_dirs)
 
     ########################################################################
     #                                 SCRAPE
     ########################################################################
 
     # START CHROME DRIVER
-    driver = initialize.initialize_driver(base_folder_pdfs, chrome_driver_path)
+    driver = initialize.initialize_driver(dirs, chrome_driver_path)
 
     # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
     # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
@@ -122,12 +132,10 @@ def main():
             # We now download each docket's full PDF file using the URL we just scraped. We get extra info and add
             # it to our docket dicts.
             for count, docket in enumerate(docket_list):
-                docket_num = docket["docket_num"]
+                docketnum = docket["docketnum"]
                 docket_url = docket["url"]
-                download.download_pdf(driver, docket_url, docket_num, base_folder_pdfs)
-                text = convert.convert_pdf_to_text(
-                    docket_num, base_folder_pdfs, base_folder_text
-                )
+                download.download_pdf(driver, docket_url, docketnum, dirs)
+                text = convert.convert_pdf_to_text(docketnum, dirs)
 
                 # PARSE PDF TEXT FOR EXTRA INFO
                 if text:
@@ -145,7 +153,7 @@ def main():
             df = export.convert_dict_into_df(docket_list, county)
 
             # CONVERT DF TO CSV
-            export.convert_df_to_csv(df, base_folder_csv)
+            export.convert_df_to_csv(df, paths)
 
             # CONVERT DF INTO HTML FOR EMAIL PAYLOAD
             county_intro = "{} in {} County:".format(
@@ -153,7 +161,7 @@ def main():
             )  # count of cases
             html_df = export.convert_df_to_html(df)
             export.save_html_county_payload(
-                county_intro, base_folder_email, base_folder_email_template, html_df
+                county_intro, paths, dirs, html_df
             )
 
         # IF NO DATA RETURNED FROM SCRAPE...
@@ -162,7 +170,7 @@ def main():
                 county
             )  # count of cases in county
             export.save_html_county_payload(
-                county_intro, base_folder_email, base_folder_email_template
+                county_intro, paths, dirs
             )  # save html df + add extra html
 
     ########################################################################
@@ -172,19 +180,18 @@ def main():
     # CREATE JSON FILE FROM CSV
     # We create a json file with some metadata about scrape.
     date_and_time_of_scrape = export.convert_csv_to_json(
-        base_folder_csv, base_folder_json, county_list
+        paths, county_list
     )
 
     # OPTIONAL: UPLOAD DATA TO DATABASE
     # if REST API env vars are set, then convert csv to json and upload to it using post request.
     if rest_api["hostname"]:
-        upload.upload_to_rest_api(rest_api)
+        upload.upload_to_rest_api(rest_api, paths)
 
     # SEND EMAIL WITH DOCKET DATA
     email.email_notification(
-        base_folder_email,
-        base_folder_email_template,
-        base_folder_final_email,
+        dirs,
+        paths,
         destination_email_addresses,
         sender_email_username,
         sender_email_password,

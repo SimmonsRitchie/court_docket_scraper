@@ -15,16 +15,18 @@ from pdfminer.converter import PDFPageAggregator
 import re
 
 # project modules
-from modules import misc
+from modules.misc import pdf_path_gen, extracted_text_path_gen
 
 
-def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
+def convert_pdf_to_text(docketnum, dirs):
+
+    # GET DIRECTORIES
+    dir_pdf = dirs["pdfs"]
+    dir_extracted_text = dirs["extracted_text"]
+
     print("Converting pdf to text...")
-    pdf_path = misc.pdf_path_generator(base_folder_pdfs, docket_num)
-    extracted_text_path = misc.extracted_text_path_generator(
-        base_folder_text, docket_num
-    )
-
+    pdf_path = pdf_path_gen(dir_pdf, docketnum)
+    extracted_text_path = dir_extracted_text / docketnum
     password = ""
     extracted_text = ""
 
@@ -42,7 +44,7 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
         print(
             "ERROR: Something went wrong when attempting to convert PDF - file may be damaged or corrupted"
         )
-        print("Returning no extracted text for docket {}".format(docket_num))
+        print("Returning no extracted text for docket {}".format(docketnum))
         return extracted_text
 
     # Check if document is extractable, if not abort

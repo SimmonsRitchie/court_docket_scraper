@@ -4,6 +4,7 @@ import unittest
 import os
 from selenium import webdriver
 from dotenv import load_dotenv, find_dotenv
+from pathlib import Path
 
 # modules to test
 from modules.initialize import initialize_driver
@@ -14,7 +15,7 @@ class TestInitialize(unittest.TestCase):
         """
         Test that chrome driver initializes
         """
-        base_folder_pdfs = "pdfs/"
+        base_folder_pdfs = Path("pdfs/")
         load_dotenv(find_dotenv())
         chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
         print(chrome_driver_path)

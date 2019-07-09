@@ -71,7 +71,7 @@ def convert_df_to_html(df):
 
 
 def save_html_county_payload(
-    county_intro, base_folder_email, base_folder_email_template, html_dataframe=""
+    county_intro, paths, dirs, html_dataframe=""
 ):
 
     """
@@ -86,14 +86,14 @@ def save_html_county_payload(
 
     print("Saving dataframe as text file for email payload")
 
-    # GET PAYLOAD PATH
-    email_payload_path = misc.email_payload_path_generator(base_folder_email)
+    # GET DIRS/PATHS
+    email_template_dir = dirs["email_template"]
+    payload_email_path = paths["payload_email"]
 
     # CREATE TOP OF TABLE
     # table header top
-    table_header_path = misc.email_template_path_generator(
-        base_folder_email_template, "table_header.html"
-    )
+    table_header_path = email_template_dir / "table_header.html"
+
     with open(table_header_path, "r") as fin:
         table_header_top = fin.read()
     # table header bottom
@@ -107,24 +107,24 @@ def save_html_county_payload(
     # WRAP HTML PAYLOAD WITH DIV
     html_payload = '<div class="datatable_container">' + html_payload + "</div>"
 
-    if os.path.exists(email_payload_path):
-        with open(email_payload_path, "a") as fin:
+    if payload_email_path.is_file():
+        with open(payload_email_path, "a") as fin:
             print("Existing file found: Adding newly-created HTML to payload")
             fin.write(html_payload)
             print("Dataframe added")
     else:
-        with open(email_payload_path, "w") as fout:
+        with open(payload_email_path, "w") as fout:
             print("No existing file found: Creating email payload file")
             fout.write(html_payload)
             print("File created")
 
 
-def convert_df_to_csv(df, base_folder_csv):
+def convert_df_to_csv(df, paths):
 
     print("Saving dataframe as CSV file")
 
-    # CREATE PATH
-    csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
+    # GET CSV PAYLOAD PATH
+    csv_payload_path = paths["payload_csv"]
 
     # REFORMAT
     print(
@@ -139,7 +139,7 @@ def convert_df_to_csv(df, base_folder_csv):
 
     # WRITE
     print("Writing CSV file...")
-    if os.path.exists(csv_payload_path):
+    if csv_payload_path.is_file():
         print("Existing CSV file found")
         print("loading existing CSV as dataframe...")
         df_from_csv = pd.read_csv(csv_payload_path)
@@ -153,7 +153,7 @@ def convert_df_to_csv(df, base_folder_csv):
         print("CSV created")
 
 
-def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
+def convert_csv_to_json(paths, county_list):
 
     """
     We transform our CSV into JSON and add a few extra fields of meta data. Returned JSON uses camelcase instead of
@@ -163,10 +163,8 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     print("Converting CSV to JSON")
 
     # GET PATHS
-    print("Getting path names...")
-    csv_payload_path = misc.csv_payload_path_generator(base_folder_csv)
-    json_payload_path = misc.json_payload_path_generator(base_folder_json)
-    print("Got path names")
+    csv_payload_path = paths["payload_csv"]
+    json_payload_path = paths["payload_json"]
 
     # GENERATE METADATA FOR JSON OUTPUT
     date_and_time_of_scrape = (
@@ -179,7 +177,7 @@ def convert_csv_to_json(base_folder_csv, base_folder_json, county_list):
     # CONVERT CSV TO DATAFRAME
     print("Loading CSV file as pandas dataframe...")
 
-    if os.path.exists(csv_payload_path):
+    if csv_payload_path.is_file():
 
         df = pd.read_csv(csv_payload_path)
         print("Dataframe created")

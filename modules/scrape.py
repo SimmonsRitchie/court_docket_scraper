@@ -177,7 +177,7 @@ def scrape_search_results(driver, url, county, scrape_date):
 
                             docket = {
                                 "county": county,
-                                "docket_num": clean_docketnum,
+                                "docketnum": clean_docketnum,
                                 "case_caption": clean_caption,
                                 "dob": clean_dob,
                                 "filing_date": clean_filing_date,

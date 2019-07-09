@@ -6,11 +6,9 @@ import pandas as pd
 import requests
 import pprint as pp
 
-# project modules
-from modules.misc import csv_payload_path_generator
 
 
-def upload_to_rest_api(rest_api, base_folder_csv):
+def upload_to_rest_api(rest_api, paths):
 
     print(
         "\n ---------------------------------------------------------------------------------------------"
@@ -20,10 +18,12 @@ def upload_to_rest_api(rest_api, base_folder_csv):
         "\n ---------------------------------------------------------------------------------------------"
     )
 
+    # GET PATH
+    csv_payload_path = paths["payload_csv"]
+
     # CONVERT CSV TO JSON
     print("Converting data to json...")
-    csv_payload_path = csv_payload_path_generator(base_folder_csv)
-    df = pd.read_csv(csv_payload_path)
+    df = pd.read_csv(csv_payload_path, dtype={"docketnum":str})
     cases_json = df.to_dict(orient="records")
     print("data converted")
 
@@ -57,6 +57,9 @@ def upload_to_rest_api(rest_api, base_folder_csv):
         terminate_upload()
         return
 
+    # success
+    print("Data succesfully uploaded to {}".format(rest_api["hostname"]))
+
 
 def login(s, rest_api):
     action = "Logging in"
@@ -78,6 +81,7 @@ def login(s, rest_api):
     success_output(action, data)
 
     # update headers
+    print("Updating headers with JWT token")
     access_token = data["access_token"]
     s.headers.update({"Authorization": f"Bearer {access_token}"})
     return s
@@ -101,10 +105,11 @@ def add_cases(s, rest_api, json_data):
     return s
 
 
-def logout(base_url, s):
+def logout(s, rest_api):
     action = "Logging out"
     print(f"{action}...")
-    r = s.post(base_url + "/logout")
+    full_logout_path = rest_api["hostname"] + rest_api["logout_endpoint"]
+    r = s.post(full_logout_path)
     status_code = r.status_code
     data = r.json()
 

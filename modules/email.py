@@ -12,9 +12,8 @@ from modules import misc, export
 
 
 def email_notification(
-    base_folder_email,
-    base_folder_email_template,
-    base_folder_final_email,
+    dirs,
+    paths,
     destination_email_addresses,
     sender_email_address,
     sender_email_password,
@@ -34,10 +33,10 @@ def email_notification(
     yesterday_date = (datetime.now() - timedelta(1)).strftime("%a, %b %-d %Y")
 
     # GENERATE EMAIL HTML
+    # We take our existing HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
-        base_folder_email,
-        base_folder_email_template,
-        base_folder_final_email,
+        dirs,
+        paths,
         target_scrape_date,
         formatted_date,
         formatted_time,
@@ -47,7 +46,7 @@ def email_notification(
 
     # GENERATE SUBJECT LINE
     subject = create_subject_line(
-        base_folder_email,
+        paths,
         target_scrape_date,
         formatted_date,
         yesterday_date,
@@ -70,9 +69,8 @@ def email_notification(
 
 
 def create_final_email_payload(
-    base_folder_email,
-    base_folder_email_template,
-    base_folder_final_email,
+    dirs,
+    paths,
     target_scrape_date,
     formatted_date,
     formatted_time,
@@ -83,9 +81,20 @@ def create_final_email_payload(
     # This function fuses our scraped data with snippets of HTML to create our final email payload
     print("Generating final HTML payload")
 
-    # GET PATHS OF EMAIL COMPONENTS
+    # GET DIRS
+    dir_email_template = dirs["email_template"]
+
+    # GET PATHS
+    path_payload_email = paths["payload_email"]
+    path_final_email = paths["email_final"]
+
+    # GET OUR SCRAPED DATA
+    # This file has all our dataframes converted into HTML from the scrape, already wrapped in a bit of HTML.
+    email_body_contents = path_payload_email.read_text()
+
+    # GET EMAIL COMPONENTS
     # First creating a list of all our email template components
-    email_components = [
+    component_list = [
         "html_head",
         "html_body_top",
         "mobile_tease_top",
@@ -96,27 +105,15 @@ def create_final_email_payload(
         "email_body_top",
         "footer_top",
     ]
-    # Creating blank dictionary to act as a look-up table
-    email_paths = {}
-    # Looping over email components to create dict of paths
-    for component in email_components:
-        filename = component + ".html"
-        path_to_item = misc.email_template_path_generator(
-            base_folder_email_template, filename
-        )
-        email_paths[component] = path_to_item
+    # Then creating a dict of all those components by reading from their respective files
+    parts = {}
+    for component in component_list:
+        path_to_component = dir_email_template / "{}.html".format(component)
+        parts["component"] = path_to_component.read_text()
 
-    # GENERATE HTML HEAD AND BODY TOP
-    with open(email_paths["html_head"], "r") as fin:
-        html_head = fin.read()
-    with open(email_paths["html_body_top"], "r") as fin:
-        html_body = fin.read()
+    ##########################  HTML HEAD + A BIT OF BODY TOP  ##########################################
 
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
-    # mobile tease top
-    with open(email_paths["mobile_tease_top"], "r") as fin:
-        mobile_tease_top = fin.read()
-    # mobile tease content
     if len(county_list) == 1:
         mobile_tease_content = "Here are the latest criminal cases filed in {} County".format(
             county_list[0]
@@ -125,28 +122,15 @@ def create_final_email_payload(
         mobile_tease_content = (
             "Here are the latest criminal cases filed in central Pa. courts."
         )
-    # mobile tease bottom + start of main email container div
-    with open(email_paths["mobile_tease_bottom"], "r") as fin:
-        mobile_tease_bottom = fin.read()
-    mobile_tease = mobile_tease_top + mobile_tease_content + mobile_tease_bottom
 
-    # GENERATE MAIN DIV AND MAIN TABLE
-    with open(email_paths["table_top"], "r") as fin:
-        table_top = fin.read()
+    # COMBINE HTML
+    mobile_tease = parts["mobile_tease_top"] + mobile_tease_content + parts["mobile_tease_bottom"]
+    html_top = parts["html_head"] + parts["html_body_top"] + mobile_tease + parts["table_top"]
 
-    # COMBINE TOP HTML TOGETHER
-    html_top = html_head + html_body + mobile_tease + table_top
-
-    # GENERATE HEADER
-    with open(email_paths["header"], "r") as fin:
-        header = fin.read()
+    #################################  BODY: REST OF TOP  ##########################################
 
     # GENERATE INTRO
-    # intro top
-    with open(email_paths["intro_top"], "r") as fin:
-        intro_container_top = fin.read()
-    # intro header and contents
-    # we provide different intros if only one county was chosen for scrape
+    # we create different intros based on conditions
     if len(county_list) == 1:
         intro_header = '<span class="subheading">{} county scrape</span>'.format(
             county_list[0]
@@ -176,59 +160,50 @@ def create_final_email_payload(
                     ".format(
                 yesterday_date
             )
-    # intro bottom
+
+    # COMBINE HTML
     intro_container_bottom = "</div></td></tr>"
-    # unify intro
-    intro = intro_container_top + intro_header + intro_contents + intro_container_bottom
+    intro = parts["header"] + parts["intro_top"] + intro_header + intro_contents + intro_container_bottom
+
+    #################################  BODY: MIDDLE  ##########################################
 
     # GENERATE EMAIL BODY
-    # email body top
-    with open(email_paths["email_body_top"], "r") as fin:
-        email_body_top = fin.read()
-    # email body contents
-    email_payload_path = misc.email_payload_path_generator(base_folder_email)
-    with open(email_payload_path, "r") as fin:
-        email_body_contents = fin.read()
-    # email body bottom
+    # Here is where we insert the HTML we generated from our scraping.
     email_body_bottom = "</td></tr>"
+    email_body = parts["email_body_top"] + email_body_contents + email_body_bottom
 
-    # unify
-    email_body = email_body_top + email_body_contents + email_body_bottom
+    #################################  BODY: BOTTOM  ##########################################
 
     # GENERATE FOOTER
-    # footer top
-    with open(email_paths["footer_top"], "r") as fin:
-        footer_top = fin.read()
-    # footer contents
     footer_contents = "<p>This information was scraped at {} on {}</p>\
                       <p>This email was generated by a program written by Daniel Simmons-Ritchie. \
                       If you don't wish to receive these emails or you see errors in this email, contact him at \
                       <a href='mailto:simmons-ritchie@pennlive.com'>simmons-ritchie@pennlive.com</a></p>".format(
         formatted_time, formatted_date
     )
-    # footer bottom
-    footer_bottom = "</td></tr>"
-    # unify
-    footer = footer_top + footer_contents + footer_bottom
 
-    # GENERATE HTML BOTTOM
+    # COMBINE HTML
+    footer_bottom = "</td></tr>"
     html_bottom = "</div></center></table></body></html>"
+    footer = parts["footer_top"] + footer_contents + footer_bottom + html_bottom
+
+    #################################  COMBINE  ##########################################
 
     # JOIN IT ALL TOGETHER
     msg_content = (
-        html_top + mobile_tease + header + intro + email_body + footer + html_bottom
+        html_top + intro + email_body + footer
     )
     message = MIMEText(msg_content, "html")
 
     # SAVE A COPY OF FINAL EMAIL FOR TESTING AND DEBUGGING PURPOSES
-    export.save_copy_of_final_email(base_folder_final_email, msg_content)
+    export.save_copy_of_final_email(path_final_email, msg_content)
 
     print("HTML payload generated")
     return message
 
 
 def create_subject_line(
-    base_folder_email,
+    paths,
     desired_scrape_date_literal,
     formatted_date,
     yesterday_date,
@@ -236,6 +211,10 @@ def create_subject_line(
 ):
 
     print("Creating subject line")
+
+    # GET PATHS
+    email_payload_path = paths["payload_email"]
+
 
     # SET SUBJECT LINE
     if len(county_list) == 1:
@@ -255,7 +234,6 @@ def create_subject_line(
 
     # APPEND HOMICIDE NOTE IF NEEDED
     # Access email body
-    email_payload_path = misc.email_payload_path_generator(base_folder_email)
     with open(email_payload_path, "r") as fin:
         email_body = fin.read()
     if "homicide" in email_body or "Homicide" in email_body or "HOMICIDE" in email_body:

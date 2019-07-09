@@ -11,10 +11,12 @@ that it no longer worked.
 from selenium import webdriver
 
 
-def initialize_driver(base_folder_pdfs, chrome_driver_path):
+def initialize_driver(dirs, chrome_driver_path):
 
-    ############# LOCAL TESTS ###############
-    print("\nInitializing Chrome in local testing mode")
+    print("\nInitializing Chrome")
+
+    # set path for downloading files to, we expect Path object and turn into string.
+    download_path = str(dirs["pdfs"])
 
     # Chrome options + initialize
     options = webdriver.ChromeOptions()
@@ -32,7 +34,7 @@ def initialize_driver(base_folder_pdfs, chrome_driver_path):
     )
     params = {
         "cmd": "Page.setDownloadBehavior",
-        "params": {"behavior": "allow", "downloadPath": base_folder_pdfs},
+        "params": {"behavior": "allow", "downloadPath": download_path},
     }
     command_result = driver.execute("send_command", params)
     print("response from browser:")
