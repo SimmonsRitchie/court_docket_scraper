@@ -2,10 +2,13 @@ import unittest
 from pathlib import Path
 from shutil import rmtree
 
-# modules to test
-from modules.misc import pdf_path_gen
+# import fixtures
+from test.fixtures.dict_list.docket_list_with_duplicates import docket_list
 
-class TestMisc(unittest.TestCase):
+# modules to test
+from modules.misc import pdf_path_gen, clean_list_of_dicts
+
+class TestPdfPathGen(unittest.TestCase):
     def setUp(self) -> None:
         self.docket1 = "1969-12-30,MJ-12101-CR-0000441-2019"
         self.docket2 = "1969-12-30,MJ-12102-CR-0000442-2019"
@@ -33,6 +36,28 @@ class TestMisc(unittest.TestCase):
             pdf_paths.append(path)
         self.assertEqual(pdf_paths, desired_output)
         print(pdf_paths)
+
+
+class TestCleanList(unittest.TestCase):
+
+
+    def test_duplicates_are_removed(self):
+        """
+        Test that duplicate dicts in list are removed
+        """
+        expected_list = docket_list[2:]
+        test_list = clean_list_of_dicts(docket_list)
+        self.assertEqual(expected_list, test_list)
+        print(test_list)
+
+    def test_no_duplicates_in_results(self):
+        """
+        Test that duplicate results are NOT in final results
+        """
+        expected_list = docket_list
+        test_list = clean_list_of_dicts(docket_list)
+        self.assertNotEqual(expected_list, test_list)
+
 
 
 if __name__ == "__main__":

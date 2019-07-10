@@ -18,15 +18,13 @@ import re
 from modules.misc import pdf_path_gen, extracted_text_path_gen
 
 
-def convert_pdf_to_text(docketnum, dirs):
+def convert_pdf_to_text(pdf_path, docketnum, dirs):
 
-    # GET DIRECTORIES
-    dir_pdf = dirs["pdfs"]
+    # SET PATHS
     dir_extracted_text = dirs["extracted_text"]
+    extracted_text_path = extracted_text_path_gen(dir_extracted_text, docketnum)
 
     print("Converting pdf to text...")
-    pdf_path = pdf_path_gen(dir_pdf, docketnum)
-    extracted_text_path = dir_extracted_text / docketnum
     password = ""
     extracted_text = ""
 

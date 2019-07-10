@@ -77,12 +77,15 @@ class TestUpload(unittest.TestCase):
         print("TEARDOWN")
         # START REQUEST SESSION
         s = requests.Session()
-        # LOGIN
-        s = login(s, self.rest_api)
-        # DELETE
-        s = helper_delete(s, self.rest_api, self.list_of_docketnums_uploaded)
-        # LOGOUT
-        logout(s, self.rest_api)
+        try:
+            # LOGIN
+            s = login(s, self.rest_api)
+            # DELETE
+            s = helper_delete(s, self.rest_api, self.list_of_docketnums_uploaded)
+            # LOGOUT
+            logout(s, self.rest_api)
+        except Exception as error:
+            print(error)
 
 
     def test_upload_cases_to_db(self):
@@ -93,7 +96,11 @@ class TestUpload(unittest.TestCase):
         upload_to_rest_api(self.rest_api, self.paths)
 
         # check all docket nums are in db
-        list_of_dockets_in_db = helper_get_docketnums_in_db(self.rest_api)
+        list_of_dockets_in_db =[]
+        try:
+            list_of_dockets_in_db = helper_get_docketnums_in_db(self.rest_api)
+        except Exception as error:
+            print(error)
         test_bool = all(elem in list_of_dockets_in_db for elem in self.list_of_docketnums_uploaded)
 
         # asserts

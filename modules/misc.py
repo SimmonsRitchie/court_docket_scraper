@@ -6,7 +6,7 @@ This module stores small, reusable functions used by other modules. Eg. getting 
 from datetime import datetime, timedelta
 import os
 from shutil import rmtree
-
+import pandas as pd
 
 def title(program_name):
     print("----------------------------------------------------------------")
@@ -39,12 +39,12 @@ def pdf_path_gen(dir, docketnum):
     return gen_unique_filename(dir, docketnum, ".pdf")
 
 
-def extracted_text_path_gen(dirs, docketnum):
+def extracted_text_path_gen(dir, docketnum):
     """
     We need to dynamically generate file names for downloaded PDFs We use this function so
     paths are always created in a consistent format.
     """
-    return dirs["extracted_text"] / "{}.txt".format(docketnum)
+    return gen_unique_filename(dir, docketnum, ".txt")
 
 
 def check_directory_exists(base_folder):
@@ -119,3 +119,24 @@ def create_folders(dirs, temp_subdirs):
         dir.mkdir(parents=True)  # creates folder and parent folders if they don't exist
         print(">> {}".format(dir))
     print("Temp directories created")
+
+def clean_list_of_dicts(list_of_dicts):
+    """
+    Take a list of dicts and returns a list of dicts. Any dict that had duplicate docketnums is removed. Retains the
+    first record in a duplicated set.
+    """
+    df = pd.DataFrame(list_of_dicts)
+    df = clean_df(df)
+    return df.to_dict('records')
+
+
+def clean_df(df):
+    """
+    Returns a df with NaN or NaTs replaced with None. Also removes any records with duplicate docketnums (
+    retains the first record of a set of duplicates)
+    """
+    df = df[~df.duplicated(subset="docketnum", keep="first")]
+    df = df.where(pd.notnull(df), None)  # Replace NaN values with None
+    df["dob"] = df["dob"].replace({'NaT': None})  # Replace NaT values with None
+    df["filing_date"] = df["filing_date"].replace({'NaT': None})  # Replace NaT values with None
+    return df

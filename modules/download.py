@@ -15,8 +15,11 @@ def download_pdf(driver, docket_url, docketnum, dirs):
     # GET DIRECTORY NAMES
     dir_pdf = dirs["pdfs"]
 
-    old_name = dir_pdf / "MDJReport.pdf"
-    new_name = pdf_path_gen(dir_pdf, docketnum)
+    # SET PATHS
+    path_downloaded_docket = dir_pdf / "MDJReport.pdf" # path of our file when it's first downloaded
+    new_path_downloaded_docket = pdf_path_gen(dir_pdf, docketnum) # path we will rename our filename with
+
+    # DOWNLOAD
     print("Downloading docket sheet PDF for: {}".format(docketnum))
     print("URL: {}".format(docket_url))
     try:
@@ -32,11 +35,11 @@ def download_pdf(driver, docket_url, docketnum, dirs):
     # This is a hacky workaround but Stack Overflow suggests that it's one way to deal with how Selenium downloads files. In future,
     # may need to replace this with a better solution.
     counter = 0
-    while counter < 120 and not old_name.is_file():
+    while counter < 120 and not path_downloaded_docket.is_file():
         print("Waiting for file to appear... {}".format(counter))
         time.sleep(0.1)
         counter += 1
-    if old_name.is_file():
+    if path_downloaded_docket.is_file():
         print("Download complete!\n")
     else:
         print("ERROR: Something went wrong, file didn't appear")
@@ -44,8 +47,10 @@ def download_pdf(driver, docket_url, docketnum, dirs):
         driver.quit()
         quit()
 
+    # RENAME FILENAME
     # Renaming file so downloaded PDFs are easy to organize and search if needed
     print("Renaming file")
-    print("Old path: {}".format(old_name))
-    print("New path: {}".format(new_name))
-    old_name.rename(new_name)
+    print("Old path: {}".format(path_downloaded_docket))
+    print("New path: {}".format(new_path_downloaded_docket))
+    path_downloaded_docket.rename(new_path_downloaded_docket)
+    return new_path_downloaded_docket

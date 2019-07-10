@@ -122,11 +122,11 @@ def main():
             # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
             # We now download each docket's full PDF file using the URL we just scraped. We get extra info and add
             # it to our docket dicts.
-            for count, docket in enumerate(docket_list):
+            for docket in docket_list:
                 docketnum = docket["docketnum"]
                 docket_url = docket["url"]
-                download.download_pdf(driver, docket_url, docketnum, dirs)
-                text = convert.convert_pdf_to_text(docketnum, dirs)
+                pdf_path = download.download_pdf(driver, docket_url, docketnum, dirs)
+                text = convert.convert_pdf_to_text(pdf_path, docketnum, dirs)
 
                 # PARSE PDF TEXT FOR EXTRA INFO
                 if text:

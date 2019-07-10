@@ -20,8 +20,6 @@ class TestInitialize(unittest.TestCase):
         }
         load_dotenv(find_dotenv())
         chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
-        print(chrome_driver_path)
-
         driver = initialize_driver(dirs, chrome_driver_path)
         self.assertIsInstance(driver, webdriver.Chrome)
         driver.close()

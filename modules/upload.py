@@ -5,7 +5,7 @@ This module uploads data to a REST API.
 import pandas as pd
 import requests
 import pprint as pp
-
+from modules.misc import clean_df
 
 def upload_to_rest_api(rest_api, paths):
 
@@ -23,9 +23,8 @@ def upload_to_rest_api(rest_api, paths):
     # CONVERT CSV TO JSON
     print("Converting data to json...")
     df = pd.read_csv(csv_payload_path, dtype={"docketnum": str, "dob":str, "filing_date":str}) # this is to ensure docketnum is str
-    df = df.where(pd.notnull(df), None) # Replace NaN values with None
-    df["dob"] = df["dob"].replace({'NaT': None}) # Replace NaT values with None
-    df["filing_date"] = df["filing_date"].replace({'NaT': None}) # Replace NaT values with None
+    df = clean_df(df) # remove cases with duplicate docketnums if they exists, converts NaN and NaT to None (will
+    # appear as 'null' in json sent in Post request)
 
     # conversion
     cases_json = df.to_dict(orient="records")
@@ -41,7 +40,7 @@ def upload_to_rest_api(rest_api, paths):
     # LOGIN
     try:
         s = login(s, rest_api)
-    except AssertionError as error:
+    except Exception as error:
         print(error)
         terminate_upload()
         return
@@ -49,7 +48,7 @@ def upload_to_rest_api(rest_api, paths):
     # POST
     try:
         s = add_cases(s, rest_api, cases_json)
-    except AssertionError as error:
+    except Exception as error:
         print(error)
         terminate_upload()
         return
@@ -57,7 +56,7 @@ def upload_to_rest_api(rest_api, paths):
     # LOGOUT
     try:
         logout(s, rest_api)
-    except AssertionError as error:
+    except Exception as error:
         print(error)
         terminate_upload()
         return

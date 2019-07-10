@@ -11,6 +11,8 @@ from selenium.webdriver.support.ui import Select
 import sys
 import time
 
+# project modules
+from modules.misc import clean_list_of_dicts
 
 def scrape_search_results(driver, url, county, scrape_date):
 
@@ -223,4 +225,10 @@ def scrape_search_results(driver, url, county, scrape_date):
         except NoSuchElementException:
             print("No more courts found")
             break
+
+    # CLEAN DATA
+    # All cases should have unique docketnums but we remove any duplicates just in case, otherwise we'll get
+    # errors later.
+    docket_list = clean_list_of_dicts(docket_list)
+
     return docket_list
