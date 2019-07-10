@@ -15,9 +15,7 @@ class TestInitialize(unittest.TestCase):
         """
         Test that chrome driver initializes
         """
-        dirs = {
-            "pdfs": Path("../output_files/pdfs/")
-        }
+        dirs = {"pdfs": Path("../output_files/pdfs/")}
         load_dotenv(find_dotenv())
         chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
         driver = initialize_driver(dirs, chrome_driver_path)

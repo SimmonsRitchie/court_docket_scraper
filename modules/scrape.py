@@ -14,6 +14,7 @@ import time
 # project modules
 from modules.misc import clean_list_of_dicts
 
+
 def scrape_search_results(driver, url, county, scrape_date):
 
     """
@@ -227,8 +228,8 @@ def scrape_search_results(driver, url, county, scrape_date):
             break
 
     # CLEAN DATA
-    # All cases should have unique docketnums but we remove any duplicates just in case, otherwise we'll get
-    # errors later.
-    docket_list = clean_list_of_dicts(docket_list)
+    # All cases should have unique docketnums but we remove any duplicates just in case because they can cause errors.
+    if docket_list:  # we only clean if we have data
+        docket_list = clean_list_of_dicts(docket_list)
 
     return docket_list

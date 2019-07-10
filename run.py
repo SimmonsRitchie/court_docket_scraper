@@ -29,7 +29,6 @@ from modules import initialize, scrape, download, convert, email, export, upload
 
 def main():
 
-
     ########################################################################
     #                                 SETUP
     ########################################################################
@@ -37,12 +36,23 @@ def main():
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"  # URL for UJC website
 
     # SET DIRECTORY NAMES
-    temp_dir = Path("temp/")  # temporary directory for files/folders created during scrape
-    temp_subdirs = ["pdfs", "extracted_text", "payload_email", "payload_csv", "payload_json", "email_final"]
+    temp_dir = Path(
+        "temp/"
+    )  # temporary directory for files/folders created during scrape
+    temp_subdirs = [
+        "pdfs",
+        "extracted_text",
+        "payload_email",
+        "payload_csv",
+        "payload_json",
+        "email_final",
+    ]
     dirs = {}
-    for dir in temp_subdirs: # generating temp subdirectories and stashing in a dict
+    for dir in temp_subdirs:  # generating temp subdirectories and stashing in a dict
         dirs[dir] = temp_dir / dir
-    dirs["email_template"] = Path("static/email_template")  # static directory with HTML for email payload
+    dirs["email_template"] = Path(
+        "static/email_template"
+    )  # static directory with HTML for email payload
 
     # SET PATHS
     # Temp files that we will need to read and write to multiple times throughout program run.
@@ -62,15 +72,13 @@ def main():
     )
     sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
     sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
-    target_scrape_day = os.environ.get(
-        "TARGET_SCRAPE_DATE", "yesterday"
-    ).lower()
+    target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
     target_scrape_date = (
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
 
     # ENV VARS - OPTIONAL
-    run_env = os.environ.get("ENV_FILE","DEV") # defaults to 'DEV'
+    run_env = os.environ.get("ENV_FILE", "DEV")  # defaults to 'DEV'
     rest_api = {
         "hostname": os.environ.get("REST_API_HOSTNAME"),
         "login_endpoint": os.environ.get("LOGIN_END_POINT"),

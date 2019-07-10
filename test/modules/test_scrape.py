@@ -7,6 +7,7 @@ from modules.misc import yesterday_date
 # modules to test
 from modules.scrape import scrape_search_results
 
+
 class TestScrape(unittest.TestCase):
     def setUp(self) -> None:
         base_folder_pdfs = Path("pdfs/")

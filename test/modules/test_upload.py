@@ -10,6 +10,7 @@ import requests
 # modules to test
 from modules.upload import upload_to_rest_api, login, logout
 
+
 def helper_delete(s, rest_api, list_of_docketnums):
     """
     This helper function deletes data that has matching docketnums
@@ -28,6 +29,7 @@ def helper_delete(s, rest_api, list_of_docketnums):
         print(f">> Deleted {docketnum}")
     print("All cases deleted")
     return s
+
 
 def helper_get_docketnums_in_db(rest_api):
     """
@@ -48,7 +50,6 @@ def helper_get_docketnums_in_db(rest_api):
 
 
 class TestUpload(unittest.TestCase):
-
     def setUp(self) -> None:
 
         """
@@ -87,7 +88,6 @@ class TestUpload(unittest.TestCase):
         except Exception as error:
             print(error)
 
-
     def test_upload_cases_to_db(self):
         """
         Test that data uploads to web service properly
@@ -96,12 +96,14 @@ class TestUpload(unittest.TestCase):
         upload_to_rest_api(self.rest_api, self.paths)
 
         # check all docket nums are in db
-        list_of_dockets_in_db =[]
+        list_of_dockets_in_db = []
         try:
             list_of_dockets_in_db = helper_get_docketnums_in_db(self.rest_api)
         except Exception as error:
             print(error)
-        test_bool = all(elem in list_of_dockets_in_db for elem in self.list_of_docketnums_uploaded)
+        test_bool = all(
+            elem in list_of_dockets_in_db for elem in self.list_of_docketnums_uploaded
+        )
 
         # asserts
         self.assertTrue(test_bool)

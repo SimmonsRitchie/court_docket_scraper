@@ -3,6 +3,10 @@
 
 ####Running a single test case or test method:
 
+If using pipenv, start pipenv shell first: 
+
+    pipenv shell
+
 In parent folder type:
 
     python -m unittest test.test_search.TestName

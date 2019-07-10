@@ -8,6 +8,7 @@ from test.fixtures.dict_list.docket_list_with_duplicates import docket_list
 # modules to test
 from modules.misc import pdf_path_gen, clean_list_of_dicts
 
+
 class TestPdfPathGen(unittest.TestCase):
     def setUp(self) -> None:
         self.docket1 = "1969-12-30,MJ-12101-CR-0000441-2019"
@@ -24,11 +25,12 @@ class TestPdfPathGen(unittest.TestCase):
         Test that we create unique PDF names when there are existing filenames in a directory.
         """
         pdf_paths = []
-        desired_output = [self.dir / f"{self.docket1}.pdf",
-                          self.dir / f"{self.docket1}_1.pdf",
-                          self.dir / f"{self.docket2}.pdf",
-                          self.dir / f"{self.docket1}_2.pdf",
-                          ]
+        desired_output = [
+            self.dir / f"{self.docket1}.pdf",
+            self.dir / f"{self.docket1}_1.pdf",
+            self.dir / f"{self.docket2}.pdf",
+            self.dir / f"{self.docket1}_2.pdf",
+        ]
         for docketnum in self.docketnum_list:
             path = pdf_path_gen(self.dir, docketnum)
             with open(path, "w") as fout:
@@ -39,8 +41,6 @@ class TestPdfPathGen(unittest.TestCase):
 
 
 class TestCleanList(unittest.TestCase):
-
-
     def test_duplicates_are_removed(self):
         """
         Test that duplicate dicts in list are removed
@@ -58,6 +58,11 @@ class TestCleanList(unittest.TestCase):
         test_list = clean_list_of_dicts(docket_list)
         self.assertNotEqual(expected_list, test_list)
 
+    def test_handles_empty_list(self):
+        empty_list = []
+        test_list = clean_list_of_dicts(empty_list)
+        print(test_list)
+        self.assertFalse(test_list)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ import os
 from shutil import rmtree
 import pandas as pd
 
+
 def title(program_name):
     print("----------------------------------------------------------------")
     print("                  {}".format(program_name.upper()))
@@ -20,7 +21,9 @@ def gen_unique_filename(dir, filename, ext, counter=0):
     This func recursively determines if a filename already exists in a given directory. Returns a unique path.
     It expects dir to be a Path object.
     """
-    full_filename = filename + ext if counter == 0 else filename + "_" + str(counter) + ext
+    full_filename = (
+        filename + ext if counter == 0 else filename + "_" + str(counter) + ext
+    )
     path = dir / full_filename
     print(f"Checking if {path} already exists...")
     if path.is_file():
@@ -120,6 +123,7 @@ def create_folders(dirs, temp_subdirs):
         print(">> {}".format(dir))
     print("Temp directories created")
 
+
 def clean_list_of_dicts(list_of_dicts):
     """
     Take a list of dicts and returns a list of dicts. Any dict that had duplicate docketnums is removed. Retains the
@@ -127,7 +131,7 @@ def clean_list_of_dicts(list_of_dicts):
     """
     df = pd.DataFrame(list_of_dicts)
     df = clean_df(df)
-    return df.to_dict('records')
+    return df.to_dict("records")
 
 
 def clean_df(df):
@@ -135,8 +139,11 @@ def clean_df(df):
     Returns a df with NaN or NaTs replaced with None. Also removes any records with duplicate docketnums (
     retains the first record of a set of duplicates)
     """
-    df = df[~df.duplicated(subset="docketnum", keep="first")]
-    df = df.where(pd.notnull(df), None)  # Replace NaN values with None
-    df["dob"] = df["dob"].replace({'NaT': None})  # Replace NaT values with None
-    df["filing_date"] = df["filing_date"].replace({'NaT': None})  # Replace NaT values with None
+    if not df.empty:  # df must not be empty otherwise Pandas will throw error
+        df = df[~df.duplicated(subset="docketnum", keep="first")]
+        df = df.where(pd.notnull(df), None)  # Replace NaN values with None
+        df["dob"] = df["dob"].replace({"NaT": None})  # Replace NaT values with None
+        df["filing_date"] = df["filing_date"].replace(
+            {"NaT": None}
+        )  # Replace NaT values with None
     return df

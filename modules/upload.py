@@ -7,6 +7,7 @@ import requests
 import pprint as pp
 from modules.misc import clean_df
 
+
 def upload_to_rest_api(rest_api, paths):
 
     print(
@@ -22,8 +23,12 @@ def upload_to_rest_api(rest_api, paths):
 
     # CONVERT CSV TO JSON
     print("Converting data to json...")
-    df = pd.read_csv(csv_payload_path, dtype={"docketnum": str, "dob":str, "filing_date":str}) # this is to ensure docketnum is str
-    df = clean_df(df) # remove cases with duplicate docketnums if they exists, converts NaN and NaT to None (will
+    df = pd.read_csv(
+        csv_payload_path, dtype={"docketnum": str, "dob": str, "filing_date": str}
+    )  # this is to ensure docketnum is str
+    df = clean_df(
+        df
+    )  # remove cases with duplicate docketnums if they exists, converts NaN and NaT to None (will
     # appear as 'null' in json sent in Post request)
 
     # conversion
@@ -62,9 +67,13 @@ def upload_to_rest_api(rest_api, paths):
         return
 
     # success
-    print("----------------------------------------------------------------------------------------")
+    print(
+        "----------------------------------------------------------------------------------------"
+    )
     print("Data succesfully uploaded to {}".format(rest_api["hostname"]))
-    print("----------------------------------------------------------------------------------------\n")
+    print(
+        "----------------------------------------------------------------------------------------\n"
+    )
 
 
 def login(s, rest_api):

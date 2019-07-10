@@ -16,8 +16,12 @@ def download_pdf(driver, docket_url, docketnum, dirs):
     dir_pdf = dirs["pdfs"]
 
     # SET PATHS
-    path_downloaded_docket = dir_pdf / "MDJReport.pdf" # path of our file when it's first downloaded
-    new_path_downloaded_docket = pdf_path_gen(dir_pdf, docketnum) # path we will rename our filename with
+    path_downloaded_docket = (
+        dir_pdf / "MDJReport.pdf"
+    )  # path of our file when it's first downloaded
+    new_path_downloaded_docket = pdf_path_gen(
+        dir_pdf, docketnum
+    )  # path we will rename our filename with
 
     # DOWNLOAD
     print("Downloading docket sheet PDF for: {}".format(docketnum))
