@@ -8,6 +8,12 @@ import os
 from shutil import rmtree
 
 
+def title(program_name):
+    print("----------------------------------------------------------------")
+    print("                  {}".format(program_name.upper()))
+    print("----------------------------------------------------------------")
+    print("CURRENT TIME: {}".format(datetime.now().strftime("%b %d %Y: %-I:%M %p")))
+
 def pdf_path_gen(dir, docketnum):
     """
     We need to dynamically generate file names for downloaded PDFs We use this function so
@@ -70,32 +76,29 @@ def camel_case_convert(item):
     return item
 
 
-def delete_folders_and_contents(list_of_dirs):
+def delete_folders_and_contents(temp_dir):
 
     """
-    Takes a dict of directories as Path objects, deletes each one if it exists.
-
+    Takes Path object, deletes if it exists.
     """
 
-    print("Checking that temp files have been deleted from previous scraper runs")
-
-    for dir in list_of_dirs:
-
-        if dir.is_dir():
-            print("Deleting {}...".format(dir))
-            try:
-                rmtree(dir)
-                print("Successfully deleted the directory and all files inside")
-            except OSError:
-                print(f"Deletion of the directory {dir} failed for some reason")
-        else:
-            print("No folder named {} detected".format(dir))
+    if temp_dir.is_dir():
+        print("Detected temp files from previous program run")
+        print("Deleting folders and files...")
+        rmtree(temp_dir)
+        print("Deleted")
+    else:
+        print("No temp files detected - project directory clean")
 
 
-def create_folders(list_of_dirs):
+def create_folders(dirs, temp_subdirs):
     """
     Takes a dict of directories as Path objects, creates each one
 
     """
-    for dir in list_of_dirs:
-        dir.mkdir(parents=False, exist_ok=False)
+    print("Generating temp directories:")
+    for sub_dir_name in temp_subdirs:
+        dir = dirs[sub_dir_name]
+        dir.mkdir(parents=True)  # creates folder and parent folders if they don't exist
+        print(">> {}".format(dir))
+    print("Temp directories created")

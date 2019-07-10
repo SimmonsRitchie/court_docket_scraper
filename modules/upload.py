@@ -10,11 +10,11 @@ import pprint as pp
 def upload_to_rest_api(rest_api, paths):
 
     print(
-        "\n ---------------------------------------------------------------------------------------------"
+        "\n ----------------------------------------------------------------------------------------"
     )
     print("       UPLOADING DATA TO REST API: {}     ".format(rest_api["hostname"]))
     print(
-        "\n ---------------------------------------------------------------------------------------------"
+        "------------------------------------------------------------------------------------------\n"
     )
 
     # GET PATH
@@ -59,7 +59,9 @@ def upload_to_rest_api(rest_api, paths):
         return
 
     # success
+    print("----------------------------------------------------------------------------------------")
     print("Data succesfully uploaded to {}".format(rest_api["hostname"]))
+    print("----------------------------------------------------------------------------------------\n")
 
 
 def login(s, rest_api):
@@ -102,7 +104,7 @@ def add_cases(s, rest_api, json_data):
         assert status_code == 201, f"{action} FAILED"
 
     # success
-    success_output(action, data)
+    success_output(action)
     return s
 
 

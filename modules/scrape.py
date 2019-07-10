@@ -14,8 +14,13 @@ import time
 
 def scrape_search_results(driver, url, county, scrape_date):
 
+    """
+    Scrape the search results of the UJS website. Returns a list of dicts with case information.
+
+    """
+
     ########################################################################
-    #                     INPUT SEARCH
+    #                     INPUT: SEARCH TERMS
     ########################################################################
 
     """
@@ -27,7 +32,7 @@ def scrape_search_results(driver, url, county, scrape_date):
     enddate = startdate
 
     # Opening webpage
-    print("Opening USC website")
+    print("Opening Pa. Unified Judicial System portal")
     driver.get(url)
 
     try:
@@ -194,7 +199,7 @@ def scrape_search_results(driver, url, county, scrape_date):
                         else:
                             print("Not a criminal case")
 
-                    # No row found: End row search loop
+                    # BREAK LOOP 3: No more rows found
                     except NoSuchElementException:
                         print("No row found")
                         break  # End row search loop
@@ -209,12 +214,12 @@ def scrape_search_results(driver, url, county, scrape_date):
                     print("More pages FOUND - going to next page")
                     page_count += 1
 
-                # No pages found: End page search loop
+                # BREAK LOOP 2: No more pages found
                 except NoSuchElementException:
                     print("No further pages found")
                     break
 
-        # No further court found: End court search loop
+        # BREAK LOOP 1: No further district courts found
         except NoSuchElementException:
             print("No more courts found")
             break

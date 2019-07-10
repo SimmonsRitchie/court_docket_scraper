@@ -29,6 +29,7 @@ from modules import initialize, scrape, download, convert, email, export, upload
 
 def main():
 
+
     ########################################################################
     #                                 SETUP
     ########################################################################
@@ -36,31 +37,15 @@ def main():
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"  # URL for UJC website
 
     # SET DIRECTORY NAMES
-    dirs = {
-        "pdfs": "pdfs/",
-        "extracted_text": "extracted_text/",
-        "payload_email": "payload_email/",
-        "payload_csv": "payload_csv/",
-        "payload_json": "payload_json/",
-        "email_final": "email_final/",
-        "email_template": "email_template/",
-    }
-    for key, value in dirs.items():
-        dirs[key] = Path(value)  # turning directory names into Path objects
-
-    # LIST OF TEMP DIRS
-    # This is a subset of dirs, which we will delete at the start of each scrape.
-    temp_dirs = [
-        dirs["pdfs"],
-        dirs["extracted_text"],
-        dirs["payload_email"],
-        dirs["payload_csv"],
-        dirs["payload_json"],
-        dirs["email_final"],
-    ]
+    temp_dir = Path("temp/")  # temporary directory for files/folders created during scrape
+    temp_subdirs = ["pdfs", "extracted_text", "payload_email", "payload_csv", "payload_json", "email_final"]
+    dirs = {}
+    for dir in temp_subdirs: # generating temp subdirectories and stashing in a dict
+        dirs[dir] = temp_dir / dir
+    dirs["email_template"] = Path("static/email_template")  # static directory with HTML for email payload
 
     # SET PATHS
-    # Some paths are generated dynamically during program run, these aren't:
+    # Temp files that we will need to read and write to multiple times throughout program run.
     paths = {
         "payload_email": dirs["payload_email"] / "email.html",
         "payload_csv": dirs["payload_csv"] / "dockets.csv",
@@ -68,7 +53,8 @@ def main():
         "email_final": dirs["email_final"] / "email.html",
     }
 
-    # SET CONFIG VALUES FROM ENV BAR
+    # ENV VARS - REQUIRED
+    # these values need to be set in .env file
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     destination_email_addresses = json.loads(
@@ -78,13 +64,13 @@ def main():
     sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
     target_scrape_day = os.environ.get(
         "TARGET_SCRAPE_DATE", "yesterday"
-    ).lower()  # "yesterday" or "today"
+    ).lower()
     target_scrape_date = (
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
 
-    # OPTIONAL: SET REST API VALUES
-    # These vars are used to upload data to REST API. If .env vars are blank, we'll ignore.
+    # ENV VARS - OPTIONAL
+    run_env = os.environ.get("ENV_FILE","DEV") # defaults to 'DEV'
     rest_api = {
         "hostname": os.environ.get("REST_API_HOSTNAME"),
         "login_endpoint": os.environ.get("LOGIN_END_POINT"),
@@ -100,15 +86,22 @@ def main():
     ]  # Counties are transformed into title case, otherwise we'll get errors during scrape
 
     ########################################################################
+    #                          START PROGRAM
+    ########################################################################
+
+    misc.title("pa court report")
+    print(f"Running in {run_env} environment\n")
+
+    ########################################################################
     #                          DELETE + CREATE
     ########################################################################
 
     # DELETE OLD FILES
     # To avoid complications, we delete any temp folders that may have been created from previous scrapes.
-    misc.delete_folders_and_contents(temp_dirs)
+    misc.delete_folders_and_contents(temp_dir)
 
     # CREATE TEMP DIRECTORIES
-    misc.create_folders(temp_dirs)
+    misc.create_folders(dirs, temp_subdirs)
 
     ########################################################################
     #                                 SCRAPE
