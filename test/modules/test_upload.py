@@ -92,11 +92,12 @@ class TestUpload(unittest.TestCase):
         # upload data
         upload_to_rest_api(self.rest_api, self.paths)
 
-        # check data is uploaded
+        # check all docket nums are in db
         list_of_dockets_in_db = helper_get_docketnums_in_db(self.rest_api)
+        test_bool = all(elem in list_of_dockets_in_db for elem in self.list_of_docketnums_uploaded)
 
         # asserts
-        self.assertTrue(set(list_of_dockets_in_db).issubset(list_of_dockets_in_db))
+        self.assertTrue(test_bool)
 
 
 if __name__ == "__main__":

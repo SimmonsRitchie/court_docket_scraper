@@ -22,10 +22,14 @@ def upload_to_rest_api(rest_api, paths):
 
     # CONVERT CSV TO JSON
     print("Converting data to json...")
-    df = pd.read_csv(csv_payload_path, dtype={"docketnum": str}) # this is to ensure docketnum is str
-    df = df.where(pd.notnull(df), None) # Replace NaN values with None so that we don't have problems with json
+    df = pd.read_csv(csv_payload_path, dtype={"docketnum": str, "dob":str, "filing_date":str}) # this is to ensure docketnum is str
+    df = df.where(pd.notnull(df), None) # Replace NaN values with None
+    df["dob"] = df["dob"].replace({'NaT': None}) # Replace NaT values with None
+    df["filing_date"] = df["filing_date"].replace({'NaT': None}) # Replace NaT values with None
+
     # conversion
     cases_json = df.to_dict(orient="records")
+    print(cases_json)
     print("data converted")
 
     # START REQUEST SESSION
