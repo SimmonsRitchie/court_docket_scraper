@@ -14,12 +14,29 @@ def title(program_name):
     print("----------------------------------------------------------------")
     print("CURRENT TIME: {}".format(datetime.now().strftime("%b %d %Y: %-I:%M %p")))
 
+
+def gen_unique_filename(dir, filename, ext, counter=0):
+    """
+    This func recursively determines if a filename already exists in a given directory. Returns a unique path.
+    It expects dir to be a Path object.
+    """
+    full_filename = filename + ext if counter == 0 else filename + "_" + str(counter) + ext
+    path = dir / full_filename
+    print(f"Checking if {path} already exists...")
+    if path.is_file():
+        counter += 1
+        print(f"{path} exists")
+        print(f"Appending {counter} to filename")
+        return gen_unique_filename(dir, filename, ext, counter=counter)
+    print(f"{path} is unique")
+    return path
+
+
 def pdf_path_gen(dir, docketnum):
     """
-    We need to dynamically generate file names for downloaded PDFs We use this function so
-    paths are always created in a consistent format.
+    We need to dynamically generate file names for downloaded PDFs.
     """
-    return dir / "{}.pdf".format(docketnum)
+    return gen_unique_filename(dir, docketnum, ".pdf")
 
 
 def extracted_text_path_gen(dirs, docketnum):
