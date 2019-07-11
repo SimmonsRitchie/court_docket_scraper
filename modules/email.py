@@ -32,6 +32,9 @@ def email_notification(
     formatted_time = date_and_time_of_scrape.strftime("%-I:%M %p")
     yesterday_date = (datetime.now() - timedelta(1)).strftime("%a, %b %-d %Y")
 
+    # GENERATE EMAIL CUSTOM MESSAGES
+    mobile_tease_content = gen_mobile_tease_content(county_list)
+
     # GENERATE EMAIL HTML
     # We take our existing HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
@@ -42,6 +45,7 @@ def email_notification(
         formatted_time,
         yesterday_date,
         county_list,
+        mobile_tease_content
     )
 
     # GENERATE SUBJECT LINE
@@ -63,6 +67,17 @@ def email_notification(
     server.quit()
     print("Email sent!")
 
+def gen_mobile_tease_content(county_list):
+    # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
+    if len(county_list) == 1:
+        return "Here are the latest criminal cases filed in {} County".format(
+            county_list[0]
+        )
+    else:
+        return (
+            "Here are the latest criminal cases filed in central Pa. courts."
+        )
+
 
 def create_final_email_payload(
     dirs,
@@ -72,6 +87,7 @@ def create_final_email_payload(
     formatted_time,
     yesterday_date,
     county_list,
+    mobile_tease_content
 ):
     # FINAL EMAIL PAYLOAD
     # This function fuses our scraped data with snippets of HTML to create our final email payload
@@ -108,16 +124,6 @@ def create_final_email_payload(
         parts[component] = path_to_component.read_text()
 
     ##########################  HTML HEAD + A BIT OF BODY TOP  ##########################################
-
-    # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
-    if len(county_list) == 1:
-        mobile_tease_content = "Here are the latest criminal cases filed in {} County".format(
-            county_list[0]
-        )
-    else:
-        mobile_tease_content = (
-            "Here are the latest criminal cases filed in central Pa. courts."
-        )
 
     # COMBINE HTML
     mobile_tease = (

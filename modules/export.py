@@ -51,7 +51,7 @@ def convert_df_to_html(df):
 
     # REDUCE SIZE OF CHARGES COL
     # Charges can be particularly long so trimming it for readability in email
-    df["charges"] = df["charges"].str.slice(0, 100)
+    df["charges"] = df["charges"].str.slice(0, 150)
     # REFORMAT COLUMN HEADS
     df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
     df.columns = df.columns.str.replace(
@@ -82,7 +82,7 @@ def save_html_county_payload(county_intro, paths, dirs, html_dataframe=""):
     county_intro.
     """
 
-    print("Saving dataframe as text file for email payload")
+    print("Saving dataframe as html file for email payload")
 
     # GET DIRS/PATHS
     email_template_dir = dirs["email_template"]
