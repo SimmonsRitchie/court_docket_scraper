@@ -67,11 +67,6 @@ def main():
     # these values need to be set in .env file
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
-    destination_email_addresses = json.loads(
-        os.environ.get("DESTINATION_EMAIL_ADDRESSES")
-    )
-    sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
-    sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
     target_scrape_date = (
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
@@ -187,12 +182,9 @@ def main():
     email.email_notification(
         dirs,
         paths,
-        destination_email_addresses,
-        sender_email_username,
-        sender_email_password,
         date_and_time_of_scrape,
         target_scrape_day,
-        county_list,
+        county_list
     )
 
     # CLOSE PROGRAM

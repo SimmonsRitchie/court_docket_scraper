@@ -13,7 +13,11 @@ def title(program_name):
     print("----------------------------------------------------------------")
     print("                  {}".format(program_name.upper()))
     print("----------------------------------------------------------------")
-    print("CURRENT TIME: {}".format(datetime.now().strftime("%b %d %Y: %-I:%M %p")))
+    print("CURRENT TIME: {}".format(get_datetime_now_formatted()))
+
+def get_datetime_now_formatted():
+    """ Gets a string of the current date and time in format: Jul 11 2019: 1:28 PM"""
+    return datetime.now().strftime("%b %d %Y, %-I:%M %p")
 
 
 def gen_unique_filename(dir, filename, ext, counter=0):

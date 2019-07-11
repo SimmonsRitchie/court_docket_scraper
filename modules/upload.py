@@ -45,24 +45,10 @@ def upload_to_rest_api(rest_api, paths):
     # LOGIN
     try:
         s = login(s, rest_api)
-    except Exception as error:
-        print(error)
-        terminate_upload()
-        return
-
-    # POST
-    try:
         s = add_cases(s, rest_api, cases_json)
-    except Exception as error:
-        print(error)
-        terminate_upload()
-        return
-
-    # LOGOUT
-    try:
         logout(s, rest_api)
-    except Exception as error:
-        print(error)
+    except Exception as full_error:
+        print(full_error)
         terminate_upload()
         return
 
@@ -140,7 +126,6 @@ def logout(s, rest_api):
 
 ############ OUTPUT FUNCTIONS ####################
 # Some reusable functions for displaying output from HTTP requests.
-
 
 def failure_output(action, status, data):
     print(f"ERROR: {action}")

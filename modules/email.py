@@ -6,25 +6,72 @@ This module handles sending auto email. It also converts dockets into an email f
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta
+import os
+import json
 
 # Load my modules
-from modules import misc, export
+from modules import export
+from modules.misc import get_datetime_now_formatted
+
+
+def email_error_notification(error_summary, full_error_msg, dirs):
+    error_emails_enabled = False if os.environ.get("ERROR_EMAILS") == "FALSE" else True
+    if not error_emails_enabled:
+        print("Email error notifications are disabled\nNo error email will be sent")
+        return
+
+    # GET INFO FOR MESSAGE
+    error_datetime = get_datetime_now_formatted()
+    dir_email_template = dirs["email_template"]
+    county_list = [
+        x.title() for x in json.loads(os.environ.get("COUNTY_LIST"))
+    ]  # Counties are transformed into title case
+    target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
+
+
+    mobile_tease_content = error_summary
+    intro_content = f"<p>Something went wrong during scrape of {target_scrape_day}'s cases for following counties:"\
+    f"{county_list}.<p>"\
+    f"<p>Summary: {error_summary}.</p>" \
+    f"<p>Error time: {error_datetime}.</p>"
+    body_content = f"<p>Full error message:</p><p>{full_error_msg}</p>"
+    footer_content = ""
+    subject_line = "ERROR: something went wrong"
+
+    # ATTACH CSV
+    # TODO: Add attachment
+
+    # CREATE HTML PAYLOAD
+    message = create_final_email_payload(
+        dir_email_template,
+        mobile_tease_content,
+        intro_content,
+        body_content,
+        footer_content
+    )
+
+    # SEND
+    default_recipients = json.loads(
+        os.environ.get("DESTINATION_EMAIL_ADDRESSES")
+    )
+    recipients = json.loads(
+        os.environ.get("DESTINATION_EMAIL_ADDRESS_FOR_ERRORS", default_recipients)
+    )
+
+    login_to_gmail_and_send(recipients, message,subject_line)
 
 
 def email_notification(
     dirs,
     paths,
-    destination_email_addresses,
-    sender_email_address,
-    sender_email_password,
     date_and_time_of_scrape,
     target_scrape_day,
-    county_list,
+    county_list
 ):
 
     print("Sending email...")
 
-    # GET DATE INFO
+    # GET DATE INFO - NEED FOR CUSTOM MESSAGES
     date_and_time_of_scrape = datetime.strptime(
         date_and_time_of_scrape, "%Y-%m-%dT%H:%M:%S"
     )  # Parse ISO date into datetime obj
@@ -47,33 +94,25 @@ def email_notification(
     # Add a special message to subject line and mobile tease if either condition is met
     subject_line, mobile_tease_content = insert_special_message(scraped_data_content, mobile_tease_content,
                                                                 subject_line)
-
     # GENERATE EMAIL HTML
     # We take our HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
-        dirs,
-        paths,
+        dirs["email_template"],
         mobile_tease_content,
         intro_content,
         scraped_data_content,
         footer_content
     )
 
-    # GENERATE SUBJECT LINE
+    # SAVE EMAIL HTML - FOR DEBUGGING PURPOSES
+    export.save_copy_of_final_email(paths["email_final"], message)
 
     # ACCESS GMAIL AND SEND
-    message["From"] = f"Pa Court Report <{sender_email_address}>"
-    message["To"] = ", ".join(destination_email_addresses)
-    message["Subject"] = subject_line
+    recipients = json.loads(
+        os.environ.get("DESTINATION_EMAIL_ADDRESSES")
+    )
+    login_to_gmail_and_send(recipients, message, subject_line)
 
-    msg_full = message.as_string()
-
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(sender_email_address, sender_email_password)
-    server.sendmail(sender_email_address, destination_email_addresses, msg_full)
-    server.quit()
-    print("Email sent!")
 
 def gen_mobile_tease_content(county_list):
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
@@ -130,6 +169,7 @@ def gen_footer_content(formatted_time, formatted_date):
         formatted_time, formatted_date
     )
 
+
 def insert_special_message(scraped_data_content, mobile_tease_content, subject_line):
     # We check for homicide first but give priority to murder if found.
     special_msg = ""
@@ -142,13 +182,11 @@ def insert_special_message(scraped_data_content, mobile_tease_content, subject_l
     return subject_line, mobile_tease_content
 
 
-
 def create_final_email_payload(
-    dirs,
-    paths,
+    dir_email_template,
     mobile_tease_content,
     intro_content,
-    scraped_data_content,
+    body_content,
     footer_content
 ):
     """
@@ -156,12 +194,6 @@ def create_final_email_payload(
     """
 
     print("Generating final HTML payload")
-
-    # GET DIRS
-    dir_email_template = dirs["email_template"]
-
-    # GET PATHS
-    path_final_email = paths["email_final"]
 
     # GET EMAIL COMPONENTS
     # First creating a list of all our email template components
@@ -204,9 +236,9 @@ def create_final_email_payload(
 
     #################################  BODY: MIDDLE  ##########################################
 
-    # This is where we insert the HTML we generated from our scrape.
+    # This is where we insert our main payload. eg. scraped data.
     email_body_bottom = "</td></tr>"
-    email_body = parts["email_body_top"] + scraped_data_content + email_body_bottom
+    email_body = parts["email_body_top"] + body_content + email_body_bottom
 
     #################################  BODY: BOTTOM  ##########################################
 
@@ -217,13 +249,10 @@ def create_final_email_payload(
     #################################  COMBINE  ##########################################
 
     # JOIN IT ALL TOGETHER
-    msg_content = html_top + intro + email_body + footer
+    message = html_top + intro + email_body + footer
 
-    # SAVE A COPY OF FINAL EMAIL FOR DEBUGGING PURPOSES
-    export.save_copy_of_final_email(path_final_email, msg_content)
-
-    print("HTML payload generated")
-    return MIMEText(msg_content, "html")
+    print("final HTML payload generated")
+    return message
 
 
 def create_subject_line(
@@ -254,3 +283,37 @@ def create_subject_line(
     print("Subject line generated")
 
     return subject
+
+
+
+def login_to_gmail_and_send(recipients, message, subject_line):
+
+    """
+    Takes a string (with HTML markup, if desired), converts to MIME, logs into gmail  and sends message.
+
+    :param recipients: List of one or more email address
+    :param message: Str
+    :param subject_line: Str.
+    :return: None
+    """
+
+    # MESSAGE
+    mime_message = MIMEText(message, "html")
+
+    # GET ENV VARIABLES - SENDER LOGIN
+    sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
+    sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
+
+    # LOGIN AND SEND
+    mime_message["From"] = f"Pa Court Report <{sender_email_username}>"
+    mime_message["To"] = ", ".join(recipients)
+    mime_message["Subject"] = subject_line
+
+    msg_full = mime_message.as_string()
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(sender_email_username, sender_email_password)
+    server.sendmail(sender_email_username, recipients, msg_full)
+    server.quit()
+    print("Email sent!")
