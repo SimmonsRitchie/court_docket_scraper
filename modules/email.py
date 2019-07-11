@@ -18,7 +18,7 @@ def email_notification(
     sender_email_address,
     sender_email_password,
     date_and_time_of_scrape,
-    target_scrape_date,
+    target_scrape_day,
     county_list,
 ):
 
@@ -34,23 +34,22 @@ def email_notification(
 
     # GENERATE EMAIL CUSTOM MESSAGES
     mobile_tease_content = gen_mobile_tease_content(county_list)
+    intro_content = gen_intro_content(county_list, target_scrape_day, formatted_date, yesterday_date)
 
     # GENERATE EMAIL HTML
     # We take our existing HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
         dirs,
         paths,
-        target_scrape_date,
         formatted_date,
         formatted_time,
-        yesterday_date,
-        county_list,
-        mobile_tease_content
+        mobile_tease_content,
+        intro_content
     )
 
     # GENERATE SUBJECT LINE
     subject = create_subject_line(
-        paths, target_scrape_date, formatted_date, yesterday_date, county_list
+        paths, target_scrape_day, formatted_date, yesterday_date, county_list
     )
 
     # ACCESS GMAIL AND SEND
@@ -78,16 +77,49 @@ def gen_mobile_tease_content(county_list):
             "Here are the latest criminal cases filed in central Pa. courts."
         )
 
+def gen_intro_content(county_list, target_scrape_day, formatted_time, yesterday_date):
+    # GENERATE INTRO
+    # we create different intros based on conditions
+    if len(county_list) == 1:
+        intro_subheading = '<span class="subheading">{} county scrape</span>'.format(
+            county_list[0]
+        )
+        if target_scrape_day == "today":
+            intro_description = "<p>The following criminal cases were filed in {} County today as of {}.</p>\
+                             <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
+                county_list[0], formatted_time
+            )
+        elif target_scrape_day == "yesterday":
+            intro_description = "<p>The following criminal cases were filed in {} County yesterday ({}).</p>\
+                            ".format(
+                county_list[0], yesterday_date
+            )
+    else:
+        if target_scrape_day == "today":
+            intro_subheading = '<span class="subheading">afternoon scrape</span>'
+            intro_description = "<p>The following criminal cases were filed in district courts today as of {}.</p>\
+                             <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
+                formatted_time
+            )
+        elif target_scrape_day == "yesterday":
+            intro_subheading = '<span class="subheading">Morning scrape</span>'
+            intro_description = "<p>The following criminal cases were filed in district courts yesterday ({}).</p>\
+                        <p>You can also view a searchable list of these cases\
+                        <a href='https://s3.amazonaws.com/court-dockets/index.html'>here</a>.</p>\
+                    ".format(
+                yesterday_date
+            )
+    return intro_subheading + intro_description
+
+
 
 def create_final_email_payload(
     dirs,
     paths,
-    target_scrape_date,
     formatted_date,
     formatted_time,
-    yesterday_date,
-    county_list,
-    mobile_tease_content
+    mobile_tease_content,
+    intro_content
 ):
     # FINAL EMAIL PAYLOAD
     # This function fuses our scraped data with snippets of HTML to create our final email payload
@@ -135,45 +167,13 @@ def create_final_email_payload(
 
     #################################  BODY: REST OF TOP  ##########################################
 
-    # GENERATE INTRO
-    # we create different intros based on conditions
-    if len(county_list) == 1:
-        intro_header = '<span class="subheading">{} county scrape</span>'.format(
-            county_list[0]
-        )
-        if target_scrape_date == "today":
-            intro_contents = "<p>The following criminal cases were filed in {} County today as of {}.</p>\
-                             <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
-                county_list[0], formatted_time
-            )
-        elif target_scrape_date == "yesterday":
-            intro_contents = "<p>The following criminal cases were filed in {} County yesterday ({}).</p>\
-                            ".format(
-                county_list[0], yesterday_date
-            )
-    else:
-        if target_scrape_date == "today":
-            intro_header = '<span class="subheading">afternoon scrape</span>'
-            intro_contents = "<p>The following criminal cases were filed in district courts today as of {}.</p>\
-                             <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
-                formatted_time
-            )
-        elif target_scrape_date == "yesterday":
-            intro_header = '<span class="subheading">Morning scrape</span>'
-            intro_contents = "<p>The following criminal cases were filed in district courts yesterday ({}).</p>\
-                        <p>You can also view a searchable list of these cases\
-                        <a href='https://s3.amazonaws.com/court-dockets/index.html'>here</a>.</p>\
-                    ".format(
-                yesterday_date
-            )
 
     # COMBINE HTML
     intro_container_bottom = "</div></td></tr>"
     intro = (
         parts["header"]
         + parts["intro_top"]
-        + intro_header
-        + intro_contents
+        + intro_content
         + intro_container_bottom
     )
 
