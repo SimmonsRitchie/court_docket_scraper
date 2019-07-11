@@ -32,33 +32,39 @@ def email_notification(
     formatted_time = date_and_time_of_scrape.strftime("%-I:%M %p")
     yesterday_date = (datetime.now() - timedelta(1)).strftime("%a, %b %-d %Y")
 
-    # GENERATE EMAIL CUSTOM MESSAGES
+    # GENERATE CUSTOM MESSAGES
     mobile_tease_content = gen_mobile_tease_content(county_list)
     intro_content = gen_intro_content(county_list, target_scrape_day, formatted_date, yesterday_date)
     footer_content = gen_footer_content(formatted_time, formatted_date)
+    subject_line = create_subject_line(
+        paths, target_scrape_day, formatted_date, yesterday_date, county_list
+    )
 
+    # GET SCRAPED DATA
+    scraped_data_content = paths["payload_email"].read_text()
+
+    # CHECK FOR MURDER/HOMICIDE
+    # Add a special message to subject line and mobile tease if either condition is met
+    subject_line, mobile_tease_content = insert_special_message(scraped_data_content, mobile_tease_content,
+                                                                subject_line)
 
     # GENERATE EMAIL HTML
-    # We take our existing HTML payload of docket data and wrap it in more HTML to make it look nice.
+    # We take our HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
         dirs,
         paths,
-        formatted_date,
-        formatted_time,
         mobile_tease_content,
         intro_content,
+        scraped_data_content,
         footer_content
     )
 
     # GENERATE SUBJECT LINE
-    subject = create_subject_line(
-        paths, target_scrape_day, formatted_date, yesterday_date, county_list
-    )
 
     # ACCESS GMAIL AND SEND
     message["From"] = f"Pa Court Report <{sender_email_address}>"
     message["To"] = ", ".join(destination_email_addresses)
-    message["Subject"] = subject
+    message["Subject"] = subject_line
 
     msg_full = message.as_string()
 
@@ -124,30 +130,38 @@ def gen_footer_content(formatted_time, formatted_date):
         formatted_time, formatted_date
     )
 
+def insert_special_message(scraped_data_content, mobile_tease_content, subject_line):
+    # We check for homicide first but give priority to murder if found.
+    special_msg = ""
+    if "homicide" in scraped_data_content.lower():
+        special_msg = "HOMICIDE detected"
+    if "murder" in scraped_data_content.lower():
+        special_msg = "MURDER detected"
+    subject_line = subject_line + " --" + special_msg
+    mobile_tease_content = special_msg if special_msg else mobile_tease_content
+    return subject_line, mobile_tease_content
+
+
 
 def create_final_email_payload(
     dirs,
     paths,
-    formatted_date,
-    formatted_time,
     mobile_tease_content,
     intro_content,
+    scraped_data_content,
     footer_content
 ):
-    # FINAL EMAIL PAYLOAD
-    # This function fuses our scraped data with snippets of HTML to create our final email payload
+    """
+    This function fuses our scraped data with snippets of HTML to create our final email payload. It returns an email in MIMEtext format
+    """
+
     print("Generating final HTML payload")
 
     # GET DIRS
     dir_email_template = dirs["email_template"]
 
     # GET PATHS
-    path_payload_email = paths["payload_email"]
     path_final_email = paths["email_final"]
-
-    # GET OUR SCRAPED DATA
-    # This file has all our dataframes converted into HTML from the scrape, already wrapped in a bit of HTML.
-    email_body_contents = path_payload_email.read_text()
 
     # GET EMAIL COMPONENTS
     # First creating a list of all our email template components
@@ -180,8 +194,6 @@ def create_final_email_payload(
 
     #################################  BODY: REST OF TOP  ##########################################
 
-
-    # COMBINE HTML
     intro_container_bottom = "</div></td></tr>"
     intro = (
         parts["header"]
@@ -192,14 +204,12 @@ def create_final_email_payload(
 
     #################################  BODY: MIDDLE  ##########################################
 
-    # GENERATE EMAIL BODY
-    # Here is where we insert the HTML we generated from our scraping.
+    # This is where we insert the HTML we generated from our scrape.
     email_body_bottom = "</td></tr>"
-    email_body = parts["email_body_top"] + email_body_contents + email_body_bottom
+    email_body = parts["email_body_top"] + scraped_data_content + email_body_bottom
 
     #################################  BODY: BOTTOM  ##########################################
 
-    # COMBINE HTML
     footer_bottom = "</td></tr>"
     html_bottom = "</div></center></table></body></html>"
     footer = parts["footer_top"] + footer_content + footer_bottom + html_bottom
@@ -208,13 +218,12 @@ def create_final_email_payload(
 
     # JOIN IT ALL TOGETHER
     msg_content = html_top + intro + email_body + footer
-    message = MIMEText(msg_content, "html")
 
-    # SAVE A COPY OF FINAL EMAIL FOR TESTING AND DEBUGGING PURPOSES
+    # SAVE A COPY OF FINAL EMAIL FOR DEBUGGING PURPOSES
     export.save_copy_of_final_email(path_final_email, msg_content)
 
     print("HTML payload generated")
-    return message
+    return MIMEText(msg_content, "html")
 
 
 def create_subject_line(
@@ -241,13 +250,6 @@ def create_subject_line(
             subject = "Criminal cases filed so far today - {}".format(formatted_date)
         elif desired_scrape_date_literal == "yesterday":
             subject = "Criminal cases filed yesterday - {}".format(yesterday_date)
-
-    # APPEND HOMICIDE NOTE IF NEEDED
-    # Access email body
-    with open(email_payload_path, "r") as fin:
-        email_body = fin.read()
-    if "homicide" in email_body or "Homicide" in email_body or "HOMICIDE" in email_body:
-        subject = subject + " (HOMICIDE detected)"
 
     print("Subject line generated")
 

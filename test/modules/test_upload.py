@@ -57,7 +57,7 @@ class TestUpload(unittest.TestCase):
         """
         # load_dotenv(find_dotenv())
         self.paths = {
-            "payload_csv": Path("../fixtures/csv_payload/dockets.csv")  # dummy data
+            "payload_csv": Path("../fixtures/payload_csv/dockets.csv")  # dummy data
         }
         self.rest_api = {
             # "hostname": os.environ.get("REST_API_HOSTNAME"),
