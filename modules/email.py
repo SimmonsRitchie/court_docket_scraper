@@ -12,6 +12,7 @@ import json
 # Load my modules
 from modules import export
 from modules.misc import get_datetime_now_formatted
+from locations import test_dirs, test_paths
 
 
 def email_error_notification(error_summary, full_error_msg, dirs):
@@ -20,9 +21,11 @@ def email_error_notification(error_summary, full_error_msg, dirs):
         print("Email error notifications are disabled\nNo error email will be sent")
         return
 
+    print("Sending error notification to desiginated email addresses")
+
     # GET INFO FOR MESSAGE
     error_datetime = get_datetime_now_formatted()
-    dir_email_template = dirs["email_template"]
+    dir_email_template = test_dirs["email_template"]
     county_list = [
         x.title() for x in json.loads(os.environ.get("COUNTY_LIST"))
     ]  # Counties are transformed into title case
@@ -105,7 +108,7 @@ def email_notification(
     )
 
     # SAVE EMAIL HTML - FOR DEBUGGING PURPOSES
-    export.save_copy_of_final_email(paths["email_final"], message)
+    export.save_copy_of_final_email(test_paths["email_final"], message)
 
     # ACCESS GMAIL AND SEND
     recipients = json.loads(

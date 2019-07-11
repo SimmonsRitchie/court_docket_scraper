@@ -10,7 +10,6 @@ import requests
 # modules to test
 from modules.upload import upload_to_rest_api, login, logout
 
-
 def helper_delete(s, rest_api, list_of_docketnums):
     """
     This helper function deletes data that has matching docketnums

@@ -5,10 +5,12 @@ from datetime import datetime
 from pathlib import Path
 import json
 from time import sleep
+from unittest import mock
+
 
 # modules to test
 from modules.email import email_error_notification
-
+from locations import test_dirs, mock_dirs
 
 class TestEmailError(unittest.TestCase):
 
@@ -30,7 +32,7 @@ class TestEmailError(unittest.TestCase):
     def tearDown(self) -> None:
         sleep(0.2) # wait a second between sending emails, so Gmail doesn't freak out
 
-
+    @mock.patch.dict(test_dirs, mock_dirs, clear=True)
     def test_email_sends(self):
         """
         Test that email successfully sends without error

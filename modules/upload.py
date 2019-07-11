@@ -5,8 +5,10 @@ This module uploads data to a REST API.
 import pandas as pd
 import requests
 import pprint as pp
-from modules.misc import clean_df
 
+# project modules
+from modules.misc import clean_df
+from modules.email import email_error_notification
 
 def upload_to_rest_api(rest_api, paths):
 

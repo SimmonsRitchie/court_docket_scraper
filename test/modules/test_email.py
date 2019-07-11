@@ -1,14 +1,18 @@
 
 import unittest
+from unittest import mock
 import os
 from datetime import datetime
 from pathlib import Path
 import json
 from time import sleep
 
+# modules to mock
+from locations import test_paths, mock_paths
+# from mock_locations import mock_paths
+
 # modules to test
 from modules.email import email_notification
-
 
 class TestEmail(unittest.TestCase):
 
@@ -36,7 +40,7 @@ class TestEmail(unittest.TestCase):
     def tearDown(self) -> None:
         sleep(0.2) # wait a second between sending emails, so Gmail doesn't freak out
 
-
+    @mock.patch.dict(test_paths, mock_paths, clear=True)
     def test_email_sends(self):
         """
         Test that email successfully sends without error
@@ -49,10 +53,10 @@ class TestEmail(unittest.TestCase):
     #     Test that email includes "homicide" in mobile tease content and subject line when "HOMICIDE" is among charges in email payload
     #     """
     #     # Set different paths for input and output email
-    #     self.paths["payload_email"] = self.dirs["payload_email"] / "email-homicide1.html"
-    #     self.paths["email_final"] = self.dirs["email_final"] / "email-homicide1.html"
+    #     self.paths["payload_email"] = self.test_dirs["payload_email"] / "email-homicide1.html"
+    #     self.paths["email_final"] = self.test_dirs["email_final"] / "email-homicide1.html"
     #
-    #     email_notification(self.dirs, self.paths,self.destination_email_addresses, self.sender_email_address,
+    #     email_notification(self.test_dirs, self.paths,self.destination_email_addresses, self.sender_email_address,
     #                        self.sender_email_password, self.date_and_time_of_scrape, self.target_scrape_day, self.county_list)
     #
     # def test_email_detects_homicide_in_lowecase(self):
@@ -60,10 +64,10 @@ class TestEmail(unittest.TestCase):
     #     Test that email includes "homicide" in mobile tease content and subject line when "homicide" is among charges in email payload
     #     """
     #     # Set different paths for input and output email
-    #     self.paths["payload_email"] = self.dirs["payload_email"] / "email-homicide2.html"
-    #     self.paths["email_final"] = self.dirs["email_final"] / "email-homicide2.html"
+    #     self.paths["payload_email"] = self.test_dirs["payload_email"] / "email-homicide2.html"
+    #     self.paths["email_final"] = self.test_dirs["email_final"] / "email-homicide2.html"
     #
-    #     email_notification(self.dirs, self.paths, self.destination_email_addresses, self.sender_email_address,
+    #     email_notification(self.test_dirs, self.paths, self.destination_email_addresses, self.sender_email_address,
     #                        self.sender_email_password, self.date_and_time_of_scrape, self.target_scrape_day, self.county_list)
     #
     #
@@ -73,10 +77,10 @@ class TestEmail(unittest.TestCase):
     #     charges in email payload
     #     """
     #     # Set different paths for input and output email
-    #     self.paths["payload_email"] = self.dirs["payload_email"] / "email-murder1.html"
-    #     self.paths["email_final"] = self.dirs["email_final"] / "email-murder1.html"
+    #     self.paths["payload_email"] = self.test_dirs["payload_email"] / "email-murder1.html"
+    #     self.paths["email_final"] = self.test_dirs["email_final"] / "email-murder1.html"
     #
-    #     email_notification(self.dirs, self.paths, self.destination_email_addresses, self.sender_email_address,
+    #     email_notification(self.test_dirs, self.paths, self.destination_email_addresses, self.sender_email_address,
     #                        self.sender_email_password, self.date_and_time_of_scrape, self.target_scrape_day, self.county_list)
     #
     # def test_email_detects_murder_when_homicide_present(self):
@@ -85,10 +89,10 @@ class TestEmail(unittest.TestCase):
     #     "homicide" are among charges in email payload.
     #     """
     #     # Set different paths for input and output email
-    #     self.paths["payload_email"] = self.dirs["payload_email"] / "email-murder-and-hom.html"
-    #     self.paths["email_final"] = self.dirs["email_final"] / "email-murder-and-hom.html"
+    #     self.paths["payload_email"] = self.test_dirs["payload_email"] / "email-murder-and-hom.html"
+    #     self.paths["email_final"] = self.test_dirs["email_final"] / "email-murder-and-hom.html"
     #
-    #     email_notification(self.dirs, self.paths, self.destination_email_addresses, self.sender_email_address,
+    #     email_notification(self.test_dirs, self.paths, self.destination_email_addresses, self.sender_email_address,
     #                        self.sender_email_password, self.date_and_time_of_scrape, self.target_scrape_day, self.county_list)
 
 
