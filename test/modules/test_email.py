@@ -5,8 +5,6 @@ from datetime import datetime
 from pathlib import Path
 import json
 
-# fixtures
-# from test.dirs import dirs, paths
 
 # modules to test
 from modules.email import email_notification
@@ -17,7 +15,7 @@ class TestEmail(unittest.TestCase):
     def setUp(self) -> None:
         # vars
         self.dirs = {
-            "payload_email": Path("../fixtures/payload_email/"),
+            "payload_email": Path("../fixtures/email_payload/"),
             "payload_csv": Path("../fixtures/csv_payload"),
             "email_final": Path("../output/email_final"),
             "email_template": Path("../../static/email_template"),
