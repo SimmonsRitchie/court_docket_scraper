@@ -15,7 +15,7 @@ from modules.misc import get_datetime_now_formatted
 from locations import test_dirs, test_paths
 
 
-def email_error_notification(error_summary, full_error_msg, dirs):
+def email_error_notification(error_summary, full_error_msg):
     error_emails_enabled = False if os.environ.get("ERROR_EMAILS") == "FALSE" else True
     if not error_emails_enabled:
         print("Email error notifications are disabled\nNo error email will be sent")
@@ -65,8 +65,6 @@ def email_error_notification(error_summary, full_error_msg, dirs):
 
 
 def email_notification(
-    dirs,
-    paths,
     date_and_time_of_scrape,
     target_scrape_day,
     county_list
@@ -87,11 +85,12 @@ def email_notification(
     intro_content = gen_intro_content(county_list, target_scrape_day, formatted_date, yesterday_date)
     footer_content = gen_footer_content(formatted_time, formatted_date)
     subject_line = create_subject_line(
-        paths, target_scrape_day, formatted_date, yesterday_date, county_list
+        target_scrape_day, formatted_date, yesterday_date, county_list
     )
 
+
     # GET SCRAPED DATA
-    scraped_data_content = paths["payload_email"].read_text()
+    scraped_data_content = test_paths["payload_email"].read_text()
 
     # CHECK FOR MURDER/HOMICIDE
     # Add a special message to subject line and mobile tease if either condition is met
@@ -100,7 +99,7 @@ def email_notification(
     # GENERATE EMAIL HTML
     # We take our HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
-        dirs["email_template"],
+        test_dirs["email_template"],
         mobile_tease_content,
         intro_content,
         scraped_data_content,
@@ -259,13 +258,10 @@ def create_final_email_payload(
 
 
 def create_subject_line(
-    paths, desired_scrape_date_literal, formatted_date, yesterday_date, county_list
+    desired_scrape_date_literal, formatted_date, yesterday_date, county_list
 ):
 
-    print("Creating subject line")
-
-    # GET PATHS
-    email_payload_path = paths["payload_email"]
+    print("Generating subject line")
 
     # SET SUBJECT LINE
     if len(county_list) == 1:

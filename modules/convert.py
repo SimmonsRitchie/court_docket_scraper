@@ -15,14 +15,13 @@ from pdfminer.converter import PDFPageAggregator
 import re
 
 # project modules
-from modules.misc import pdf_path_gen, extracted_text_path_gen
+from modules.misc import extracted_text_path_gen
+from locations import test_dirs
 
-
-def convert_pdf_to_text(pdf_path, docketnum, dirs):
+def convert_pdf_to_text(pdf_path, docketnum):
 
     # SET PATHS
-    dir_extracted_text = dirs["extracted_text"]
-    extracted_text_path = extracted_text_path_gen(dir_extracted_text, docketnum)
+    extracted_text_path = extracted_text_path_gen(test_dirs["extracted_text"], docketnum)
 
     print("Converting pdf to text...")
     password = ""

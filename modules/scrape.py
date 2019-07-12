@@ -15,7 +15,7 @@ import time
 from modules.misc import clean_list_of_dicts
 
 
-def scrape_search_results(driver, url, county, scrape_date):
+def scrape_search_results(driver, county, scrape_date):
 
     """
     Scrape the search results of the UJS website. Returns a list of dicts with case information.
@@ -33,6 +33,7 @@ def scrape_search_results(driver, url, county, scrape_date):
     # Variables
     startdate = scrape_date
     enddate = startdate
+    url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"  # URL for UJC website
 
     # Opening webpage
     print("Opening Pa. Unified Judicial System portal")

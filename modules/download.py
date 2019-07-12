@@ -8,19 +8,16 @@ import time
 
 # Project modules
 from modules.misc import pdf_path_gen
+from locations import test_dirs
 
-
-def download_pdf(driver, docket_url, docketnum, dirs):
-
-    # GET DIRECTORY NAMES
-    dir_pdf = dirs["pdfs"]
+def download_pdf(driver, docket_url, docketnum):
 
     # SET PATHS
     path_downloaded_docket = (
-        dir_pdf / "MDJReport.pdf"
+        test_dirs["pdfs"] / "MDJReport.pdf"
     )  # path of our file when it's first downloaded
     new_path_downloaded_docket = pdf_path_gen(
-        dir_pdf, docketnum
+        test_dirs["pdfs"], docketnum
     )  # path we will rename our filename with
 
     # DOWNLOAD

@@ -11,7 +11,7 @@ from datetime import datetime
 
 # project modules
 from modules import misc, style
-
+from locations import test_dirs, test_paths
 
 def convert_dict_into_df(docketlist, county):
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
@@ -70,13 +70,13 @@ def convert_df_to_html(df):
     return df_styled.render()
 
 
-def save_html_county_payload(county_intro, paths, dirs, html_dataframe=""):
+def save_html_county_payload(county_intro, df_styled=""):
 
     """
-    Here we take our df of county dockets rendered in HTML, add county_intro above it, wrap it an HTML table,
-    and then wrap it in a div. We then save it.
+    Here we load our pandas DF that's been rendered in HTML, add county_intro above it, wrap it an HTML table,
+    and then wrap it in a div.
 
-    If there is an existing HTML payload file in the project directory, we'll append this county to it.
+    We then save it to payload_email path. If there is an existing file, we'll append this county to it.
 
     If no dataframe is supplied, we'll replace it with an empty string. The county payload will be empty except for the
     county_intro.
@@ -85,8 +85,8 @@ def save_html_county_payload(county_intro, paths, dirs, html_dataframe=""):
     print("Saving dataframe as html file for email payload")
 
     # GET DIRS/PATHS
-    email_template_dir = dirs["email_template"]
-    payload_email_path = paths["payload_email"]
+    email_template_dir = test_dirs["email_template"]
+    payload_email_path = test_paths["payload_email"]
 
     # CREATE TOP OF TABLE
     # table header top
@@ -100,7 +100,7 @@ def save_html_county_payload(county_intro, paths, dirs, html_dataframe=""):
     table_header_with_html = table_header_top + county_intro + table_header_bottom
 
     # JOIN INTRO WITH BODY
-    html_payload = table_header_with_html + html_dataframe
+    html_payload = table_header_with_html + df_styled
 
     # WRAP HTML PAYLOAD WITH DIV
     html_payload = '<div class="datatable_container">' + html_payload + "</div>"
@@ -117,12 +117,12 @@ def save_html_county_payload(county_intro, paths, dirs, html_dataframe=""):
             print("File created")
 
 
-def convert_df_to_csv(df, paths):
+def convert_df_to_csv(df):
 
     print("Saving dataframe as CSV file")
 
     # GET CSV PAYLOAD PATH
-    csv_payload_path = paths["payload_csv"]
+    csv_payload_path = test_paths["payload_csv"]
 
     # REFORMAT
     print(
@@ -151,7 +151,7 @@ def convert_df_to_csv(df, paths):
         print("CSV created")
 
 
-def convert_csv_to_json(paths, county_list):
+def convert_csv_to_json(county_list):
 
     """
     We transform our CSV into JSON and add a few extra fields of meta data. Returned JSON uses camelcase instead of
@@ -161,8 +161,8 @@ def convert_csv_to_json(paths, county_list):
     print("Converting CSV to JSON")
 
     # GET PATHS
-    csv_payload_path = paths["payload_csv"]
-    json_payload_path = paths["payload_json"]
+    csv_payload_path = test_paths["payload_csv"]
+    json_payload_path = test_paths["payload_json"]
 
     # GENERATE METADATA FOR JSON OUTPUT
     date_and_time_of_scrape = (

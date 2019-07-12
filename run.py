@@ -33,8 +33,6 @@ def main():
     #                                 SETUP
     ########################################################################
 
-    url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"  # URL for UJC website
-
     # SET DIRECTORY NAMES
     temp_dir = Path(
         "temp/"
@@ -65,7 +63,6 @@ def main():
 
     # ENV VARS - REQUIRED
     # these values need to be set in .env file
-    chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
     target_scrape_date = (
@@ -111,7 +108,7 @@ def main():
     ########################################################################
 
     # START CHROME DRIVER
-    driver = initialize.initialize_driver(dirs, chrome_driver_path)
+    driver = initialize.initialize_driver()
 
     # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
     # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
@@ -128,8 +125,8 @@ def main():
             for docket in docket_list:
                 docketnum = docket["docketnum"]
                 docket_url = docket["url"]
-                pdf_path = download.download_pdf(driver, docket_url, docketnum, dirs)
-                text = convert.convert_pdf_to_text(pdf_path, docketnum, dirs)
+                pdf_path = download.download_pdf(driver, docket_url, docketnum)
+                text = convert.convert_pdf_to_text(pdf_path, docketnum)
 
                 # PARSE PDF TEXT FOR EXTRA INFO
                 if text:
@@ -147,14 +144,14 @@ def main():
             df = export.convert_dict_into_df(docket_list, county)
 
             # CONVERT DF TO CSV
-            export.convert_df_to_csv(df, paths)
+            export.convert_df_to_csv(df)
 
             # CONVERT DF INTO HTML FOR EMAIL PAYLOAD
             county_intro = "{} in {} County:".format(
                 df.shape[0], county
             )  # count of cases
             html_df = export.convert_df_to_html(df)
-            export.save_html_county_payload(county_intro, paths, dirs, html_df)
+            export.save_html_county_payload(county_intro, html_df)
 
         # IF NO DATA RETURNED FROM SCRAPE...
         else:
@@ -162,8 +159,7 @@ def main():
                 county
             )  # count of cases in county
             export.save_html_county_payload(
-                county_intro, paths, dirs
-            )  # save html df + add extra html
+                county_intro)  # save html df + add extra html
 
     ########################################################################
     #                        EXPORT & EMAIL FINAL PAYLOAD
@@ -180,8 +176,6 @@ def main():
 
     # SEND EMAIL WITH DOCKET DATA
     email.email_notification(
-        dirs,
-        paths,
         date_and_time_of_scrape,
         target_scrape_day,
         county_list

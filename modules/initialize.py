@@ -6,17 +6,23 @@ bug in Selenium/ChromeDriver. Note: I don't use Requests library to download PDF
 that it no longer worked.
 """
 
-
 # Load selenium modules
 from selenium import webdriver
+import os
 
+# project modules
+from locations import test_dirs
 
-def initialize_driver(dirs, chrome_driver_path):
+def initialize_driver():
 
     print("\nInitializing Chrome")
 
-    # set path for downloading files to, we expect Path object and turn into string.
-    download_path = str(dirs["pdfs"])
+    # SET CONFIG VARS
+    chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
+    download_path = str(test_dirs["pdfs"]) # must be string, not Path instance
+
+    print("Driver download directory:", download_path)
+    print("All files will be downloaded to this path")
 
     # Chrome options + initialize
     options = webdriver.ChromeOptions()

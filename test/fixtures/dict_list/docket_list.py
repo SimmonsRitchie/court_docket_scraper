@@ -2,7 +2,7 @@ docket_list = [
     {
         "county": "Dauphin",
         "docketnum": 1,
-        "caption": "Commonwealth V. Smith, John A.",
+        "case_caption": "Commonwealth V. Smith, John A.",
         "dob": "01/01/1986",
         "filing_date": "03/03/2019",
         "charges": "Receiving Stolen Property; Driving W/O A License",
@@ -12,7 +12,7 @@ docket_list = [
     {
         "county": "Dauphin",
         "docketnum": 12,
-        "caption": "Commonwealth V. Smith, John A.",
+        "case_caption": "Commonwealth V. Smith, John A.",
         "dob": "01/01/1986",
         "filing_date": "03/03/2019",
         "charges": "Receiving Stolen Property; Driving W/O A License",
@@ -22,7 +22,7 @@ docket_list = [
     {
         "county": "Dauphin",
         "docketnum": 123,
-        "caption": "Commonwealth V. Smith, John A.",
+        "case_caption": "Commonwealth V. Smith, John A.",
         "dob": "01/01/1986",
         "filing_date": "03/03/2019",
         "charges": "Receiving Stolen Property; Driving W/O A License",
@@ -32,7 +32,7 @@ docket_list = [
     {
         "county": "Dauphin",
         "docketnum": 1234,
-        "caption": "Commonwealth V. Smith, John A.",
+        "case_caption": "Commonwealth V. Smith, John A.",
         "dob": "01/01/1986",
         "filing_date": "03/03/2019",
         "charges": "Receiving Stolen Property; Driving W/O A License",
@@ -42,7 +42,7 @@ docket_list = [
     {
         "county": "Dauphin",
         "docketnum": 12345,
-        "caption": "Commonwealth V. Smith, John A.",
+        "case_caption": "Commonwealth V. Smith, John A.",
         "dob": "01/01/1986",
         "filing_date": "03/03/2019",
         "charges": "Receiving Stolen Property; Driving W/O A License",
@@ -52,7 +52,7 @@ docket_list = [
     {
         "county": "Dauphin",
         "docketnum": 123456,
-        "caption": "Commonwealth V. Smith, John A.",
+        "case_caption": "Commonwealth V. Smith, John A.",
         "dob": "01/01/1986",
         "filing_date": "03/03/2019",
         "charges": "Receiving Stolen Property; Driving W/O A License",

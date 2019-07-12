@@ -32,12 +32,11 @@ class TestEmailError(unittest.TestCase):
     def tearDown(self) -> None:
         sleep(0.2) # wait a second between sending emails, so Gmail doesn't freak out
 
-    @mock.patch.dict(test_dirs, mock_dirs, clear=True)
-    def test_email_sends(self):
+    def test_error_email_runs_without_errors(self):
         """
         Test that email successfully sends without error
         """
         error_summary = "Error when uploading data to database"
         full_error_msg = "HTTPConnectionPool(host='localhost', port=5000): Max retries exceeded with url: /cases (" \
                        "Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x1051665f8>: Failed to establish a new connection: [Errno 61] Connection refused'))"
-        email_error_notification(error_summary, full_error_msg, self.dirs)
+        email_error_notification(error_summary, full_error_msg)
