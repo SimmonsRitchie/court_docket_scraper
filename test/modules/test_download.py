@@ -23,8 +23,8 @@ class TestPdfDownload(unittest.TestCase):
         mock_dirs["pdfs"].mkdir(parents=True, exist_ok=True)  # make directory
 
 
-    # def tearDown(self) -> None:
-    #     rmtree(mock_dirs["pdfs"])
+    def tearDown(self) -> None:
+        rmtree(mock_dirs["pdfs"])
 
     @mock.patch.dict(test_dirs, mock_dirs, clear=True)
     def test_download_pdf(self):
