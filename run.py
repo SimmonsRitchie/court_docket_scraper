@@ -75,7 +75,7 @@ def main():
     misc.delete_folders_and_contents(temp_dir)
 
     # CREATE TEMP DIRECTORIES
-    temp_subdirs = [dir for dir in test_dirs if temp_dir.name in str(dir)]
+    temp_subdirs = [test_dirs[dir] for dir in test_dirs if "/" + str(temp_dir.name) + "/" in str(test_dirs[dir])]
     misc.create_folders(temp_subdirs)
 
     ########################################################################

@@ -41,15 +41,14 @@ def gen_unique_filename(dir, filename, ext, counter=0):
 
 def pdf_path_gen(dir, docketnum):
     """
-    We need to dynamically generate file names for downloaded PDFs.
+    Dynamically generates file names for downloaded PDF.
     """
     return gen_unique_filename(dir, docketnum, ".pdf")
 
 
 def extracted_text_path_gen(dir, docketnum):
     """
-    We need to dynamically generate file names for downloaded PDFs We use this function so
-    paths are always created in a consistent format.
+    Dynamically generates file names for text extracted from PDF.
     """
     return gen_unique_filename(dir, docketnum, ".txt")
 

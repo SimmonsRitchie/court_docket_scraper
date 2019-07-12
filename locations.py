@@ -26,7 +26,8 @@ test_dirs = {
 }
 
 # PATHS
-# Temp files that we will need to read and write to multiple times throughout program run.
+# Many of our filenames are generated dynamically during runtime (eg. downloaded PDFs are in format {docketnum}.pdf,
+# however the following are files with static filenames:
 test_paths = {
     "payload_email": test_dirs["payload_email"] / "email.html",
     "payload_csv": test_dirs["payload_csv"] / "dockets.csv",
