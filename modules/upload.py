@@ -5,12 +5,25 @@ This module uploads data to a REST API.
 import pandas as pd
 import requests
 import pprint as pp
+import os
 
 # project modules
 from modules.misc import clean_df
 from modules.email import email_error_notification
+from locations import test_paths
 
-def upload_to_rest_api(rest_api, paths):
+def upload_to_rest_api():
+
+
+    # GET ENV VARS
+    rest_api = {
+        "hostname": os.getenv("REST_API_HOSTNAME"),
+        "login_endpoint": os.getenv("LOGIN_END_POINT"),
+        "logout_endpoint": os.getenv("LOGOUT_END_POINT"),
+        "post_endpoint": os.getenv("POST_END_POINT"),
+        "username": os.getenv("REST_API_USERNAME"),
+        "password": os.getenv("REST_API_PASSWORD"),
+    }
 
     print(
         "\n ----------------------------------------------------------------------------------------"
@@ -19,9 +32,10 @@ def upload_to_rest_api(rest_api, paths):
     print(
         "------------------------------------------------------------------------------------------\n"
     )
-
-    # GET PATH
-    csv_payload_path = paths["payload_csv"]
+    
+    # GET PATH TO CSV
+    csv_payload_path = test_paths["payload_csv"]
+    print("Path to CSVs", csv_payload_path)
 
     # CONVERT CSV TO JSON
     print("Converting data to json...")

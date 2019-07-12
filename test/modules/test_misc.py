@@ -6,7 +6,7 @@ from shutil import rmtree
 from test.fixtures.dict_list.docket_list_with_duplicates import docket_list
 
 # modules to test
-from modules.misc import pdf_path_gen, clean_list_of_dicts
+from modules.misc import pdf_path_gen, clean_list_of_dicts, create_folders
 
 
 class TestPdfPathGen(unittest.TestCase):
@@ -63,6 +63,30 @@ class TestCleanList(unittest.TestCase):
         test_list = clean_list_of_dicts(empty_list)
         print(test_list)
         self.assertFalse(test_list)
+
+
+class TestCreateFolders(unittest.TestCase):
+    def setUp(self) -> None:
+        self.output_dir = Path("../output/create_folders/")
+        self.list_of_subdirs_to_create = [
+            self.output_dir / "test1",
+            self.output_dir / "test2",
+            self.output_dir / "test3"
+        ]
+
+
+    def tearDown(self) -> None:
+        rmtree(self.output_dir)
+
+
+    def test_directories_are_created(self):
+        # create
+        create_folders(self.list_of_subdirs_to_create)
+        # assert
+        list_of_dirs_created = [subdir for subdir in self.output_dir.iterdir() if subdir.is_dir()]
+        print("to create",self.list_of_subdirs_to_create)
+        print("created",list_of_dirs_created)
+        self.assertCountEqual(list_of_dirs_created, self.list_of_subdirs_to_create)
 
 
 if __name__ == "__main__":

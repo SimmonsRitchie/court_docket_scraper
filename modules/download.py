@@ -52,6 +52,6 @@ def download_pdf(driver, docket_url, docketnum):
     # Renaming file so downloaded PDFs are easy to organize and search if needed
     print("Renaming file")
     print("Old path: {}".format(path_downloaded_docket))
-    print("New path: {}".format(new_path_downloaded_docket))
     path_downloaded_docket.rename(new_path_downloaded_docket)
+    print("New path: {}".format(new_path_downloaded_docket))
     return new_path_downloaded_docket

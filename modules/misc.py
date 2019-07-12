@@ -115,14 +115,13 @@ def delete_folders_and_contents(temp_dir):
         print("No temp files detected - project directory clean")
 
 
-def create_folders(dirs, temp_subdirs):
+def create_folders(dirs):
     """
     Takes a dict of directories as Path objects, creates each one
 
     """
     print("Generating temp directories:")
-    for sub_dir_name in temp_subdirs:
-        dir = dirs[sub_dir_name]
+    for dir in dirs:
         dir.mkdir(parents=True)  # creates folder and parent folders if they don't exist
         print(">> {}".format(dir))
     print("Temp directories created")

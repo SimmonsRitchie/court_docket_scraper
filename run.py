@@ -25,7 +25,7 @@ import json
 
 # Project modules
 from modules import initialize, scrape, download, convert, email, export, upload, misc
-
+from locations import test_dirs, temp_dir, test_paths
 
 def main():
 
@@ -34,35 +34,17 @@ def main():
     ########################################################################
 
     # SET DIRECTORY NAMES
-    temp_dir = Path(
-        "temp/"
-    )  # temporary directory for files/folders created during scrape
+  # temporary directory for files/folders created during scrape
     temp_subdirs = [
-        "pdfs",
-        "extracted_text",
-        "payload_email",
-        "payload_csv",
-        "payload_json",
-        "email_final",
+        test_dirs["pdfs"],
+        test_dirs["extracted_text"],
+        test_dirs["payload_email"],
+        test_dirs["payload_csv"],
+        test_dirs["payload_json"],
+        test_dirs["email_final"]
     ]
-    dirs = {}
-    for dir in temp_subdirs:  # generating temp subdirectories and stashing in a dict
-        dirs[dir] = temp_dir / dir
-    dirs["email_template"] = Path(
-        "static/email_template"
-    )  # static directory with HTML for email payload
 
-    # SET PATHS
-    # Temp files that we will need to read and write to multiple times throughout program run.
-    paths = {
-        "payload_email": dirs["payload_email"] / "email.html",
-        "payload_csv": dirs["payload_csv"] / "dockets.csv",
-        "payload_json": dirs["payload_json"] / "dockets.json",
-        "email_final": dirs["email_final"] / "email.html",
-    }
-
-    # ENV VARS - REQUIRED
-    # these values need to be set in .env file
+    # ENV VARS
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
     target_scrape_date = (
@@ -71,14 +53,6 @@ def main():
 
     # ENV VARS - OPTIONAL
     run_env = os.environ.get("ENV_FILE", "DEV")  # defaults to 'DEV'
-    rest_api = {
-        "hostname": os.environ.get("REST_API_HOSTNAME"),
-        "login_endpoint": os.environ.get("LOGIN_END_POINT"),
-        "logout_endpoint": os.environ.get("LOGOUT_END_POINT"),
-        "post_endpoint": os.environ.get("POST_END_POINT"),
-        "username": os.environ.get("REST_API_USERNAME"),
-        "password": os.environ.get("REST_API_PASSWORD"),
-    }
 
     # REFORMAT COUNTY LIST
     county_list = [
@@ -97,11 +71,12 @@ def main():
     ########################################################################
 
     # DELETE OLD FILES
-    # To avoid complications, we delete any temp folders that may have been created from previous scrapes.
+    # If temp folder was created from previous scrape we delete it so it doesn't cause complications.
     misc.delete_folders_and_contents(temp_dir)
 
     # CREATE TEMP DIRECTORIES
-    misc.create_folders(dirs, temp_subdirs)
+    temp_subdirs = [dir for dir in test_dirs if temp_dir.name in str(dir)]
+    misc.create_folders(temp_subdirs)
 
     ########################################################################
     #                                 SCRAPE
@@ -115,13 +90,13 @@ def main():
     # PDFs of full docket data.
     for county in county_list:
         docket_list = scrape.scrape_search_results(
-            driver, url, county, target_scrape_date
+            driver, county, target_scrape_date
         )
         if docket_list:
 
             # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
-            # We now download each docket's full PDF file using the URL we just scraped. We get extra info and add
-            # it to our docket dicts.
+            # Each case is associated with a PDF that has more data. We now download each PDF using URLs we
+            # scraped from the search results.
             for docket in docket_list:
                 docketnum = docket["docketnum"]
                 docket_url = docket["url"]
@@ -167,12 +142,12 @@ def main():
 
     # CREATE JSON FILE FROM CSV
     # We create a json file with some metadata about scrape.
-    date_and_time_of_scrape = export.convert_csv_to_json(paths, county_list)
+    date_and_time_of_scrape = export.convert_csv_to_json(county_list)
 
     # OPTIONAL: UPLOAD DATA TO DATABASE
     # if REST API env vars are set and data exists, then convert csv to json and upload to it using post request.
-    if rest_api["hostname"] and paths["payload_csv"].is_file():
-        upload.upload_to_rest_api(rest_api, paths)
+    if os.getenv("REST_API_HOSTNAME") and test_paths["payload_csv"].is_file():
+        upload.upload_to_rest_api()
 
     # SEND EMAIL WITH DOCKET DATA
     email.email_notification(
