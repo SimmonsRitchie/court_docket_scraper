@@ -6,7 +6,7 @@ from pathlib import Path
 
 # fixtures
 from test.fixtures.dict_list.docket_list import docket_list
-from locations import test_paths, test_dirs
+from locations import paths, dirs
 
 # modules to test
 from modules.export import convert_dict_into_df, convert_df_to_csv, save_html_county_payload, convert_df_to_html
@@ -14,7 +14,7 @@ from modules.export import convert_dict_into_df, convert_df_to_csv, save_html_co
 mock_dirs = {
     "payload_csv": Path("../output/csv_converted_from_df/"),
     "payload_email": Path("../output/payload_email/"),
-    "email_template": test_dirs["email_template"]  # using actual directory
+    "email_template": dirs["email_template"]  # using actual directory
 }
 
 mock_paths = {
@@ -51,7 +51,7 @@ class TestConvertDfToCsv(unittest.TestCase):
         print(f"Deleting temp folder: {mock_dirs['payload_csv']}")
         rmtree(mock_dirs["payload_csv"])
 
-    @mock.patch.dict(test_paths, mock_paths, clear=True)
+    @mock.patch.dict(paths, mock_paths, clear=True)
     def test_csv_file_is_created(self):
         """
         Test that a CSV file is generated
@@ -75,7 +75,7 @@ class TestSaveHtmlPayload(unittest.TestCase):
         print(f"Deleting temp folder: {mock_dirs['payload_email']}")
         rmtree(mock_dirs["payload_email"])
 
-    @mock.patch.dict(test_paths, mock_paths, clear=True)
+    @mock.patch.dict(paths, mock_paths, clear=True)
     def test_html_file_is_created(self):
         """
         Test that an HTML file is generated

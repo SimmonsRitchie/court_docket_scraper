@@ -11,7 +11,7 @@ from selenium import webdriver
 import os
 
 # project modules
-from locations import test_dirs
+from locations import dirs
 
 def initialize_driver():
 
@@ -19,7 +19,7 @@ def initialize_driver():
 
     # SET CONFIG VARS
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
-    download_path = str(test_dirs["pdfs"]) # must be string, not Path instance
+    download_path = str(dirs["pdfs"]) # must be string, not Path instance
 
     print("Driver download directory:", download_path)
     print("All files will be downloaded to this path")

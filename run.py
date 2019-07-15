@@ -25,7 +25,8 @@ import json
 
 # Project modules
 from modules import initialize, scrape, download, convert, email, export, upload, misc
-from locations import test_dirs, temp_dir, test_paths
+from modules.misc import get_datetime_now_formatted
+from locations import dirs, temp_dir, paths
 
 def main():
 
@@ -33,25 +34,12 @@ def main():
     #                                 SETUP
     ########################################################################
 
-    # SET DIRECTORY NAMES
-  # temporary directory for files/folders created during scrape
-    temp_subdirs = [
-        test_dirs["pdfs"],
-        test_dirs["extracted_text"],
-        test_dirs["payload_email"],
-        test_dirs["payload_csv"],
-        test_dirs["payload_json"],
-        test_dirs["email_final"]
-    ]
-
     # ENV VARS
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
     target_scrape_date = (
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
-
-    # ENV VARS - OPTIONAL
     run_env = os.environ.get("ENV_FILE", "DEV")  # defaults to 'DEV'
 
     # REFORMAT COUNTY LIST
@@ -75,7 +63,7 @@ def main():
     misc.delete_folders_and_contents(temp_dir)
 
     # CREATE TEMP DIRECTORIES
-    temp_subdirs = [test_dirs[dir] for dir in test_dirs if "/" + str(temp_dir.name) + "/" in str(test_dirs[dir])]
+    temp_subdirs = [dirs[dir] for dir in dirs if "/" + str(temp_dir.name) + "/" in str(dirs[dir])]
     misc.create_folders(temp_subdirs)
 
     ########################################################################
@@ -141,12 +129,11 @@ def main():
     ########################################################################
 
     # CREATE JSON FILE FROM CSV
-    # We create a json file with some metadata about scrape.
+    # We save a json file with some metadata about scrape.
     date_and_time_of_scrape = export.convert_csv_to_json(county_list)
 
     # OPTIONAL: UPLOAD DATA TO DATABASE
-    # if REST API env vars are set and data exists, then convert csv to json and upload to it using post request.
-    if os.getenv("REST_API_HOSTNAME") and test_paths["payload_csv"].is_file():
+    if os.getenv("REST_API_ENABLED", False) and paths["payload_csv"].is_file():
         upload.upload_to_rest_api()
 
     # SEND EMAIL WITH DOCKET DATA
@@ -157,6 +144,7 @@ def main():
     )
 
     # CLOSE PROGRAM
+    print("Scrape completed at: {}".format(get_datetime_now_formatted()))
     print("Closing program")
 
 

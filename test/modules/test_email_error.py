@@ -10,7 +10,7 @@ from unittest import mock
 
 # modules to test
 from modules.email import email_error_notification
-from locations import test_dirs, mock_dirs
+from locations import dirs, mock_dirs
 
 class TestEmailError(unittest.TestCase):
 

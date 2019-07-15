@@ -31,6 +31,7 @@ MarkupSafe = "==1.1.1"
 PyJWT = "==1.6.4"
 PySocks = "==1.6.8"
 python-dotenv = "*"
+retry = "*"
 
 [requires]
 python_version = "3.7"

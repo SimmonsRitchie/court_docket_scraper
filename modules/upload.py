@@ -10,7 +10,7 @@ import os
 # project modules
 from modules.misc import clean_df
 from modules.email import email_error_notification
-from locations import test_paths
+from locations import paths
 
 def upload_to_rest_api():
 
@@ -34,7 +34,7 @@ def upload_to_rest_api():
     )
     
     # GET PATH TO CSV
-    csv_payload_path = test_paths["payload_csv"]
+    csv_payload_path = paths["payload_csv"]
     print("Path to CSVs", csv_payload_path)
 
     # CONVERT CSV TO JSON
@@ -52,21 +52,20 @@ def upload_to_rest_api():
     print(cases_json)
     print("data converted")
 
-    # START REQUEST SESSION
-    # Request session allows us to update our request headers with JWT token after login
-    s = requests.Session()
-
     # REQUESTS
     # We request three different endpoints. We abort if we encounter any HTTP errors.
     # LOGIN
-    try:
-        s = login(s, rest_api)
-        s = add_cases(s, rest_api, cases_json)
-        logout(s, rest_api)
-    except Exception as full_error:
-        print(full_error)
-        terminate_upload()
-        return
+    with requests.Session() as s:
+        try:
+            s = login(s, rest_api)
+            s = add_cases(s, rest_api, cases_json)
+            logout(s, rest_api)
+        except Exception as full_error:
+            print(full_error)
+            error_summary = "An error occurred during upload to REST API."
+            email_error_notification(error_summary, full_error)
+            terminate_upload()
+            return
 
     # success
     print(
@@ -92,7 +91,7 @@ def login(s, rest_api):
     # if assert evaluates as false, raise error
     if status_code != 200:  # not status 'added successfully'
         failure_output(action, status_code, data)
-        assert status_code == 200, f"{action} FAILED"
+        assert status_code == 200, data
 
     # success
     success_output(action, data)
@@ -115,7 +114,7 @@ def add_cases(s, rest_api, json_data):
     # failure
     if status_code != 201:  # not status 'added successfully'
         failure_output(action, status_code, data)
-        assert status_code == 201, f"{action} FAILED"
+        assert status_code == 201, data
 
     # success
     success_output(action)
@@ -133,7 +132,7 @@ def logout(s, rest_api):
     # failure
     if status_code != 200:  # not status 'ok'
         failure_output(action, status_code, data)
-        assert status_code == 200, f"{action} FAILED"
+        assert status_code == 200, data
 
     # success
     success_output(action, data)

@@ -10,7 +10,7 @@ from test.mocks.driver import initialize_test_driver
 # modules to test
 from modules.download import download_pdf
 from modules.initialize import initialize_driver
-from locations import test_dirs
+from locations import dirs
 
 mock_dirs = {
     "pdfs": Path("../output/pdfs/").resolve(),
@@ -26,7 +26,7 @@ class TestPdfDownload(unittest.TestCase):
     def tearDown(self) -> None:
         rmtree(mock_dirs["pdfs"])
 
-    @mock.patch.dict(test_dirs, mock_dirs, clear=True)
+    @mock.patch.dict(dirs, mock_dirs, clear=True)
     def test_download_pdf(self):
         """
         Test that we can download a PDF and then rename file

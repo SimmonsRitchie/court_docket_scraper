@@ -11,7 +11,7 @@ from datetime import datetime
 
 # project modules
 from modules import misc, style
-from locations import test_dirs, test_paths
+from locations import dirs, paths
 
 def convert_dict_into_df(docketlist, county):
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
@@ -85,8 +85,8 @@ def save_html_county_payload(county_intro, df_styled=""):
     print("Saving dataframe as html file for email payload")
 
     # GET DIRS/PATHS
-    email_template_dir = test_dirs["email_template"]
-    payload_email_path = test_paths["payload_email"]
+    email_template_dir = dirs["email_template"]
+    payload_email_path = paths["payload_email"]
 
     # CREATE TOP OF TABLE
     # table header top
@@ -122,7 +122,7 @@ def convert_df_to_csv(df):
     print("Saving dataframe as CSV file")
 
     # GET CSV PAYLOAD PATH
-    csv_payload_path = test_paths["payload_csv"]
+    csv_payload_path = paths["payload_csv"]
 
     # REFORMAT
     print(
@@ -161,8 +161,8 @@ def convert_csv_to_json(county_list):
     print("Converting CSV to JSON")
 
     # GET PATHS
-    csv_payload_path = test_paths["payload_csv"]
-    json_payload_path = test_paths["payload_json"]
+    csv_payload_path = paths["payload_csv"]
+    json_payload_path = paths["payload_json"]
 
     # GENERATE METADATA FOR JSON OUTPUT
     date_and_time_of_scrape = (

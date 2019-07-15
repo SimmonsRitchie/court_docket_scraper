@@ -4,7 +4,7 @@ from shutil import rmtree
 from pathlib import Path
 
 # fixtures
-from locations import test_paths, test_dirs
+from locations import paths, dirs
 
 # modules to test
 from modules.convert import convert_pdf_to_text
@@ -24,7 +24,7 @@ class TestConvertPdfToText(unittest.TestCase):
         rmtree(mock_dirs["extracted_text"])
 
 
-    @mock.patch.dict(test_dirs, mock_dirs, clear=True)
+    @mock.patch.dict(dirs, mock_dirs, clear=True)
     def test_text_file_is_generated(self):
         """
         Test that a text file is generated

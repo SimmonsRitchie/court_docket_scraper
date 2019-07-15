@@ -12,7 +12,7 @@ import json
 # Load my modules
 from modules import export
 from modules.misc import get_datetime_now_formatted
-from locations import test_dirs, test_paths
+from locations import dirs, paths
 
 
 def email_error_notification(error_summary, full_error_msg):
@@ -25,19 +25,19 @@ def email_error_notification(error_summary, full_error_msg):
 
     # GET INFO FOR MESSAGE
     error_datetime = get_datetime_now_formatted()
-    dir_email_template = test_dirs["email_template"]
+    dir_email_template = dirs["email_template"]
     county_list = [
         x.title() for x in json.loads(os.environ.get("COUNTY_LIST"))
     ]  # Counties are transformed into title case
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
 
-
+    pluralize_county = 'county' if len(county_list) == 1 else 'counties'
     mobile_tease_content = error_summary
-    intro_content = f"<p>Something went wrong during scrape of {target_scrape_day}'s cases for following counties:"\
-    f"{county_list}.<p>"\
-    f"<p>Summary: {error_summary}.</p>" \
-    f"<p>Error time: {error_datetime}.</p>"
-    body_content = f"<p>Full error message:</p><p>{full_error_msg}</p>"
+    intro_content = f"<p>{error_summary}</p>" \
+    f"<p>SETTINGS: Scraping {target_scrape_day}'s cases for {', '.join(county_list)} {pluralize_county}" \
+    f"<p>ERROR TIME: {error_datetime}.</p>"
+    body_content = f"<div style='text-align:center;margin-left:20px;margin-right:20px'><p>ERROR:</p><p>" \
+    f"{full_error_msg}</p></div>"
     footer_content = ""
     subject_line = "ERROR: something went wrong"
 
@@ -90,7 +90,7 @@ def email_notification(
 
 
     # GET SCRAPED DATA
-    scraped_data_content = test_paths["payload_email"].read_text()
+    scraped_data_content = paths["payload_email"].read_text()
 
     # CHECK FOR MURDER/HOMICIDE
     # Add a special message to subject line and mobile tease if either condition is met
@@ -99,7 +99,7 @@ def email_notification(
     # GENERATE EMAIL HTML
     # We take our HTML payload of docket data and wrap it in more HTML to make it look nice.
     message = create_final_email_payload(
-        test_dirs["email_template"],
+        dirs["email_template"],
         mobile_tease_content,
         intro_content,
         scraped_data_content,
@@ -107,7 +107,7 @@ def email_notification(
     )
 
     # SAVE EMAIL HTML - FOR DEBUGGING PURPOSES
-    export.save_copy_of_final_email(test_paths["email_final"], message)
+    export.save_copy_of_final_email(paths["email_final"], message)
 
     # ACCESS GMAIL AND SEND
     recipients = json.loads(
@@ -179,7 +179,7 @@ def insert_special_message(scraped_data_content, mobile_tease_content, subject_l
         special_msg = "HOMICIDE detected"
     if "murder" in scraped_data_content.lower():
         special_msg = "MURDER detected"
-    subject_line = subject_line + " --" + special_msg
+    subject_line = subject_line + f" ({special_msg})"
     mobile_tease_content = special_msg if special_msg else mobile_tease_content
     return subject_line, mobile_tease_content
 
@@ -195,7 +195,7 @@ def create_final_email_payload(
     This function fuses our scraped data with snippets of HTML to create our final email payload. It returns an email in MIMEtext format
     """
 
-    print("Generating final HTML payload")
+    print("Wrapping content in HTML")
 
     # GET EMAIL COMPONENTS
     # First creating a list of all our email template components
@@ -253,7 +253,7 @@ def create_final_email_payload(
     # JOIN IT ALL TOGETHER
     message = html_top + intro + email_body + footer
 
-    print("final HTML payload generated")
+    print("HTML payload generated")
     return message
 
 
