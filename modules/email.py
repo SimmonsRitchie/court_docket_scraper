@@ -28,7 +28,7 @@ def email_error_notification(error_summary, full_error_msg):
     dir_email_template = dirs["email_template"]
     county_list = [
         x.title() for x in json.loads(os.environ.get("COUNTY_LIST"))
-    ]  # Counties are transformed into title case
+    ]  # Counties are transformed into print_title case
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
 
     pluralize_county = 'county' if len(county_list) == 1 else 'counties'
@@ -41,7 +41,7 @@ def email_error_notification(error_summary, full_error_msg):
     footer_content = ""
     subject_line = "ERROR: something went wrong"
 
-    # ATTACH CSV
+    # ATTACH ERROR LOG + CSV
     # TODO: Add attachment
 
     # CREATE HTML PAYLOAD
@@ -297,19 +297,20 @@ def login_to_gmail_and_send(recipients, message, subject_line):
     """
 
     # MESSAGE
-    mime_message = MIMEText(message, "html")
+    mime_msg_content = MIMEText(message, "html")
 
     # GET ENV VARIABLES - SENDER LOGIN
     sender_email_username = os.environ.get("SENDER_EMAIL_USERNAME")
     sender_email_password = os.environ.get("SENDER_EMAIL_PASSWORD")
 
+    # SET FROM/TO/SUBJECT
+    mime_msg_content["From"] = f"Pa Court Report <{sender_email_username}>"
+    mime_msg_content["To"] = ", ".join(recipients)
+    mime_msg_content["Subject"] = subject_line
+
+
     # LOGIN AND SEND
-    mime_message["From"] = f"Pa Court Report <{sender_email_username}>"
-    mime_message["To"] = ", ".join(recipients)
-    mime_message["Subject"] = subject_line
-
-    msg_full = mime_message.as_string()
-
+    msg_full = mime_msg_content.as_string()
     server = smtplib.SMTP("smtp.gmail.com", 587)
     server.starttls()
     server.login(sender_email_username, sender_email_password)

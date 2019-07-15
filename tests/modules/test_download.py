@@ -5,7 +5,7 @@ from shutil import rmtree
 import os
 
 # import mocks
-from test.mocks.driver import initialize_test_driver
+from tests.mocks.driver import initialize_test_driver
 
 # modules to test
 from modules.download import download_pdf

@@ -7,13 +7,12 @@ from datetime import datetime, timedelta
 import os
 from shutil import rmtree
 import pandas as pd
+import logging
 
-
-def title(program_name):
+def print_title(program_name):
     print("----------------------------------------------------------------")
     print("                  {}".format(program_name.upper()))
     print("----------------------------------------------------------------")
-    print("CURRENT TIME: {}".format(get_datetime_now_formatted()))
 
 def get_datetime_now_formatted():
     """ Gets a string of the current date and time in format: Jul 11 2019: 1:28 PM"""
@@ -29,13 +28,13 @@ def gen_unique_filename(dir, filename, ext, counter=0):
         filename + ext if counter == 0 else filename + "_" + str(counter) + ext
     )
     path = dir / full_filename
-    print(f"Checking if {path} already exists...")
+    logging.info(f"Checking if {path} already exists...")
     if path.is_file():
         counter += 1
-        print(f"{path} exists")
-        print(f"Appending {counter} to filename")
+        logging.info(f"{path} exists")
+        logging.info(f"Appending {counter} to filename")
         return gen_unique_filename(dir, filename, ext, counter=counter)
-    print(f"{path} is unique")
+    logging.info(f"{path} is unique")
     return path
 
 
@@ -101,17 +100,15 @@ def camel_case_convert(item):
 
 def delete_folders_and_contents(temp_dir):
 
-    """
-    Takes Path object, deletes if it exists.
-    """
+    """Takes Path directory, deletes directory if it exists."""
 
     if temp_dir.is_dir():
-        print("Detected temp files from previous program run")
-        print("Deleting folders and files...")
+        logging.info("Detected temp files from previous program run")
+        logging.info("Deleting folders and files...")
         rmtree(temp_dir)
-        print("Deleted")
+        logging.info("Deleted")
     else:
-        print("No temp files detected - project directory clean")
+        logging.info("No temp files detected - project directory clean")
 
 
 def create_folders(dirs):
@@ -119,11 +116,11 @@ def create_folders(dirs):
     Takes a dict of directories as Path objects, creates each one
 
     """
-    print("Generating temp directories:")
+    logging.info("Generating temp directories:")
     for dir in dirs:
         dir.mkdir(parents=True)  # creates folder and parent folders if they don't exist
-        print(">> {}".format(dir))
-    print("Temp directories created")
+        logging.info(">> {}".format(dir))
+    logging.info("Temp directories created")
 
 
 def clean_list_of_dicts(list_of_dicts):

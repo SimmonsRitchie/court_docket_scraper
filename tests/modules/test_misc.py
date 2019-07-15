@@ -3,7 +3,7 @@ from pathlib import Path
 from shutil import rmtree
 
 # import fixtures
-from test.fixtures.dict_list.docket_list_with_duplicates import docket_list
+from tests.fixtures.dict_list.docket_list_with_duplicates import docket_list
 
 # modules to test
 from modules.misc import pdf_path_gen, clean_list_of_dicts, create_folders

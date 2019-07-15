@@ -3,7 +3,7 @@ NAME: Pa Court Report
 AUTHOR: Daniel Simmons-Ritchie
 
 ABOUT:
-This is the entrypoint for the program. From main(), the program performs the following actions:
+This file is the entrypoint. From main(), the program performs the following actions:
 
     -DELETE + CREATE: temp folders from earlier scrapes are deleted and recreated
     -INITIALIZE: Selenium webdriver is initialized.
@@ -20,19 +20,23 @@ Attempting to run it in non-headless mode may cause it to crash.
 """
 # inbuilt or third party libs
 import os
-from pathlib import Path
 import json
+import logging
 
 # Project modules
 from modules import initialize, scrape, download, convert, email, export, upload, misc
 from modules.misc import get_datetime_now_formatted
 from locations import dirs, temp_dir, paths
+from logs.config.logging import logs_config
 
 def main():
 
     ########################################################################
     #                                 SETUP
     ########################################################################
+
+    # INIT LOGGING
+    logs_config()
 
     # ENV VARS
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
@@ -45,14 +49,15 @@ def main():
     # REFORMAT COUNTY LIST
     county_list = [
         x.title() for x in county_list
-    ]  # Counties are transformed into title case, otherwise we'll get errors during scrape
+    ]  # Counties are transformed into print_title case, otherwise we'll get errors during scrape
 
     ########################################################################
     #                          START PROGRAM
     ########################################################################
 
-    misc.title("pa court report")
-    print(f"Running in {run_env} environment\n")
+    misc.print_title("pa court report")
+    logging.info('##### PROGRAM START #####')
+    logging.info(f"Running in {run_env} environment\n")
 
     ########################################################################
     #                          DELETE + CREATE
@@ -72,6 +77,7 @@ def main():
 
     # START CHROME DRIVER
     driver = initialize.initialize_driver()
+    raise
 
     # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
     # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
@@ -97,7 +103,7 @@ def main():
                     docket["charges"] = parsed_data["charges"]
                     docket["bail"] = parsed_data["bail"]
                 else:
-                    print(
+                    logging.warning(
                         "Error: no extracted text found"
                     )  # if no text, it likely means that there was a problem converting PDF to text
                     docket["charges"] = "error: check docket"
@@ -144,10 +150,17 @@ def main():
     )
 
     # CLOSE PROGRAM
-    print("Scrape completed at: {}".format(get_datetime_now_formatted()))
-    print("Closing program")
+    logging.info("Scrape completed at: {}".format(get_datetime_now_formatted()))
+    logging.info("Closing program")
 
 
-# Start main loop if running from program.py
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        # Terminating program and sending email notification
+        error_summary = "An unexpected error occurred"
+        logging.critical(error_summary)
+        logging.exception(e)
+        email.email_error_notification(error_summary, e)
+        quit()

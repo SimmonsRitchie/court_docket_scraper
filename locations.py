@@ -21,7 +21,8 @@ dirs = {
     "payload_csv": temp_dir / "payload_csv",
     "payload_json": temp_dir / "payload_json",
     "email_final": temp_dir / "email_final",
-    "email_template": static_dir / "email_template"
+    "email_template": static_dir / "email_template",
+    "logs": root_dir / "logs"
 }
 
 # PATHS
@@ -32,4 +33,5 @@ paths = {
     "payload_csv": dirs["payload_csv"] / "dockets.csv",
     "payload_json": dirs["payload_json"] / "dockets.json",
     "email_final": dirs["email_final"] / "email.html",
+    "logs_config": dirs["logs"] / "config/logging.yaml"
 }

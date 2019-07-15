@@ -5,7 +5,7 @@ from shutil import rmtree
 from pathlib import Path
 
 # fixtures
-from test.fixtures.dict_list.docket_list import docket_list
+from tests.fixtures.dict_list.docket_list import docket_list
 from locations import paths, dirs
 
 # modules to test

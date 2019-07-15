@@ -9,20 +9,21 @@ that it no longer worked.
 # Load selenium modules
 from selenium import webdriver
 import os
+import logging
 
 # project modules
 from locations import dirs
 
 def initialize_driver():
 
-    print("\nInitializing Chrome")
+    logging.info("\nInitializing Chrome")
 
     # SET CONFIG VARS
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
     download_path = str(dirs["pdfs"]) # must be string, not Path instance
 
-    print("Driver download directory:", download_path)
-    print("All files will be downloaded to this path")
+    logging.info(f"Driver download directory: {download_path}")
+    logging.info("All files will be downloaded to this path")
 
     # Chrome options + initialize
     options = webdriver.ChromeOptions()
@@ -43,12 +44,13 @@ def initialize_driver():
         "params": {"behavior": "allow", "downloadPath": download_path},
     }
     command_result = driver.execute("send_command", params)
-    print("response from browser:")
+    logging.info("response from browser:")
     for key in command_result:
-        print("result:" + key + ":" + str(command_result[key]))
+        logging.info("result:" + key + ":" + str(command_result[key]))
 
     #####################
     # Sets how long driver waits when things go wrong
     driver.implicitly_wait(5)
 
+    logging.info("Chrome initialized")
     return driver
