@@ -13,11 +13,19 @@ handlers:
         formatter: simple
         stream: ext://sys.stdout
 
-    info_file_handler:
+    debug_file_handler:
         class: logging.FileHandler
         level: DEBUG
         formatter: simple
         filename: latest/debug.log
+        encoding: utf8
+        mode: w
+
+    info_file_handler:
+        class: logging.FileHandler
+        level: INFO
+        formatter: simple
+        filename: latest/info.log
         encoding: utf8
         mode: w
 
@@ -32,4 +40,4 @@ handlers:
 
 root:
     level: DEBUG
-    handlers: [console, info_file_handler, warning_file_handler]
+    handlers: [console, debug_file_handler, info_file_handler, warning_file_handler]

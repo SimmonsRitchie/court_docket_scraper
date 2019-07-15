@@ -17,7 +17,7 @@ from locations import dirs
 
 def initialize_driver():
 
-    logging.info("\nInitializing Chrome")
+    logging.info("Initializing Chrome")
 
     # SET CONFIG VARS
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")

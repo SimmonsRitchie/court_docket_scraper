@@ -159,6 +159,9 @@ if __name__ == "__main__":
         error_summary = "An unexpected error occurred"
         logging.critical(error_summary)
         logging.exception(e)
-        email.email_error_notification(error_summary, e)
-        logging.critical("Closing program")
-        raise SystemExit
+        try:
+            email.email_error_notification(error_summary, e)
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            raise SystemExit

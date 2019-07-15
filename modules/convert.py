@@ -25,7 +25,7 @@ def convert_pdf_to_text(pdf_path, docketnum):
     # SET PATHS
     extracted_text_path = extracted_text_path_gen(dirs["extracted_text"], docketnum)
 
-    logging.info(f"Converting pdf to text for docket {docketnut}...")
+    logging.info(f"Converting pdf to text for docket {docketnum}...")
     password = ""
     extracted_text = ""
 
