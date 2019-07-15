@@ -71,21 +71,21 @@ class TestCreateFolders(unittest.TestCase):
         self.list_of_subdirs_to_create = [
             self.output_dir / "test1",
             self.output_dir / "test2",
-            self.output_dir / "test3"
+            self.output_dir / "test3",
         ]
-
 
     def tearDown(self) -> None:
         rmtree(self.output_dir)
-
 
     def test_directories_are_created(self):
         # create
         create_folders(self.list_of_subdirs_to_create)
         # assert
-        list_of_dirs_created = [subdir for subdir in self.output_dir.iterdir() if subdir.is_dir()]
-        print("to create",self.list_of_subdirs_to_create)
-        print("created",list_of_dirs_created)
+        list_of_dirs_created = [
+            subdir for subdir in self.output_dir.iterdir() if subdir.is_dir()
+        ]
+        print("to create", self.list_of_subdirs_to_create)
+        print("created", list_of_dirs_created)
         self.assertCountEqual(list_of_dirs_created, self.list_of_subdirs_to_create)
 
 

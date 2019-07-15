@@ -1,8 +1,0 @@
-[Jul 15, 2019 13:11:13 PM] CRITICAL --- An unexpected error occurred (run.py:163)
-[Jul 15, 2019 13:11:13 PM]    ERROR --- No active exception to reraise (run.py:164)
-Traceback (most recent call last):
-  File "/Users/dsimmonsritchie/PycharmProjects/pennlive/scrapers/scraper_ujs/run.py", line 159, in <module>
-    main()
-  File "/Users/dsimmonsritchie/PycharmProjects/pennlive/scrapers/scraper_ujs/run.py", line 80, in main
-    raise
-RuntimeError: No active exception to reraise

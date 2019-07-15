@@ -5,9 +5,8 @@ from pathlib import Path
 from modules.initialize import initialize_driver
 from locations import dirs
 
-mock_dirs = {
-    "pdfs": Path("../output/pdfs/").resolve(),
-}
+mock_dirs = {"pdfs": Path("../output/pdfs/").resolve()}
+
 
 @mock.patch.dict(dirs, mock_dirs, clear=True)
 def initialize_test_driver():

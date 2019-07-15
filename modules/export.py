@@ -8,10 +8,12 @@ import pandas as pd
 import json
 import os
 from datetime import datetime
+import logging
 
 # project modules
 from modules import misc, style
 from locations import dirs, paths
+
 
 def convert_dict_into_df(docketlist, county):
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
@@ -20,17 +22,17 @@ def convert_dict_into_df(docketlist, county):
     pd.set_option("display.max_rows", 700)
 
     # CONVERT TO DF
-    print(
+    logging.info(
         "Turning saved data on {} county dockets into Pandas dataframe".format(county)
     )
     pd.set_option("display.max_colwidth", -1)
     df = pd.DataFrame(docketlist)
-    print("Removing duplicate rows if any exist")
+    logging.info("Removing duplicate rows if any exist")
     df = df.drop_duplicates()
     if not df.empty:  # this is to avoid pandas error if df is empty
-        print("Convert bail column to integer type")
+        logging.info("Convert bail column to integer type")
         df["bail"] = df["bail"].apply(pd.to_numeric, errors="coerce")
-        print(df)
+        logging.debug(df)
     return df
 
 
@@ -39,10 +41,10 @@ def convert_df_to_html(df):
     """
     Takes a Pandas DF, reformats slightly, returns a DF rendered in HTML.
     """
+    logging.info("Converting Pandas DF into HTML table...")
 
     # SORTING DATA
     # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
-    print("Sorting dockets by bail amount, descending order")
     df = df.sort_values(by="bail", ascending=False)
 
     # CULLING COLUMNS + REORDERING
@@ -67,6 +69,8 @@ def convert_df_to_html(df):
 
     # RENDER DATAFRAME AS HTML
     df_styled = df_styled.hide_index()
+    logging.info("...DF converted into HTML")
+
     return df_styled.render()
 
 
@@ -82,7 +86,7 @@ def save_html_county_payload(county_intro, df_styled=""):
     county_intro.
     """
 
-    print("Saving dataframe as html file for email payload")
+    logging.info("Wrapping HTML dataframe in additional HTML for email payload")
 
     # GET DIRS/PATHS
     email_template_dir = dirs["email_template"]
@@ -105,50 +109,47 @@ def save_html_county_payload(county_intro, df_styled=""):
     # WRAP HTML PAYLOAD WITH DIV
     html_payload = '<div class="datatable_container">' + html_payload + "</div>"
 
+    # SAVE FILE OR APPEND TO EXISTING
+    logging.info("Saving as HTML file...")
     if payload_email_path.is_file():
         with open(payload_email_path, "a") as fin:
-            print("Existing file found: Adding newly-created HTML to payload")
+            logging.info("Existing file found: Adding newly-created HTML to payload")
             fin.write(html_payload)
-            print("Dataframe added")
+            logging.info("Dataframe added")
     else:
         with open(payload_email_path, "w") as fout:
-            print("No existing file found: Creating email payload file")
+            logging.info("No existing file found: Creating email payload file")
             fout.write(html_payload)
-            print("File created")
+            logging.info("File created")
 
 
 def convert_df_to_csv(df):
 
-    print("Saving dataframe as CSV file")
+    logging.info("Saving dataframe as CSV file")
 
     # GET CSV PAYLOAD PATH
     csv_payload_path = paths["payload_csv"]
 
     # REFORMAT
-    print(
-        "Changing headers to lowercase and replacing any spaces with underscore so export data is cleaner"
-    )
+    logging.info("Reformatting certain fields for clean data entry...")
     df.columns = df.columns.str.lower().str.replace(" ", "_")
-    print("Headers reformatted")
-    print("Converting date fields to ISO format")
     df["dob"] = pd.to_datetime(df["dob"]).dt.strftime("%Y-%m-%d")
     df["filing_date"] = pd.to_datetime(df["filing_date"]).dt.strftime("%Y-%m-%d")
-    print("Dates converted")
-
+    logging.info("Reformatting complete")
     # WRITE
-    print("Writing CSV file...")
+    logging.info("Writing CSV file...")
     if csv_payload_path.is_file():
-        print("Existing CSV file found")
-        print("loading existing CSV as dataframe...")
+        logging.info("Existing CSV file found")
+        logging.info("loading existing CSV as dataframe...")
         df_from_csv = pd.read_csv(csv_payload_path)
-        print("Combining dataframes...")
+        logging.info("Combining dataframes...")
         df_combined = pd.concat([df_from_csv, df])
-        print("Saving new dataframe as CSV...")
+        logging.info("Saving new dataframe as CSV...")
         df_combined.to_csv(csv_payload_path, index=False)
-        print("New CSV created")
+        logging.info("New CSV created")
     else:
         df.to_csv(csv_payload_path, index=False)
-        print("CSV created")
+        logging.info("CSV created")
 
 
 def convert_csv_to_json(county_list):
@@ -158,7 +159,7 @@ def convert_csv_to_json(county_list):
     python snake case.
     """
 
-    print("Converting CSV to JSON")
+    logging.info("Converting CSV to JSON")
 
     # GET PATHS
     csv_payload_path = paths["payload_csv"]
@@ -173,18 +174,18 @@ def convert_csv_to_json(county_list):
     )  # Metadata field: list of all counties that were SELECTED by user to be scraped
 
     # CONVERT CSV TO DATAFRAME
-    print("Loading CSV file as pandas dataframe...")
+    logging.info("Loading CSV file as pandas dataframe...")
 
     if csv_payload_path.is_file():
 
         df = pd.read_csv(csv_payload_path)
-        print("Dataframe created")
+        logging.info("Dataframe created")
 
         # CHANGE HEADERS TO CAMEL CASE
         # Doing this just to make final JSON file more javascript friendly
-        print("Reformatting headers in camel case")
+        logging.info("Reformatting headers in camel case")
         df.rename(columns=lambda x: misc.camel_case_convert(x), inplace=True)
-        print("Reformatted")
+        logging.info("Reformatted")
 
         # REMOVE NAN
         # If we don't remove NaNs we'll get invalid JSON
@@ -200,7 +201,7 @@ def convert_csv_to_json(county_list):
             orient="records"
         )  # Data: this is our actual data from the scrape, each case will be a single object in a big array
     else:
-        print("No CSV found - assuming no cases returned from scrape")
+        logging.info("No CSV found - assuming no cases returned from scrape")
 
         # RETURN EMPTY DICT
         cases_dict = ""
@@ -209,24 +210,26 @@ def convert_csv_to_json(county_list):
         returned_counties = "none"
 
     # GENERATE JSON
-    print("Creating new dictionary so we can include metadata with JSON payload...")
+    logging.info(
+        "Creating new dictionary so we can include metadata with JSON payload..."
+    )
     final_dict = {
         "scrapeDatetime": date_and_time_of_scrape,
         "countiesSelectedForScrape": selected_counties,
         "countiesReturnedFromScrape": returned_counties,
         "cases": cases_dict,
     }
-    print("New dictionary created")
-    print("Exporting dictionary as JSON file...")
+    logging.info("New dictionary created")
+    logging.info("Exporting dictionary as JSON file...")
 
     with open(json_payload_path, "w") as write_file:
         json.dump(final_dict, write_file, indent=4)
-    print("Export complete")
+    logging.info("Export complete")
     return date_and_time_of_scrape
 
 
 def save_copy_of_final_email(path_final_email, msg_content):
     with open(path_final_email, "w") as fout:
-        print("Saving copy of email for testing and debugging purposes")
+        logging.info("Saving copy of email for testing and debugging purposes")
         fout.write(msg_content)
-        print("File saved")
+        logging.info("File saved")

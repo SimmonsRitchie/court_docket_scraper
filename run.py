@@ -29,6 +29,7 @@ from modules.misc import get_datetime_now_formatted
 from locations import dirs, temp_dir, paths
 from logs.config.logging import logs_config
 
+
 def main():
 
     ########################################################################
@@ -56,7 +57,7 @@ def main():
     ########################################################################
 
     misc.print_title("pa court report")
-    logging.info('##### PROGRAM START #####')
+    logging.info("##### PROGRAM START #####")
     logging.info(f"Running in {run_env} environment\n")
 
     ########################################################################
@@ -68,7 +69,9 @@ def main():
     misc.delete_folders_and_contents(temp_dir)
 
     # CREATE TEMP DIRECTORIES
-    temp_subdirs = [dirs[dir] for dir in dirs if "/" + str(temp_dir.name) + "/" in str(dirs[dir])]
+    temp_subdirs = [
+        dirs[dir] for dir in dirs if "/" + str(temp_dir.name) + "/" in str(dirs[dir])
+    ]
     misc.create_folders(temp_subdirs)
 
     ########################################################################
@@ -77,15 +80,12 @@ def main():
 
     # START CHROME DRIVER
     driver = initialize.initialize_driver()
-    raise
 
     # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
     # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
     # PDFs of full docket data.
     for county in county_list:
-        docket_list = scrape.scrape_search_results(
-            driver, county, target_scrape_date
-        )
+        docket_list = scrape.scrape_search_results(driver, county, target_scrape_date)
         if docket_list:
 
             # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
@@ -104,10 +104,10 @@ def main():
                     docket["bail"] = parsed_data["bail"]
                 else:
                     logging.warning(
-                        "Error: no extracted text found"
+                        "No extracted text found"
                     )  # if no text, it likely means that there was a problem converting PDF to text
-                    docket["charges"] = "error: check docket"
-                    docket["bail"] = "error: check docket"
+                    docket["charges"] = None
+                    docket["bail"] = None
 
             # CONVERT DICT LIST INTO PANDAS DF
             df = export.convert_dict_into_df(docket_list, county)
@@ -128,7 +128,8 @@ def main():
                 county
             )  # count of cases in county
             export.save_html_county_payload(
-                county_intro)  # save html df + add extra html
+                county_intro
+            )  # save html df + add extra html
 
     ########################################################################
     #                        EXPORT & EMAIL FINAL PAYLOAD
@@ -143,11 +144,7 @@ def main():
         upload.upload_to_rest_api()
 
     # SEND EMAIL WITH DOCKET DATA
-    email.email_notification(
-        date_and_time_of_scrape,
-        target_scrape_day,
-        county_list
-    )
+    email.email_notification(date_and_time_of_scrape, target_scrape_day, county_list)
 
     # CLOSE PROGRAM
     logging.info("Scrape completed at: {}".format(get_datetime_now_formatted()))
@@ -163,4 +160,5 @@ if __name__ == "__main__":
         logging.critical(error_summary)
         logging.exception(e)
         email.email_error_notification(error_summary, e)
-        quit()
+        logging.critical("Closing program")
+        raise SystemExit

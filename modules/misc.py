@@ -9,10 +9,12 @@ from shutil import rmtree
 import pandas as pd
 import logging
 
+
 def print_title(program_name):
     print("----------------------------------------------------------------")
     print("                  {}".format(program_name.upper()))
     print("----------------------------------------------------------------")
+
 
 def get_datetime_now_formatted():
     """ Gets a string of the current date and time in format: Jul 11 2019: 1:28 PM"""

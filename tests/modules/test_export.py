@@ -9,22 +9,26 @@ from tests.fixtures.dict_list.docket_list import docket_list
 from locations import paths, dirs
 
 # modules to test
-from modules.export import convert_dict_into_df, convert_df_to_csv, save_html_county_payload, convert_df_to_html
+from modules.export import (
+    convert_dict_into_df,
+    convert_df_to_csv,
+    save_html_county_payload,
+    convert_df_to_html,
+)
 
 mock_dirs = {
     "payload_csv": Path("../output/csv_converted_from_df/"),
     "payload_email": Path("../output/payload_email/"),
-    "email_template": dirs["email_template"]  # using actual directory
+    "email_template": dirs["email_template"],  # using actual directory
 }
 
 mock_paths = {
     "payload_csv": mock_dirs["payload_csv"] / "dockets.csv",
-    "payload_email": mock_dirs["payload_email"] / "email.html"
+    "payload_email": mock_dirs["payload_email"] / "email.html",
 }
 
 
 class TestExport(unittest.TestCase):
-
     def test_convert_dict_into_df(self):
         """
         Test that result is a dataframe
@@ -44,8 +48,8 @@ class TestExport(unittest.TestCase):
 
 class TestConvertDfToCsv(unittest.TestCase):
     def setUp(self) -> None:
-        mock_dirs["payload_csv"].mkdir(parents=True, exist_ok=True) # make directory
-        self.df = convert_dict_into_df(docket_list, "Dauphin") # make testing df
+        mock_dirs["payload_csv"].mkdir(parents=True, exist_ok=True)  # make directory
+        self.df = convert_dict_into_df(docket_list, "Dauphin")  # make testing df
 
     def tearDown(self) -> None:
         print(f"Deleting temp folder: {mock_dirs['payload_csv']}")
@@ -64,7 +68,6 @@ class TestConvertDfToCsv(unittest.TestCase):
 
 
 class TestSaveHtmlPayload(unittest.TestCase):
-
     def setUp(self) -> None:
         mock_dirs["payload_email"].mkdir(parents=True, exist_ok=True)
         # create testing df

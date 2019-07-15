@@ -9,15 +9,15 @@ formatters:
 handlers:
     console:
         class: logging.StreamHandler
-        level: DEBUG
+        level: INFO
         formatter: simple
         stream: ext://sys.stdout
 
     info_file_handler:
         class: logging.FileHandler
-        level: INFO
+        level: DEBUG
         formatter: simple
-        filename: latest/info.log
+        filename: latest/debug.log
         encoding: utf8
         mode: w
 
@@ -31,5 +31,5 @@ handlers:
         encoding: utf8
 
 root:
-    level: INFO
+    level: DEBUG
     handlers: [console, info_file_handler, warning_file_handler]

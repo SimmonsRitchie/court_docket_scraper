@@ -13,13 +13,9 @@ from locations import paths
 
 
 # Path to normal CSV payload data
-mock_paths1 = {
-    "payload_csv": Path("../fixtures/payload_csv/dockets.csv")  # dummy data
-}
+mock_paths1 = {"payload_csv": Path("../fixtures/payload_csv/dockets.csv")}  # dummy data
 # Path to bad CSV payload data that has a string in bail field
-mock_paths2 = {
-    "payload_csv": Path("../fixtures/payload_csv/dockets_bad1.csv")
-}
+mock_paths2 = {"payload_csv": Path("../fixtures/payload_csv/dockets_bad1.csv")}
 
 # we set this to prevent error emails from sending during upload failure
 mock_env = os.environ
@@ -69,7 +65,6 @@ def helper_get_docketnums_in_db(rest_api):
     return [case["docketnum"] for case in cases]
 
 
-
 class TestUpload1(unittest.TestCase):
     def setUp(self) -> None:
 
@@ -108,7 +103,9 @@ class TestUpload1(unittest.TestCase):
         s.close()
 
     @mock.patch.dict(paths, mock_paths1, clear=True)
-    @mock.patch.dict(os.environ, mock_env, clear=True) # to prevent error emails from sending
+    @mock.patch.dict(
+        os.environ, mock_env, clear=True
+    )  # to prevent error emails from sending
     def test_upload_cases_to_db(self):
         """
         Test that data successfully uploads to web service
@@ -124,11 +121,13 @@ class TestUpload1(unittest.TestCase):
         except Exception as error:
             print(error)
         test_bool = all(
-            elem in list_of_dockets_in_db for elem in self.list_of_docketnums_to_be_uploaded
+            elem in list_of_dockets_in_db
+            for elem in self.list_of_docketnums_to_be_uploaded
         )
 
         # asserts
         self.assertTrue(test_bool)
+
 
 class TestUpload2(unittest.TestCase):
     def setUp(self) -> None:
@@ -160,14 +159,18 @@ class TestUpload2(unittest.TestCase):
                 # LOGIN
                 s = login(s, self.rest_api)
                 # DELETE
-                s = helper_delete(s, self.rest_api, self.list_of_docketnums_to_be_uploaded)
+                s = helper_delete(
+                    s, self.rest_api, self.list_of_docketnums_to_be_uploaded
+                )
                 # LOGOUT
                 logout(s, self.rest_api)
             except Exception as error:
                 print(error)
 
     @mock.patch.dict(paths, mock_paths2, clear=True)
-    @mock.patch.dict(os.environ, mock_env, clear=True) # to prevent error emails from sending
+    @mock.patch.dict(
+        os.environ, mock_env, clear=True
+    )  # to prevent error emails from sending
     def test_bad_data_not_uploaded_to_db(self):
         """
         Test that bad data isn't uploaded to web service
@@ -183,7 +186,9 @@ class TestUpload2(unittest.TestCase):
             print(error)
 
         # asserts
-        test_bool = not set(list_of_dockets_in_db).isdisjoint(self.list_of_docketnums_to_be_uploaded)
+        test_bool = not set(list_of_dockets_in_db).isdisjoint(
+            self.list_of_docketnums_to_be_uploaded
+        )
         self.assertFalse(test_bool)
 
 

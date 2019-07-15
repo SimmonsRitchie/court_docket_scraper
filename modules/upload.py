@@ -4,16 +4,19 @@ This module uploads data to a REST API.
 # third party or inbuilt libs
 import pandas as pd
 import requests
-import pprint as pp
 import os
+import logging
 
 # project modules
 from modules.misc import clean_df
 from modules.email import email_error_notification
 from locations import paths
 
-def upload_to_rest_api():
+ERROR_SUMMARY = "An error occurred during upload to REST API."
+ABORTING_UPLOAD = "Aborting upload."
 
+
+def upload_to_rest_api():
 
     # GET ENV VARS
     rest_api = {
@@ -25,20 +28,23 @@ def upload_to_rest_api():
         "password": os.getenv("REST_API_PASSWORD"),
     }
 
-    print(
-        "\n ----------------------------------------------------------------------------------------"
-    )
-    print("       UPLOADING DATA TO REST API: {}     ".format(rest_api["hostname"]))
-    print(
-        "------------------------------------------------------------------------------------------\n"
-    )
-    
+    # MAKING SURE ALL ENV VARS ARE SET
+    for key, value in rest_api.items():
+        if value is None:
+            full_error = f"Missing value for key {key} in rest_api ENV variables"
+            logging.error(full_error)
+            email_error_notification(ERROR_SUMMARY, full_error)
+            logging.error(ABORTING_UPLOAD)
+            return
+
+    logging.info(f"Uploading CSV to REST API at host: {rest_api['hostname']}")
+
     # GET PATH TO CSV
     csv_payload_path = paths["payload_csv"]
-    print("Path to CSVs", csv_payload_path)
+    logging.info("Path to CSV: {csv_payload_path}")
 
     # CONVERT CSV TO JSON
-    print("Converting data to json...")
+    logging.info("Converting CSV to JSON...")
     df = pd.read_csv(
         csv_payload_path, dtype={"docketnum": str, "dob": str, "filing_date": str}
     )  # this is to ensure docketnum is str
@@ -49,8 +55,8 @@ def upload_to_rest_api():
 
     # conversion
     cases_json = df.to_dict(orient="records")
-    print(cases_json)
-    print("data converted")
+    logging.debug(cases_json)
+    logging.info("CSV converted to JSON")
 
     # REQUESTS
     # We request three different endpoints. We abort if we encounter any HTTP errors.
@@ -62,24 +68,17 @@ def upload_to_rest_api():
             logout(s, rest_api)
         except Exception as full_error:
             print(full_error)
-            error_summary = "An error occurred during upload to REST API."
-            email_error_notification(error_summary, full_error)
-            terminate_upload()
+            email_error_notification(ERROR_SUMMARY, full_error)
+            logging.error(ABORTING_UPLOAD)
             return
 
     # success
-    print(
-        "----------------------------------------------------------------------------------------"
-    )
-    print("Data succesfully uploaded to {}".format(rest_api["hostname"]))
-    print(
-        "----------------------------------------------------------------------------------------\n"
-    )
+    logging.info("Data succesfully uploaded to {}".format(rest_api["hostname"]))
 
 
 def login(s, rest_api):
     action = "Logging in"
-    print(f"{action}...")
+    logging.info(f"{action}...")
     login_data = {"username": rest_api["username"], "password": rest_api["password"]}
     full_login_path = rest_api["hostname"] + rest_api["login_endpoint"]
 
@@ -97,7 +96,7 @@ def login(s, rest_api):
     success_output(action, data)
 
     # update headers
-    print("Updating headers with JWT token")
+    logging.info("Updating headers with JWT token")
     access_token = data["access_token"]
     s.headers.update({"Authorization": f"Bearer {access_token}"})
     return s
@@ -105,7 +104,7 @@ def login(s, rest_api):
 
 def add_cases(s, rest_api, json_data):
     action = "Adding cases"
-    print(f"{action}...")
+    logging.info(f"{action}...")
     full_post_path = rest_api["hostname"] + rest_api["post_endpoint"]
     r = s.post(full_post_path, json=json_data)
     status_code = r.status_code
@@ -123,7 +122,7 @@ def add_cases(s, rest_api, json_data):
 
 def logout(s, rest_api):
     action = "Logging out"
-    print(f"{action}...")
+    logging.info(f"{action}...")
     full_logout_path = rest_api["hostname"] + rest_api["logout_endpoint"]
     r = s.post(full_logout_path)
     status_code = r.status_code
@@ -142,20 +141,14 @@ def logout(s, rest_api):
 ############ OUTPUT FUNCTIONS ####################
 # Some reusable functions for displaying output from HTTP requests.
 
+
 def failure_output(action, status, data):
-    print(f"ERROR: {action}")
-    print(f"STATUS CODE: {status}")
-    print("RESPONSE:")
-    print(data)
+    logging.error(f"Failed to {action}")
+    logging.error(f"STATUS CODE: {status}, RESPONSE: {data}")
 
 
 def success_output(action, data=None):
-    print(f"{action} successful")
+    logging.info(f"{action} successful")
 
     if data:
-        print("RESPONSE:")
-        pp.pprint(data)
-
-
-def terminate_upload():
-    print("--------------------- TERMINATING UPLOAD -----------------------\n")
+        logging.debug(data)

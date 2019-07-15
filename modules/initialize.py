@@ -14,13 +14,14 @@ import logging
 # project modules
 from locations import dirs
 
+
 def initialize_driver():
 
     logging.info("\nInitializing Chrome")
 
     # SET CONFIG VARS
     chrome_driver_path = os.environ.get("CHROME_DRIVER_PATH")
-    download_path = str(dirs["pdfs"]) # must be string, not Path instance
+    download_path = str(dirs["pdfs"])  # must be string, not Path instance
 
     logging.info(f"Driver download directory: {download_path}")
     logging.info("All files will be downloaded to this path")

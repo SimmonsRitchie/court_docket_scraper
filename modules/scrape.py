@@ -10,6 +10,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver.support.ui import Select
 import sys
 import time
+import logging
 
 # project modules
 from modules.misc import clean_list_of_dicts
@@ -21,6 +22,7 @@ def scrape_search_results(driver, county, scrape_date):
     Scrape the search results of the UJS website. Returns a list of dicts with case information.
 
     """
+    logging.info("Beginning scrape of Pa. Unified Judicial System portal")
 
     ########################################################################
     #                     INPUT: SEARCH TERMS
@@ -36,12 +38,12 @@ def scrape_search_results(driver, county, scrape_date):
     url = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"  # URL for UJC website
 
     # Opening webpage
-    print("Opening Pa. Unified Judicial System portal")
+    logging.info(f"Opening: {url}")
     driver.get(url)
 
     try:
         # selecting search type
-        print("Selecting search type")
+        logging.info("Selecting search type")
         input_searchtype = Select(
             driver.find_element_by_xpath(
                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_ddlSearchType"]'
@@ -50,7 +52,7 @@ def scrape_search_results(driver, county, scrape_date):
         input_searchtype.select_by_visible_text("Date Filed")
 
         # selecting start date
-        print("Entering start date: {}".format(startdate))
+        logging.info("Entering start date: {}".format(startdate))
         xpath_startdate = '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_drpFiled_beginDateChildControl_DateTextBox"]'
         input_startdate = driver.find_element_by_xpath(xpath_startdate)
 
@@ -58,7 +60,7 @@ def scrape_search_results(driver, county, scrape_date):
         input_startdate.send_keys(str(startdate))
 
         # selecting end date
-        print("Entering end date: {}".format(enddate))
+        logging.info("Entering end date: {}".format(enddate))
         input_enddate = driver.find_element_by_xpath(
             '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_drpFiled_endDateChildControl_DateTextBox"]'
         )
@@ -66,10 +68,7 @@ def scrape_search_results(driver, county, scrape_date):
         input_enddate.send_keys(str(enddate))
 
         # selecting county
-        print("")
-        print("###########")
-        print("Beginning search of dockets in {} County".format(county.upper()))
-        print("")
+        logging.info("Beginning search of dockets in {} County".format(county.upper()))
         input_county = Select(
             driver.find_element_by_xpath(
                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCounty"]'
@@ -78,14 +77,14 @@ def scrape_search_results(driver, county, scrape_date):
         input_county.select_by_visible_text(county)
 
         # Starting loop that searches through all courts in county
-        print("Scraping search results...")
-    except NoSuchElementException:
-        print("ERROR: Something went wrong while looking for input fields")
-        print("USJ page might be down for maintenance")
-        print("Close Chrome")
-        print("Closing program")
+        logging.info("Scraping search results...")
+    except NoSuchElementException as e:
+        # If no input fields are found that's a serious error that suggests the UJS website might be down or has
+        # undergone a major change
+        logging.error("Something went wrong while looking for input fields")
+        logging.exception(e)
         driver.quit()
-        sys.exit(1)
+        raise
 
     ########################################################################
     #                     SCRAPE SEARCH RESULTS
@@ -110,7 +109,7 @@ def scrape_search_results(driver, county, scrape_date):
     while search_courts_loop:
         try:
             # select district court
-            print("Selecting court: {}".format(court))
+            logging.info("Selecting court: {}".format(court))
             time.sleep(3)  # we use sleep to give UJS website time to load
             input_court = Select(
                 driver.find_element_by_xpath(
@@ -120,25 +119,28 @@ def scrape_search_results(driver, county, scrape_date):
             input_court.select_by_index(court)
 
             # submit form
-            print("Submitting form")
+            logging.info("Submitting form")
             driver.find_element_by_xpath(
                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_btnSearch"]'
             ).click()
             court += 1
 
             # LOOP 2: RESULTS PAGES FOR EACH COURT
-            print("Beginning page search loop")
             search_pages_loop = True
             page_count = 1  # page result counter
+            logging.info("Beginning page search loop")
             while search_pages_loop:
                 time.sleep(4)
 
                 # LOOP 3: ROWS FOR EACH RESULTS PAGE
                 search_rows_loop = True
                 row_count = 1  # row counter
-                print("Searching page {}...".format(page_count))
+                logging.info("Searching page {}...".format(page_count))
+                logging.info("Starting row search loop...")
                 while search_rows_loop:
-                    print("Searching row {}...".format(row_count))
+                    logging.info(
+                        f"Checking whether row {row_count} exists...".format(row_count)
+                    )
                     row_count += 1
                     xpath_substring = str(
                         "%02d" % (row_count,)
@@ -152,10 +154,14 @@ def scrape_search_results(driver, county, scrape_date):
                             + "]/td[2]"
                         )
                         clean_docketnum = docketnum.text
+                        logging.info(f"Row {row_count} exists")
+                        logging.info(
+                            f"Checking whether row {row_count} contains a criminal case..."
+                        )
 
                         # If docketnum is a criminal docket then capture information
                         if "-CR-" in clean_docketnum:
-                            print("Criminal case FOUND - saving")
+                            logging.info("Criminal case FOUND - saving")
                             caption = driver.find_element_by_xpath(
                                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket_ctl'
                                 + xpath_substring
@@ -195,37 +201,43 @@ def scrape_search_results(driver, county, scrape_date):
 
                             # Display docket info
                             for key, value in docket.items():
-                                print(f"{key.upper()}: {value}")
+                                logging.info(f"{key.upper()}: {value}")
 
                             docket_list.append(docket)  # Add docket to payload
 
                         # if not a criminal docket then move on to next row.
                         else:
-                            print("Not a criminal case")
+                            logging.info("Not a criminal case, moving on.")
 
                     # BREAK LOOP 3: No more rows found
                     except NoSuchElementException:
-                        print("No row found")
+                        logging.info("No row found")
+                        logging.info("Ending row search loop")
                         break  # End row search loop
-                    except StaleElementReferenceException:
-                        print("ERROR: Tried to find element but it has become stale")
+                    except StaleElementReferenceException as e:
+                        # this suggests the UJS website might be down or search results aren't loading properly
+                        logging.error("Element has become stale")
+                        logging.exception(e)
+                        raise
 
                 # Checking whether there are more pages
                 try:
-                    print("Checking if there are more pages...")
+                    logging.info("Checking if there are more pages...")
                     next_page = str(page_count + 1)
                     driver.find_element_by_link_text(next_page).click()
-                    print("More pages FOUND - going to next page")
+                    logging.info("More pages FOUND - going to next page")
                     page_count += 1
 
                 # BREAK LOOP 2: No more pages found
                 except NoSuchElementException:
-                    print("No further pages found")
+                    logging.info("No further pages found")
+                    logging.info("Ending page search loop")
                     break
 
         # BREAK LOOP 1: No further district courts found
         except NoSuchElementException:
-            print("No more courts found")
+            logging.info("No more courts found")
+            logging.info("Ending court search loop")
             break
 
     # CLEAN DATA
