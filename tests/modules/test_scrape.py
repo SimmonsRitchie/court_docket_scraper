@@ -19,7 +19,7 @@ class TestScrape(unittest.TestCase):
         Test that a single county's docket's for yesterday can be scraped without raising an error.
         """
         scrape_date = yesterday_date() # get string of yesterday's date
-        scrape_search_results(self.driver, "Adams", scrape_date)
+        scrape_search_results(self.driver, "Dauphin", scrape_date)
 
 
 if __name__ == "__main__":

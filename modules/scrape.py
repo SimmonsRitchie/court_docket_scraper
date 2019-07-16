@@ -7,8 +7,11 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
-import sys
 import time
 import logging
 from typing import List
@@ -111,10 +114,15 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
         try:
             # select district court
             logging.info("Selecting court: {}".format(court))
-            time.sleep(3)  # we use sleep to give UJS website time to load
+
+            # EXPLICIT WAIT
+            input_court_xpath = '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
+            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, input_court_xpath)))
+            # time.sleep(3)  # we use sleep to give UJS website time to load
+
             input_court = Select(
                 driver.find_element_by_xpath(
-                    '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
+                    input_court_xpath
                 )
             )
             input_court.select_by_index(court)
@@ -156,9 +164,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                             + "]/td[2]"
                         )
                         clean_docketnum = docketnum.text
-                        logging.info(f"Row {row_count} exists")
+                        logging.info(f"Row {row_count - 1} exists")
                         logging.info(
-                            f"Checking whether row {row_count} contains a criminal case..."
+                            f"Checking whether row {row_count - 1} contains a criminal case..."
                         )
 
                         # If docketnum is a criminal docket then capture information
@@ -209,11 +217,11 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
 
                         # if not a criminal docket then move on to next row.
                         else:
-                            logging.info("Not a criminal case, moving on.")
+                            logging.info(f"Row {row_count - 1} is not a criminal case, moving on.")
 
                     # BREAK LOOP 3: No more rows found
                     except NoSuchElementException:
-                        logging.info(f"Row {row_count} doesn't exist")
+                        logging.info(f"Row {row_count - 1} doesn't exist")
                         logging.info("Ending row search loop")
                         break  # End row search loop
                     except StaleElementReferenceException as e:
