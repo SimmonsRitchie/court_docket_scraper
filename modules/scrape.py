@@ -142,7 +142,8 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                     logging.info(
                         f"Checking whether row {row_count} exists...".format(row_count)
                     )
-                    row_count += 1
+                    row_count += 1 # Be wary of moving this counter, it plays an important part in finding
+                    # row elements in this loop
                     xpath_substring = str(
                         "%02d" % (row_count,)
                     )  # Xpaths in some columns use leading zeros so use this substring to amend those xpaths.
@@ -212,7 +213,7 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
 
                     # BREAK LOOP 3: No more rows found
                     except NoSuchElementException:
-                        logging.info("No row found")
+                        logging.info(f"Row {row_count} doesn't exist")
                         logging.info("Ending row search loop")
                         break  # End row search loop
                     except StaleElementReferenceException as e:

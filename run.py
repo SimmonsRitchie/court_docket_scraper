@@ -46,6 +46,7 @@ def main():
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
     run_env = os.environ.get("ENV_FILE", "DEV")  # defaults to 'DEV'
+    rest_api_enabled = True if os.getenv("REST_API_ENABLED", False) == 'TRUE' else False
 
     # REFORMAT COUNTY LIST
     county_list = [
@@ -140,7 +141,7 @@ def main():
     date_and_time_of_scrape = export.convert_csv_to_json(county_list)
 
     # OPTIONAL: UPLOAD DATA TO DATABASE
-    if os.getenv("REST_API_ENABLED", False) and paths["payload_csv"].is_file():
+    if rest_api_enabled and paths["payload_csv"].is_file():
         upload.upload_to_rest_api()
 
     # SEND EMAIL WITH DOCKET DATA
