@@ -120,20 +120,30 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             # time.sleep(3)  # we formerly used sleep here to give UJS website time to load
             logging.info("Select is clickable")
 
-            # select district court
+            # SELECT DISTRICT COURT
             logging.info("Selecting court: {}".format(court_count))
             input_court_element = driver.find_element_by_xpath(input_court_xpath)  # create webelement
             input_court_select = Select(input_court_element)  # create Select webelement
+            input_court_select.select_by_index(court_count) # this will return 'noSuchElement' exception when no more
+            # courts are available, breaking search_courtloop
+
+            # GET COURT NAME
             input_court_options = [court.text for court in input_court_select.options]
             court_name = input_court_options[court_count]
             logging.info(f"court name: {court_name}")
-            input_court_select.select_by_index(court_count)
 
-            # submit form
+            # SUBMIT FORM
             logging.info("Submitting form")
             driver.find_element_by_xpath(
                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_btnSearch"]'
             ).click()
+
+            # EXPLICIT WAIT
+            # Make sure that search results container is visible
+            logging.info("Wait for search results container to be visible...")
+            search_results_container_css = "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_SearchResultsPanel"
+            WebDriverWait(driver, 120).until(EC.visibility_of_element_located((By.CSS_SELECTOR, search_results_container_css)))
+            logging.info("Container is visisble...")
 
             court_count += 1
 
@@ -142,7 +152,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             page_count = 1  # page result counter
             logging.info("Beginning page search loop")
             while search_pages_loop:
-                time.sleep(4)
+
+                # time.sleep(4) This was formerly in place because of page loading issues, replaced by explicit wait
+                # above
 
                 # LOOP 3: ROWS FOR EACH RESULTS PAGE
                 search_rows_loop = True
@@ -240,6 +252,19 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                     driver.find_element_by_link_text(next_page).click()
                     logging.info("More pages FOUND - going to next page")
                     page_count += 1
+
+                    # EXPLICIT WAIT
+                    # Wait for page to load - otherwise we might start scraping rows on current page rather than new
+                    # page
+                    css_wait_msg = "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_ctl05 > div > div"
+                    logging.info("Wait for 'please wait' message to be visible")
+                    WebDriverWait(driver, 120).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, css_wait_msg)))
+                    logging.info("Please wait is visible")
+                    logging.info("Wait for 'please wait' message to be invisible")
+                    WebDriverWait(driver, 120).until(
+                        EC.invisibility_of_element_located((By.CSS_SELECTOR, css_wait_msg)))
+                    logging.info("Please wait is invisible ")
 
                 # BREAK LOOP 2: No more pages found
                 except NoSuchElementException:
