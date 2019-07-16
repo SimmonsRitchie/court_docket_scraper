@@ -109,30 +109,33 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
 
     # LOOP 1: DISTRICT COURTS
     search_courts_loop = True
-    court = 1  # district court counter
+    court_count = 1  # district court counter
     while search_courts_loop:
         try:
-            # select district court
-            logging.info("Selecting court: {}".format(court))
 
             # EXPLICIT WAIT
+            logging.info("Waiting for court select element to be clickable...")
             input_court_xpath = '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
             WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, input_court_xpath)))
-            # time.sleep(3)  # we use sleep to give UJS website time to load
+            # time.sleep(3)  # we formerly used sleep here to give UJS website time to load
+            logging.info("Select is clickable")
 
-            input_court = Select(
-                driver.find_element_by_xpath(
-                    input_court_xpath
-                )
-            )
-            input_court.select_by_index(court)
+            # select district court
+            logging.info("Selecting court: {}".format(court_count))
+            input_court_element = driver.find_element_by_xpath(input_court_xpath)  # create webelement
+            input_court_select = Select(input_court_element)  # create Select webelement
+            input_court_options = [court.text for court in input_court_select.options]
+            court_name = input_court_options[court_count]
+            logging.info(f"court name: {court_name}")
+            input_court_select.select_by_index(court_count)
 
             # submit form
             logging.info("Submitting form")
             driver.find_element_by_xpath(
                 '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_btnSearch"]'
             ).click()
-            court += 1
+
+            court_count += 1
 
             # LOOP 2: RESULTS PAGES FOR EACH COURT
             search_pages_loop = True
