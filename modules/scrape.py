@@ -11,12 +11,13 @@ from selenium.webdriver.support.ui import Select
 import sys
 import time
 import logging
+from typing import List
 
 # project modules
 from modules.misc import clean_list_of_dicts
 
 
-def scrape_search_results(driver, county, scrape_date):
+def scrape_search_results(driver: object, county: str, scrape_date: str) -> List:
 
     """
     Scrape the search results of the UJS website. Returns a list of dicts with case information.
