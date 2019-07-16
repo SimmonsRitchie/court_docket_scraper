@@ -5,30 +5,20 @@ from pathlib import Path
 import json
 from time import sleep
 from unittest import mock
+from logs.config.logging import logs_config
 
 
 # modules to test
 from modules.email import email_error_notification
-from locations import dirs, mock_dirs
+from locations import paths
 
 
 class TestEmailError(unittest.TestCase):
     def setUp(self) -> None:
-        # vars
-        self.dirs = {
-            "email_template": Path("../../static/email_template/"),
-            "email_error": Path("../output/email_error/"),
-        }
-
-        self.paths = {"email_error": self.dirs["email_error"] / "email.html"}
-
-        # build temp directory
-        self.dirs["email_error"].mkdir(
-            parents=True, exist_ok=True
-        )  # generate a subdirectory for testing purposes
+        logs_config(paths["logs_config_test"])
 
     def tearDown(self) -> None:
-        sleep(0.2)  # wait a second between sending emails, so Gmail doesn't freak out
+        pass
 
     def test_error_email_runs_without_errors(self):
         """
