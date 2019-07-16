@@ -38,7 +38,7 @@ def email_error_notification(error_summary, full_error_msg):
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
 
     pluralize_county = "county" if len(county_list) == 1 else "counties"
-    mobile_tease_content = error_summary
+    mobile_tease_content = error_summary + ("&nbsp;&zwnj;" * 50)
     intro_content = (
         f"<p>{error_summary}</p>"
         f"<p>SETTINGS: Scraping {target_scrape_day}'s cases for {', '.join(county_list)} {pluralize_county}"
@@ -125,12 +125,12 @@ def email_notification(date_and_time_of_scrape, target_scrape_day, county_list):
 def gen_mobile_tease_content(county_list):
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
     if len(county_list) == 1:
-        return "Here are the latest criminal cases filed in {} County".format(
+        mobile_tease_content = "Here are the latest criminal cases filed in {} County".format(
             county_list[0]
         )
     else:
-        return "Here are the latest criminal cases filed in central Pa. courts."
-
+        mobile_tease_content = "Here are the latest criminal cases filed in central Pa. courts."
+    return mobile_tease_content + ("&nbsp;&zwnj;" * 50)
 
 def gen_intro_content(county_list, target_scrape_day, formatted_time, yesterday_date):
     # GENERATE INTRO
