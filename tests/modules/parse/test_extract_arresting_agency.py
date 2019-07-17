@@ -6,13 +6,13 @@ import pprint as pp
 
 # project modules
 from locations import paths
-from modules.parse import parse_main, extract_bail, extract_charges
+from modules.parse import extract_arresting_agency
 
 # fixtures
-test_dirs = {"extracted_text": Path("../../fixtures/extracted_text_2/")}
+test_dirs = {"extracted_text": Path("../../fixtures/extracted_text/")}
 
 
-class TestParseCharges(unittest.TestCase):
+class TestParseArrestingAgency(unittest.TestCase):
     # def setUp(self) -> None:
     # logs_config(paths["logs_config_test"])
 
@@ -26,6 +26,6 @@ class TestParseCharges(unittest.TestCase):
             print(f"\n\nITEM {count}: {text_file_path.stem}")
             print("----------------------------------------------------------")
             text = text_file_path.read_text()
-            parsed_data = extract_charges(text)
+            parsed_data = extract_arresting_agency(text)
             pp.pprint(parsed_data)
             print("----------------------------------------------------------")

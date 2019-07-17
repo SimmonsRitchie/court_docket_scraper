@@ -24,12 +24,10 @@ def parse_main(text: str = "") -> Dict:
     if text == "":
         logging.warning("Empty string provided for parsing")
 
-    charges = extract_charges(text)
-    bail = extract_bail(text)
-
     return {
-        "charges": charges,
-        "bail": bail
+        "charges": extract_charges(text),
+        "bail": extract_bail(text),
+        "arresting_agency": extract_arresting_agency()
     }
 
 
@@ -83,7 +81,9 @@ def extract_bail(text: str) -> int:
         # PARSE
         logging.info("Attempting to extract bail from text with Regex...")
         pattern = re.compile(
-            r"(Amount\n)" r"\$" r"((\d|,)*)" r"\.00",  # first find 'Amount'  # capture
+            r"(Amount\n)"  # first find 'Amount' and newline
+            r"\$" r"((\d|,)*)"  # capture all digits and commas
+            r"\.00",  # end with '.00'
             re.DOTALL,
         )
         match = pattern.search(text)
@@ -110,4 +110,29 @@ def extract_bail(text: str) -> int:
 
 
 def extract_arresting_agency(text: str) -> str:
-    pass
+
+    """ Returns bail amount from raw text, eg. '1200'. Note: unlike charges,
+    many dockets will have no bail set. Most values will return as None"""
+
+    # parsing text file for bail
+    try:
+        # PARSE
+        logging.info("Attempting to extract bail from text with Regex...")
+        pattern = re.compile(
+            r"\n[A-Z]\s\d{4,}.*\n(?P<agency>.*(Police|PSP|police|District "
+            r"Attorney|district attorney).*)\n"
+        )
+        match = pattern.search(text)
+        agency = match.group('agency')
+        logging.info(f"ARRESTING AGENCY, FIRST PASS: {agency}")
+
+
+    # If something goes wrong with parsing, default to None
+    except AttributeError as e:
+        logging.info(
+            "Parsing failed or couldn't find target value - setting " "to None"
+        )
+        agency = None
+
+    logging.info(f"ARRESTING AGENCY, FINAL: {agency}")
+    return agency
