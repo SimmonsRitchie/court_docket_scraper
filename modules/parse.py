@@ -10,7 +10,7 @@ from typing import Dict
 # project modules
 
 
-def parse_main(text: str) -> Dict:
+def parse_main(text: str = "") -> Dict:
 
     """
     Parse texted from PDFs using regex.
@@ -21,11 +21,16 @@ def parse_main(text: str) -> Dict:
     However there are generally specific words that precede and proceed the
     text we want. We use these markers in our regex.
     """
+    if text == "":
+        logging.warning("Empty string provided for parsing")
 
     charges = extract_charges(text)
     bail = extract_bail(text)
 
-    return {"charges": charges, "bail": bail}
+    return {
+        "charges": charges,
+        "bail": bail
+    }
 
 
 def extract_charges(text: str) -> str:

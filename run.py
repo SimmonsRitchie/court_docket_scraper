@@ -85,15 +85,15 @@ def main():
 
     for county in county_list:
 
-        # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
-        # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
-        # PDFs of full docket data.
+        # SCRAPE UJS SEARCH RESULTS
+        # We first get basic docket data from search results, like docket
+        # numbers, filing dates
         docket_list = scrape(county, target_scrape_date)
         if docket_list:
 
-            # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
-            # Each case is associated with a PDF that has more data. We now download each PDF using URLs we
-            # scraped from the search results.
+            # DOWNLOAD PDF OF EACH DOCKET
+            # Each case is associated with a PDF that has more data. We now
+            # download and parse each PDF
             driver = initialize.initialize_driver()
             for docket in docket_list:
                 docketnum = docket["docketnum"]
@@ -102,16 +102,8 @@ def main():
                 text = convert.convert_pdf_to_text(pdf_path, docketnum)
 
                 # PARSE PDF TEXT FOR EXTRA INFO
-                if text:
-                    parsed_data = parse_main(text)
-                    docket["charges"] = parsed_data["charges"]
-                    docket["bail"] = parsed_data["bail"]
-                else:
-                    logging.warning(
-                        "No extracted text found"
-                    )  # if no text, it likely means that there was a problem converting PDF to text
-                    docket["charges"] = None
-                    docket["bail"] = None
+                parsed_data = parse_main(text)
+                docket.update(parsed_data)
             driver.quit()
 
             # CONVERT DICT LIST INTO PANDAS DF
