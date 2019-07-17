@@ -5,9 +5,10 @@ from pathlib import Path
 from shutil import rmtree
 import os
 import json
+import dotenv
 
 # modules to mock
-from locations import paths, dirs
+from locations import paths, dirs, root_dir
 
 # modules to test
 from modules.email import email_notification, login_to_gmail_and_send
@@ -25,6 +26,8 @@ mock_paths = {
     "payload_csv": mock_dirs["payload_csv"] / "dockets.csv",
 }
 
+# Load ENV vars
+dotenv.load_dotenv(root_dir / ".dev.env")
 
 class TestEmail(unittest.TestCase):
     def setUp(self) -> None:

@@ -28,7 +28,7 @@ mock_paths = {
 }
 
 
-class TestExport(unittest.TestCase):
+class TestConvertDictToDf(unittest.TestCase):
     def test_convert_dict_into_df(self):
         """
         Test that result is a dataframe
@@ -73,6 +73,7 @@ class TestSaveHtmlPayload(unittest.TestCase):
         # create testing df
         df = convert_dict_into_df(docket_list, "Dauphin")
         self.styled_df = convert_df_to_html(df)
+
 
     def tearDown(self) -> None:
         print(f"Deleting temp folder: {mock_dirs['payload_email']}")

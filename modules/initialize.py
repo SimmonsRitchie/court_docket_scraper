@@ -15,7 +15,7 @@ import logging
 from locations import dirs
 
 
-def initialize_driver():
+def initialize_driver() -> webdriver:
 
     logging.info("Initializing Chrome")
 

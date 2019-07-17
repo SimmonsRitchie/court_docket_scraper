@@ -6,16 +6,18 @@ This module handles the conversion of docket data to JSON.
 # inbuilt or third party libs
 import pandas as pd
 import json
-import os
 from datetime import datetime
 import logging
+from typing import Dict, Optional, List, Union
+from pathlib import Path
 
 # project modules
 from modules import misc, style
 from locations import dirs, paths
 
 
-def convert_dict_into_df(docketlist, county):
+def convert_dict_into_df(docketlist: Dict, county: str) -> \
+        pd.DataFrame:
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
     pd.set_option("display.max_columns", 20)
     pd.set_option("display.width", 2000)
@@ -36,7 +38,7 @@ def convert_dict_into_df(docketlist, county):
     return df
 
 
-def convert_df_to_html(df):
+def convert_df_to_html(df: pd.DataFrame) -> str:
 
     """
     Takes a Pandas DF, reformats slightly, returns a DF rendered in HTML.
@@ -74,7 +76,8 @@ def convert_df_to_html(df):
     return df_styled.render()
 
 
-def save_html_county_payload(county_intro, df_styled=""):
+def save_html_county_payload(county_intro: str, df_styled:Optional[str]="") \
+        -> None:
 
     """
     Here we load our pandas DF that's been rendered in HTML, add county_intro above it, wrap it an HTML table,
@@ -123,7 +126,7 @@ def save_html_county_payload(county_intro, df_styled=""):
             logging.info("File created")
 
 
-def convert_df_to_csv(df):
+def convert_df_to_csv(df: pd.DataFrame) -> None:
 
     logging.info("Saving dataframe as CSV file")
 
@@ -152,7 +155,7 @@ def convert_df_to_csv(df):
         logging.info("CSV created")
 
 
-def convert_csv_to_json(county_list):
+def convert_csv_to_json(county_list: List[str]) -> datetime:
 
     """
     We transform our CSV into JSON and add a few extra fields of meta data. Returned JSON uses camelcase instead of
@@ -228,7 +231,8 @@ def convert_csv_to_json(county_list):
     return date_and_time_of_scrape
 
 
-def save_copy_of_final_email(path_final_email, msg_content):
+def save_copy_of_final_email(path_final_email: Union[str, Path],
+                             msg_content: str) -> None:
     with open(path_final_email, "w") as fout:
         logging.info("Saving copy of email for testing and debugging purposes")
         fout.write(msg_content)

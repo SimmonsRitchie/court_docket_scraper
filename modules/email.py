@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 import os
 import json
 import logging
+from typing import List, Union, Optional
 
 # Load my modules
 from modules import export
@@ -19,7 +20,11 @@ from modules.misc import get_datetime_now_formatted
 from locations import dirs, paths
 
 
-def email_error_notification(error_summary, full_error_msg):
+def email_error_notification(error_summary: str, full_error_msg: str) -> None:
+
+    """ Assembles and sends an email notifying maintainer that there was an
+    error during program run. """
+
     error_emails_enabled = False if os.environ.get("ERROR_EMAILS") == "FALSE" else True
     if not error_emails_enabled:
         logging.info(
@@ -76,7 +81,10 @@ def email_error_notification(error_summary, full_error_msg):
     login_to_gmail_and_send(recipients, message, subject_line, attachments)
 
 
-def email_notification(date_and_time_of_scrape, target_scrape_day, county_list):
+def email_notification(date_and_time_of_scrape: object, target_scrape_day: str,
+                       county_list: List[str]) -> None:
+
+    """ Assembles and sends our email notification after successful scrape """
 
     logging.info("Sending email with scraped data...")
 
@@ -124,7 +132,7 @@ def email_notification(date_and_time_of_scrape, target_scrape_day, county_list):
     login_to_gmail_and_send(recipients, message, subject_line)
 
 
-def gen_mobile_tease_content(county_list):
+def gen_mobile_tease_content(county_list: List[str]) -> str:
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
     if len(county_list) == 1:
         mobile_tease_content = "Here are the latest criminal cases filed in {} County".format(
@@ -137,7 +145,9 @@ def gen_mobile_tease_content(county_list):
     return mobile_tease_content + ("&nbsp;&zwnj;" * 50)
 
 
-def gen_intro_content(county_list, target_scrape_day, formatted_time, yesterday_date):
+def gen_intro_content(county_list: List[str], target_scrape_day: str,
+                      formatted_time: str,
+                      yesterday_date: str) -> str:
     # GENERATE INTRO
     # we create different intros based on conditions
     if len(county_list) == 1:
@@ -172,7 +182,7 @@ def gen_intro_content(county_list, target_scrape_day, formatted_time, yesterday_
     return intro_subheading + intro_description
 
 
-def gen_footer_content(formatted_time, formatted_date):
+def gen_footer_content(formatted_time: str, formatted_date: str) -> str:
     # GENERATE FOOTER
     return "<p>This information was scraped at {} on {} from the Pa. Unified Judicial Portal. Please note that new \
         cases are not always immediately uploaded to the website. the cases listed above may not represent all cases \
@@ -184,7 +194,8 @@ def gen_footer_content(formatted_time, formatted_date):
     )
 
 
-def insert_special_message(scraped_data_content, mobile_tease_content, subject_line):
+def insert_special_message(scraped_data_content: str, mobile_tease_content:
+str, subject_line: str) -> str:
     # We first but give priority to murder if found.
     special_msg = ""
     if "homicide" in scraped_data_content.lower():
@@ -199,12 +210,12 @@ def insert_special_message(scraped_data_content, mobile_tease_content, subject_l
 
 
 def create_final_email_payload(
-    dir_email_template,
-    mobile_tease_content,
-    intro_content,
-    body_content,
-    footer_content,
-):
+    dir_email_template: Union[str, object],
+    mobile_tease_content: str,
+    intro_content: str,
+    body_content: str,
+    footer_content: str,
+) -> str:
     """
     This function fuses our scraped data with snippets of HTML to create our final email payload. It returns an email in MIMEtext format
     """
@@ -269,25 +280,26 @@ def create_final_email_payload(
 
 
 def create_subject_line(
-    desired_scrape_date_literal, formatted_date, yesterday_date, county_list
-):
+    target_scrape_date: str, formatted_date: str, yesterday_date: str,
+        county_list: List[str]
+) -> str:
 
     logging.info("Generating subject line...")
 
     # SET SUBJECT LINE
     if len(county_list) == 1:
-        if desired_scrape_date_literal == "today":
+        if target_scrape_date == "today":
             subject = "Criminal cases filed in {} County today - {}".format(
                 county_list[0], formatted_date
             )
-        elif desired_scrape_date_literal == "yesterday":
+        elif target_scrape_date == "yesterday":
             subject = "Criminal cases filed in {} County yesterday - {}".format(
                 county_list[0], yesterday_date
             )
     else:
-        if desired_scrape_date_literal == "today":
+        if target_scrape_date == "today":
             subject = "Criminal cases filed so far today - {}".format(formatted_date)
-        elif desired_scrape_date_literal == "yesterday":
+        elif target_scrape_date == "yesterday":
             subject = "Criminal cases filed yesterday - {}".format(yesterday_date)
 
     logging.info("Subject line generated")
@@ -295,7 +307,9 @@ def create_subject_line(
     return subject
 
 
-def login_to_gmail_and_send(recipients, html_msg, subject_line, attachments=None):
+def login_to_gmail_and_send(recipients: List[str], html_msg: str,
+                            subject_line: str,
+                            attachments: Optional[List[str]]=[]):
 
     """
     Takes a string (with HTML markup, if desired), converts to MIME, logs into gmail  and sends message.
