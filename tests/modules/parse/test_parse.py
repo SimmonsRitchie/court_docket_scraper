@@ -2,7 +2,7 @@ import logging
 import unittest
 from logs.config.logging import logs_config
 from pathlib import Path
-
+import pprint as pp
 # project modules
 from locations import paths
 from modules.parse import parse_main
@@ -23,11 +23,14 @@ class TestCleanList(unittest.TestCase):
         """
         extracted_text_dir = test_dirs["extracted_text"]
         list_text_files = list(extracted_text_dir.glob("*.txt"))  # we get all files with this suffix
-        for count, text_file in enumerate(list_text_files):
-            print(f"\n\nITEM {count}")
-            text = text_file.read_text()
+        for count, text_file_path in enumerate(list_text_files):
+            print(f"\n\nITEM {count}: {text_file_path.stem}")
+            print("-------------------------------------------------------------")
+            text = text_file_path.read_text()
             parsed_data = parse_main(text)
-            print(parsed_data)
+            pp.pprint(parsed_data)
+            print("-------------------------------------------------------------")
+
 
 
 

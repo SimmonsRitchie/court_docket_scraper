@@ -37,16 +37,19 @@ def extract_charges(text):
         )
         match = pattern.search(text)
         charges = match.group(4)
-        logging.info("Charges found:")
-        logging.info(charges)
+        logging.info(f"CHARGES, FIRST CUT: {charges}")
         charges = charges.replace(
             "\n", "; "
         )  # Replacing newline characters so easier to display data in tabular format
-        return charges[0:400]  # Limit size of captured text
+        charges = charges[0:400]  # Limit size of captured text
+        logging.info(f"CHARGES, FINAL CUT: {charges}")
+        return charges
     except AttributeError as e:
         logging.error("Error: Something went wrong with charges parsing")
         logging.exception(e)
-        return None
+        charges = None
+        logging.info(f"CHARGES, FINAL CUT: {charges}")
+        return charges
 
 def extract_bail(text):
     # parsing text file for bail
@@ -55,11 +58,15 @@ def extract_bail(text):
         pattern = re.compile(r"(Amount\n)\$(.*)\.00", re.DOTALL)
         match = pattern.search(text)
         bail = match.group(2)
-        logging.info(f"Bail: {bail}")
+        logging.info(f"BAIL, FIRST CUT: {bail}")
         # Removing newline characters
         bail = bail[0:15]
         bail = bail.replace("\n", "").replace(",", "")
+        logging.info(f"BAIL, FINAL CUT: {bail}")
+        return bail
     except (AttributeError, ValueError) as e:
         logging.error("Something went wrong with bail parsing for that docket")
         logging.exception(e)
         bail = None
+        logging.info(f"BAIL, FINAL CUT: {bail}")
+        return bail
