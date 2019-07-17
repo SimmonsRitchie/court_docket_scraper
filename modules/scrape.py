@@ -116,15 +116,21 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             # EXPLICIT WAIT
             logging.info("Waiting for court select element to be clickable...")
             input_court_xpath = '//*[@id="ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_ddlCourtOffice"]'
-            WebDriverWait(driver, 120).until(EC.element_to_be_clickable((By.XPATH, input_court_xpath)))
+            WebDriverWait(driver, 120).until(
+                EC.element_to_be_clickable((By.XPATH, input_court_xpath))
+            )
             # time.sleep(3)  # we formerly used sleep here to give UJS website time to load
             logging.info("Select is clickable")
 
             # SELECT DISTRICT COURT
             logging.info("Selecting court: {}".format(court_count))
-            input_court_element = driver.find_element_by_xpath(input_court_xpath)  # create webelement
+            input_court_element = driver.find_element_by_xpath(
+                input_court_xpath
+            )  # create webelement
             input_court_select = Select(input_court_element)  # create Select webelement
-            input_court_select.select_by_index(court_count) # this will return 'noSuchElement' exception when no more
+            input_court_select.select_by_index(
+                court_count
+            )  # this will return 'noSuchElement' exception when no more
             # courts are available, breaking search_courtloop
 
             # GET COURT NAME
@@ -142,7 +148,11 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             # Make sure that search results container is visible
             logging.info("Wait for search results container to be visible...")
             search_results_container_css = "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_SearchResultsPanel"
-            WebDriverWait(driver, 120).until(EC.visibility_of_element_located((By.CSS_SELECTOR, search_results_container_css)))
+            WebDriverWait(driver, 120).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, search_results_container_css)
+                )
+            )
             logging.info("Container is visisble...")
 
             court_count += 1
@@ -165,7 +175,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                     logging.info(
                         f"Checking whether row {row_count} exists...".format(row_count)
                     )
-                    row_count += 1 # Be wary of moving this counter, it plays an important part in finding
+                    row_count += (
+                        1
+                    )  # Be wary of moving this counter, it plays an important part in finding
                     # row elements in this loop
                     xpath_substring = str(
                         "%02d" % (row_count,)
@@ -232,7 +244,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
 
                         # if not a criminal docket then move on to next row.
                         else:
-                            logging.info(f"Row {row_count - 1} is not a criminal case, moving on.")
+                            logging.info(
+                                f"Row {row_count - 1} is not a criminal case, moving on."
+                            )
 
                     # BREAK LOOP 3: No more rows found
                     except NoSuchElementException:
@@ -256,14 +270,22 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                     # EXPLICIT WAIT
                     # Wait for page to load - otherwise we might start scraping rows on current page rather than new
                     # page
-                    css_wait_msg = "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_ctl05 > div > div"
+                    css_wait_msg = (
+                        "#ctl00_ctl00_ctl00_cphMain_cphDynamicContent_ctl05 > div > div"
+                    )
                     logging.info("Wait for 'please wait' message to be visible")
                     WebDriverWait(driver, 120).until(
-                        EC.visibility_of_element_located((By.CSS_SELECTOR, css_wait_msg)))
+                        EC.visibility_of_element_located(
+                            (By.CSS_SELECTOR, css_wait_msg)
+                        )
+                    )
                     logging.info("Please wait is visible")
                     logging.info("Wait for 'please wait' message to be invisible")
                     WebDriverWait(driver, 120).until(
-                        EC.invisibility_of_element_located((By.CSS_SELECTOR, css_wait_msg)))
+                        EC.invisibility_of_element_located(
+                            (By.CSS_SELECTOR, css_wait_msg)
+                        )
+                    )
                     logging.info("Please wait is invisible ")
 
                 # BREAK LOOP 2: No more pages found

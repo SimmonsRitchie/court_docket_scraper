@@ -13,7 +13,9 @@ from locations import paths
 
 
 # Path to normal CSV payload data
-mock_paths1 = {"payload_csv": Path("../../fixtures/payload_csv/dockets.csv")}  # dummy data
+mock_paths1 = {
+    "payload_csv": Path("../../fixtures/payload_csv/dockets.csv")
+}  # dummy data
 # Path to bad CSV payload data that has a string in bail field
 mock_paths2 = {"payload_csv": Path("../../fixtures/payload_csv/dockets_bad1.csv")}
 

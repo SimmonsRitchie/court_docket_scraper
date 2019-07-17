@@ -12,13 +12,17 @@ from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
 import logging
+from typing import Union
 
 # project modules
 from modules.misc import extracted_text_path_gen
 from locations import dirs
 
 
-def convert_pdf_to_text(pdf_path, docketnum):
+def convert_pdf_to_text(pdf_path: Union[object, str], docketnum: str) -> str:
+
+    """ Takes path (or pathlib Path object) to a PDF file, docketnum and
+    returns text inside PDF"""
 
     # SET PATHS
     extracted_text_path = extracted_text_path_gen(dirs["extracted_text"], docketnum)
@@ -77,6 +81,3 @@ def convert_pdf_to_text(pdf_path, docketnum):
         fout.write(extracted_text.encode("utf-8"))
     logging.info("Text extracted successfully")
     return extracted_text
-
-
-

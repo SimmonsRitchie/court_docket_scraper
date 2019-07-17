@@ -7,6 +7,7 @@ from selenium import webdriver
 # modules to test
 from modules.initialize import initialize_driver
 
+
 class TestInitialize(unittest.TestCase):
     def test_chrome_driver_initializes(self):
         """

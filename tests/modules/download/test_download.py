@@ -14,12 +14,16 @@ from logs.config.logging import logs_config
 from modules.initialize import initialize_driver
 
 # MOCKS
-mock_dirs = {"pdfs": Path("../../output/pdfs/").resolve()} # NOTE: Must have resolve otherwise you'll have problems
+mock_dirs = {
+    "pdfs": Path("../../output/pdfs/").resolve()
+}  # NOTE: Must have resolve otherwise you'll have problems
+
 
 @mock.patch.dict(dirs, mock_dirs, clear=True)
 def initialize_test_driver():
     """ By mocking the directory paths we force webdriver to set test/output/pdfs as default download directory"""
     return initialize_driver()
+
 
 # TESTS
 class TestPdfDownload(unittest.TestCase):
@@ -51,9 +55,7 @@ class TestPdfDownload(unittest.TestCase):
         Test that we can download a PDF and then rename file
         """
         # set vars
-        url = (
-            "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=INVALIDDOCKETURL"
-        )
+        url = "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=INVALIDDOCKETURL"
         docketnum = "MJ-19301-CR-0000267-2019-FAKEDOCKET"
         # # download
         # pdf_path = download_pdf(self.driver, url, docketnum)

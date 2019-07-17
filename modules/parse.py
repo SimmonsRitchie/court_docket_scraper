@@ -6,8 +6,8 @@ This module uses regex to extract important information from text extracted from
 import re
 import logging
 from typing import Dict
-# project modules
 
+# project modules
 
 
 def parse_main(text: str) -> Dict:
@@ -25,10 +25,8 @@ def parse_main(text: str) -> Dict:
     charges = extract_charges(text)
     bail = extract_bail(text)
 
-    return {
-        "charges": charges,
-        "bail": bail
-        }
+    return {"charges": charges, "bail": bail}
+
 
 def extract_charges(text: str) -> str:
 
@@ -49,7 +47,7 @@ def extract_charges(text: str) -> str:
             re.DOTALL,  # matches all chars, including newlines
         )
         match = pattern.search(text)
-        charges = match.group('charges_text') # we used named capture group
+        charges = match.group("charges_text")  # we used named capture group
         logging.info(f"CHARGES, FIRST PASS: {charges}")
 
         # CLEAN UP
@@ -61,12 +59,14 @@ def extract_charges(text: str) -> str:
 
     # If something goes wrong with parsing, default to None
     except AttributeError as e:
-        logging.info("Parsing failed or couldn't find target value - setting "
-                     "to None")
+        logging.info(
+            "Parsing failed or couldn't find target value - setting " "to None"
+        )
         charges = None
 
     logging.info(f"CHARGES, FINAL: {charges}")
     return charges
+
 
 def extract_bail(text: str) -> int:
 
@@ -77,29 +77,32 @@ def extract_bail(text: str) -> int:
     try:
         # PARSE
         logging.info("Attempting to extract bail from text with Regex...")
-        pattern = re.compile(r"(Amount\n)" # first find 'Amount'
-                             r"\$"
-                             r"((\d|,)*)"  # capture 
-                             r"\.00",
-                             re.DOTALL)
+        pattern = re.compile(
+            r"(Amount\n)" r"\$" r"((\d|,)*)" r"\.00",  # first find 'Amount'  # capture
+            re.DOTALL,
+        )
         match = pattern.search(text)
         bail = match.group(2)
         logging.info(f"BAIL, FIRST PASS: {bail}")
 
         # CLEAN UP
-        bail = bail[0:15] # limit size
-        bail = bail.replace("\n", "").replace(",", "") # remove newlines,
+        bail = bail[0:15]  # limit size
+        bail = bail.replace("\n", "").replace(",", "")  # remove newlines,
         # commas
-        bail = int(bail) # return as int
-
+        bail = int(bail)  # return as int
 
     # If something goes wrong with parsing, default to None. We could set to
     # 0 here but we prefer None because not all offenses result in bail
     # being set. Using '0' may imply a bail of $0 was set.
     except (AttributeError, ValueError) as e:
-        logging.info("Parsing failed or couldn't find target value - setting "
-                     "to None")
+        logging.info(
+            "Parsing failed or couldn't find target value - setting " "to None"
+        )
         bail = None
 
     logging.info(f"BAIL, FINAL: {bail}")
     return bail
+
+
+def extract_arresting_agency(text: str) -> str:
+    pass

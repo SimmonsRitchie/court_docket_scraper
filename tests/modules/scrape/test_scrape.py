@@ -10,6 +10,7 @@ from modules.scrape import scrape_search_results
 import logging
 from locations import paths
 
+
 class TestScrape(unittest.TestCase):
     def setUp(self) -> None:
         self.driver = initialize_driver()
@@ -19,7 +20,7 @@ class TestScrape(unittest.TestCase):
         """
         Test that a single county's docket's for yesterday's date can be scraped without raising an error.
         """
-        scrape_date = yesterday_date() # get string of yesterday's date
+        scrape_date = yesterday_date()  # get string of yesterday's date
         docket_list = scrape_search_results(self.driver, "Dauphin", scrape_date)
         logging.info(docket_list)
 
