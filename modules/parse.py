@@ -32,7 +32,8 @@ def extract_charges(text):
     try:
         logging.info("Attempting to extract charges from text with Regex...")
         pattern = re.compile(
-            r"(Grade Description\n)((F|F1|F2|F3|M|M1|M2|M3|S)?\n)*(.*?)(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled Date)",
+            r"(Grade Description\n)((F|F1|F2|F3|M|M1|M2|M3|S)?\n)*(.*?)(\nOffense "
+            r"Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled Date)",
             re.DOTALL,
         )
         match = pattern.search(text)
@@ -45,7 +46,7 @@ def extract_charges(text):
         logging.info(f"CHARGES, FINAL CUT: {charges}")
         return charges
     except AttributeError as e:
-        logging.error("Error: Something went wrong with charges parsing")
+        logging.warning("Something went wrong with charges parsing")
         logging.exception(e)
         charges = None
         logging.info(f"CHARGES, FINAL CUT: {charges}")
@@ -65,7 +66,7 @@ def extract_bail(text):
         logging.info(f"BAIL, FINAL CUT: {bail}")
         return bail
     except (AttributeError, ValueError) as e:
-        logging.error("Something went wrong with bail parsing for that docket")
+        logging.warning("Something went wrong with bail parsing for that docket")
         logging.exception(e)
         bail = None
         logging.info(f"BAIL, FINAL CUT: {bail}")

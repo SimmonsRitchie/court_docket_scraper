@@ -5,17 +5,16 @@ from pathlib import Path
 import pprint as pp
 # project modules
 from locations import paths
-from modules.parse import parse_main
+from modules.parse import parse_main, extract_bail, extract_charges
 
 # fixtures
 test_dirs = {
-    "extracted_text": Path("../../fixtures/extracted_text/")
+    "extracted_text": Path("../../fixtures/extracted_text_2/")
 }
 
-class TestCleanList(unittest.TestCase):
-    def setUp(self) -> None:
-        logs_config(paths["logs_config_test"])
-
+class TestParseMain(unittest.TestCase):
+    # def setUp(self) -> None:
+        # logs_config(paths["logs_config_test"])
 
     def test_text_is_parsed_without_error(self):
         """
@@ -27,7 +26,7 @@ class TestCleanList(unittest.TestCase):
             print(f"\n\nITEM {count}: {text_file_path.stem}")
             print("-------------------------------------------------------------")
             text = text_file_path.read_text()
-            parsed_data = parse_main(text)
+            parsed_data = extract_charges(text)
             pp.pprint(parsed_data)
             print("-------------------------------------------------------------")
 

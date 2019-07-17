@@ -11,7 +11,6 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
-import re
 import logging
 
 # project modules
@@ -53,10 +52,8 @@ def convert_pdf_to_text(pdf_path, docketnum):
     # set parameters for analysis
     laparams = LAParams()
 
-    # Create a PDFDevice object which translates interpreted information into desired format
+    # Create a device object which translates interpreted information into desired format
     # Device needs to be connected to resource manager to store shared resources
-    # device = PDFDevice(rsrcmgr)
-    # Extract the decive to page aggregator to get LT object elements
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
 
     # Create interpreter object to process page content from PDFDocument
@@ -78,7 +75,7 @@ def convert_pdf_to_text(pdf_path, docketnum):
 
     with open(extracted_text_path, "wb") as fout:
         fout.write(extracted_text.encode("utf-8"))
-    logging.info("Text extracted succesfully")
+    logging.info("Text extracted successfully")
     return extracted_text
 
 
