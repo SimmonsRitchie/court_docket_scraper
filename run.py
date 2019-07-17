@@ -26,6 +26,7 @@ import logging
 # Project modules
 from modules import initialize, scrape, download, convert, email, export, upload, misc
 from modules.misc import get_datetime_now_formatted
+from modules.parse import parse_main
 from locations import dirs, temp_dir, paths
 from logs.config.logging import logs_config
 
@@ -100,7 +101,7 @@ def main():
 
                 # PARSE PDF TEXT FOR EXTRA INFO
                 if text:
-                    parsed_data = convert.parse_extracted_text(text)
+                    parsed_data = parse_main(text)
                     docket["charges"] = parsed_data["charges"]
                     docket["bail"] = parsed_data["bail"]
                 else:
