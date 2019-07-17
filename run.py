@@ -83,12 +83,11 @@ def main():
     #                                 SCRAPE
     ########################################################################
 
-    # START CHROME DRIVER
-
-    # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
-    # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
-    # PDFs of full docket data.
     for county in county_list:
+
+        # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
+        # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
+        # PDFs of full docket data.
         docket_list = scrape(county, target_scrape_date)
         if docket_list:
 
