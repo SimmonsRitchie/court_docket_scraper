@@ -27,6 +27,7 @@ import logging
 from modules import initialize, scrape, download, convert, email, export, upload, misc
 from modules.misc import get_datetime_now_formatted
 from modules.parse import parse_main
+from modules.scrape import scrape
 from locations import dirs, temp_dir, paths
 from logs.config.logging import logs_config
 
@@ -83,18 +84,18 @@ def main():
     ########################################################################
 
     # START CHROME DRIVER
-    driver = initialize.initialize_driver()
 
     # SCRAPE UJS SEARCH RESULTS - SAVE DATA AS LIST OF DICTS
     # We first get basic docket data from search results, like docket numbers, filing dates, and URLs to download
     # PDFs of full docket data.
     for county in county_list:
-        docket_list = scrape.scrape_search_results(driver, county, target_scrape_date)
+        docket_list = scrape(county, target_scrape_date)
         if docket_list:
 
             # CYCLE THROUGH LIST OF DICTS, DOWNLOAD PDF OF EACH DOCKET
             # Each case is associated with a PDF that has more data. We now download each PDF using URLs we
             # scraped from the search results.
+            driver = initialize.initialize_driver()
             for docket in docket_list:
                 docketnum = docket["docketnum"]
                 docket_url = docket["url"]
@@ -112,6 +113,7 @@ def main():
                     )  # if no text, it likely means that there was a problem converting PDF to text
                     docket["charges"] = None
                     docket["bail"] = None
+            driver.quit()
 
             # CONVERT DICT LIST INTO PANDAS DF
             df = export.convert_dict_into_df(docket_list, county)

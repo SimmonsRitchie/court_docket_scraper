@@ -13,11 +13,32 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 import time
+import os
 import logging
 from typing import List
-
+from retry import retry
 # project modules
 from modules.misc import clean_list_of_dicts
+from modules.initialize import initialize_driver
+
+# GET ENV VARS
+RETRY_ATTEMPTS = os.getenv("RETRY_ATTEMPTS", 3) # default 0 attempts
+RETRY_DELAY = os.getenv("RETRY_DELAY", 10) # default 10 sec
+RETRY_BACKOFF = os.getenv("RETRY_BACKOFF", 5) # default x5
+
+
+@retry(Exception, tries=RETRY_ATTEMPTS, delay=RETRY_DELAY, backoff=RETRY_BACKOFF)
+def scrape(*args):
+    """Because scraping can fail unexpectedly we use retry decorator to
+    attempt scrape several times"""
+
+    try:
+        driver = initialize_driver()
+        scrape_search_results(driver, *args)
+        driver.quit()
+    except:
+        driver.quit()
+        raise
 
 
 def scrape_search_results(driver: object, county: str, scrape_date: str) -> List:
