@@ -14,7 +14,7 @@ class TestPdfPathGen(unittest.TestCase):
         self.docket1 = "1969-12-30,MJ-12101-CR-0000441-2019"
         self.docket2 = "1969-12-30,MJ-12102-CR-0000442-2019"
         self.docketnum_list = [self.docket1, self.docket1, self.docket2, self.docket1]
-        self.dir = Path("../output_files/pdfs/")
+        self.dir = Path("../../output_files/pdfs/")
         self.dir.mkdir(parents=True)
 
     def tearDown(self) -> None:
@@ -67,7 +67,7 @@ class TestCleanList(unittest.TestCase):
 
 class TestCreateFolders(unittest.TestCase):
     def setUp(self) -> None:
-        self.output_dir = Path("../output/create_folders/")
+        self.output_dir = Path("../../output/create_folders/")
         self.list_of_subdirs_to_create = [
             self.output_dir / "test1",
             self.output_dir / "test2",

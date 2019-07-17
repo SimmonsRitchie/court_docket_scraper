@@ -10,8 +10,8 @@ from locations import paths, dirs
 from modules.convert import convert_pdf_to_text
 
 mock_dirs = {
-    "pdfs": Path("../fixtures/pdfs/"),
-    "extracted_text": Path("../output/extracted_text/"),
+    "pdfs": Path("../../fixtures/pdfs/"),
+    "extracted_text": Path("../../output/extracted_text/"),
 }
 
 

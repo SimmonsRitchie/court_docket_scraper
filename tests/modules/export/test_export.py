@@ -17,8 +17,8 @@ from modules.export import (
 )
 
 mock_dirs = {
-    "payload_csv": Path("../output/csv_converted_from_df/"),
-    "payload_email": Path("../output/payload_email/"),
+    "payload_csv": Path("../../output/csv_converted_from_df/"),
+    "payload_email": Path("../../output/payload_email/"),
     "email_template": dirs["email_template"],  # using actual directory
 }
 
