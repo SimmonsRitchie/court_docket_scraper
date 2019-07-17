@@ -35,10 +35,13 @@ def scrape(*args):
     try:
         driver = initialize_driver()
         scrape_search_results(driver, *args)
-        driver.quit()
     except:
-        driver.quit()
+        logging.error("Something went wrong during scrape")
         raise
+    finally:
+        logging.error("Quitting chrome driver")
+        driver.quit() # it's important to quit driver otherwise we'll get
+        # errors when we re-run scrape_search_results
 
 
 def scrape_search_results(driver: object, county: str, scrape_date: str) -> List:
@@ -84,8 +87,6 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
         input_startdate.clear()
         input_startdate.send_keys(str(startdate))
 
-        # RANDOM ERROR - DELETE THIS
-        raise
 
         # selecting end date
         logging.info("Entering end date: {}".format(enddate))
@@ -156,6 +157,7 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                 court_count
             )  # this will return 'noSuchElement' exception when no more
             # courts are available, breaking search_courtloop
+
 
             # GET COURT NAME
             input_court_options = [court.text for court in input_court_select.options]
