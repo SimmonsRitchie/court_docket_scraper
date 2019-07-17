@@ -40,7 +40,7 @@ def main():
     # INIT LOGGING
     logs_config()
 
-    # ENV VARS
+    # GET ENV VARS
     county_list = json.loads(os.environ.get("COUNTY_LIST"))
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
     target_scrape_date = (

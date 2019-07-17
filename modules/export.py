@@ -16,7 +16,7 @@ from modules import misc, style
 from locations import dirs, paths
 
 
-def convert_dict_into_df(docketlist: Dict, county: str) -> \
+def convert_dict_into_df(docketlist: List[Dict], county: str) -> \
         pd.DataFrame:
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
     pd.set_option("display.max_columns", 20)
