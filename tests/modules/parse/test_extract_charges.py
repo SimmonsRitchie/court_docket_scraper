@@ -12,7 +12,7 @@ test_dirs = {
     "extracted_text": Path("../../fixtures/extracted_text_2/")
 }
 
-class TestParseMain(unittest.TestCase):
+class TestParseCharges(unittest.TestCase):
     # def setUp(self) -> None:
         # logs_config(paths["logs_config_test"])
 
@@ -21,14 +21,14 @@ class TestParseMain(unittest.TestCase):
         Test that extracted text files are parsed without causing an error.
         """
         extracted_text_dir = test_dirs["extracted_text"]
-        list_text_files = list(extracted_text_dir.glob("*.txt"))  # we get all files with this suffix
+        list_text_files = list(extracted_text_dir.glob("*.txt"))
         for count, text_file_path in enumerate(list_text_files):
             print(f"\n\nITEM {count}: {text_file_path.stem}")
-            print("-------------------------------------------------------------")
+            print("----------------------------------------------------------")
             text = text_file_path.read_text()
             parsed_data = extract_charges(text)
             pp.pprint(parsed_data)
-            print("-------------------------------------------------------------")
+            print("----------------------------------------------------------")
 
 
 
