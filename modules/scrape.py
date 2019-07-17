@@ -22,9 +22,9 @@ from modules.misc import clean_list_of_dicts
 from modules.initialize import initialize_driver
 
 # GET ENV VARS
-RETRY_ATTEMPTS = os.getenv("RETRY_ATTEMPTS", 3) # default 0 attempts
-RETRY_DELAY = os.getenv("RETRY_DELAY", 10) # default 10 sec
-RETRY_BACKOFF = os.getenv("RETRY_BACKOFF", 5) # default x5
+RETRY_ATTEMPTS = float(os.getenv("RETRY_ATTEMPTS", 3)) # default 0 attempts
+RETRY_DELAY = float(os.getenv("RETRY_DELAY", 10)) # default 10 sec
+RETRY_BACKOFF = float(os.getenv("RETRY_BACKOFF", 5)) # default x5
 
 
 @retry(Exception, tries=RETRY_ATTEMPTS, delay=RETRY_DELAY, backoff=RETRY_BACKOFF)
@@ -83,6 +83,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
 
         input_startdate.clear()
         input_startdate.send_keys(str(startdate))
+
+        # RANDOM ERROR - DELETE THIS
+        raise
 
         # selecting end date
         logging.info("Entering end date: {}".format(enddate))
