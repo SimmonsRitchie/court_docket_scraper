@@ -13,10 +13,10 @@ from locations import paths, dirs
 from modules.email import email_notification, login_to_gmail_and_send
 
 mock_dirs = {
-    "payload_email": Path("../fixtures/payload_email"),
+    "payload_email": Path("../../fixtures/payload_email"),
     "email_template": dirs["email_template"],
-    "email_final": Path("../output/email_final"),
-    "payload_csv": Path("../fixtures/payload_csv"),
+    "email_final": Path("../../output/email_final"),
+    "payload_csv": Path("../../fixtures/payload_csv"),
 }
 
 mock_paths = {

@@ -5,16 +5,23 @@ from shutil import rmtree
 import os
 
 # import mocks
-from tests.mocks.driver import initialize_test_driver
+# from tests.mocks.driver import initialize_test_driver
 
 # project modules
 from modules.download import download_pdf
 from locations import dirs, paths
 from logs.config.logging import logs_config
+from modules.initialize import initialize_driver
 
-mock_dirs = {"pdfs": Path("../output/pdfs/").resolve()}
+# MOCKS
+mock_dirs = {"pdfs": Path("../../output/pdfs/").resolve()} # NOTE: Must have resolve otherwise you'll have problems
 
+@mock.patch.dict(dirs, mock_dirs, clear=True)
+def initialize_test_driver():
+    """ By mocking the directory paths we force webdriver to set test/output/pdfs as default download directory"""
+    return initialize_driver()
 
+# TESTS
 class TestPdfDownload(unittest.TestCase):
     def setUp(self) -> None:
         self.driver = initialize_test_driver()

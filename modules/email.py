@@ -54,7 +54,7 @@ def email_error_notification(error_summary, full_error_msg):
     # ATTACH ERROR LOG + CSV
     # Attach logs
     dir_latest_logs = dirs["logs_output"] / "latest"
-    attachments = list(dir_latest_logs.glob("*.log"))
+    attachments = list(dir_latest_logs.glob("*info.log")) # we get all files with this suffix
 
     # CREATE HTML PAYLOAD
     message = create_final_email_payload(
