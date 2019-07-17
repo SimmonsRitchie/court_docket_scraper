@@ -71,7 +71,7 @@ def main():
 
     # CREATE TEMP DIRECTORIES
     temp_subdirs = [
-        dirs[dir] for dir in dirs if "/" + str(temp_dir.name) + "/" in str(dirs[dir])
+        dirs[directory] for directory in dirs if "/" + str(temp_dir.name) + "/" in str(dirs[directory])
     ]
     misc.create_folders(temp_subdirs)
 
