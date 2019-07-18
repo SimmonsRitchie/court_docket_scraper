@@ -6,137 +6,116 @@ from docket PDFs.
 # in-built or third party libs
 import re
 import logging
-from typing import Dict
+from typing import Dict, Pattern, Callable, Any, Optional, Union
 
-# project modules
+"""
+PARSER RECIPE
+We set how different text fields will be parsed here.
+"""
+parser_recipe = [
+    {
+        "field": "charges",
+        "pattern": re.compile(
+            r"(Grade Description\n)"  # look for 'Grade Description' first
+            r"((F\d?|M\d?|S)?\n)*"  # May be followed by multiple M, F1...
+            r"(?P<charges>.*?)"  # we capture this
+            r"(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled "
+            r"Date|\nM\d?\n|\nF\d?\n|\nS\n|\nBail Set:\n|\nPage |\n# "
+            r"Charge\n)",  # wide range of keywords proceed charges
+            re.DOTALL  # matches all chars, including newlines
+        ),
+        "clean_up": lambda x: x.replace("\n", "; "),
+        "limit_size": 400,
+    }, {
+        "field": "bail",
+        "pattern": re.compile(
+            r"(Amount\n)"  # first find 'Amount' and newline
+            r"\$"
+            r"(?P<bail>(\d|,)*)"  # capture all digits and commas
+            r"\.00",  # end with '.00'
+            re.DOTALL
+        ),
+        "type_converter": lambda x: int(x),
+        "clean_up": lambda x: x.replace(",", ""),
+        "limit_size": 15,
+    }, {
+        "field": "arresting_agency",
+        "pattern": re.compile(
+            r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
+            r"\n(?P<arresting_agency>.*(Police|PSP|police|District "  # 
+            # capture group
+            r"Attorney|district attorney|Detectives|detectives).*)\n"
+        ),
+        "limit_size": 100,
+    },
+]
 
 
 def parse_main(text: str = "") -> Dict:
 
     """
-    Parse texted from PDFs using regex.
-
-    Each time we extract docket text from PDF the results can be slightly
-    different.
-
-    However there are generally specific words that precede and proceed the
-    text we want. We use these markers in our regex.
+    A loop for processing each parsing recipe. Returns a dict of parsed values.
     """
     if text == "":
         logging.warning("Empty string provided for parsing")
 
-    return {
-        "charges": extract_charges(text),
-        "bail": extract_bail(text),
-        "arresting_agency": extract_arresting_agency(text),
-    }
+    parsed_data = {}
+    for recipe in parser_recipe:
+        field = recipe["field"]
+        parsed_data[field] = parser(text, **recipe)
+    return parsed_data
 
 
-def extract_charges(text: str) -> str:
 
-    """ Returns list of charges from raw text. Note: some charges may not be
-     extracted perfectly """
+def parser(text: str, *,
+           field: str,
+           pattern: Pattern[str],
+           type_converter: Optional[Callable] = None,
+           clean_up: Optional[Callable] = None,
+           limit_size: Optional[int] = None,
+           null_value: Optional[Union[str, int, bool, None]] = None
+           ) -> str:
+    """
+    Returns text based on regex pattern and other provided conditions.
 
-    # attempt tp parse text file for charges
+    :param text: Str. Text to parse.
+    :param field: Str. Label for output info, eg 'charges', 'bail'.
+    :param pattern: Pattern. Regex, compiled pattern used to search.
+    :param type_converter: Callable. Optional. Set type for return value.
+    Defaults to string converter.
+    :param clean_up: Callable. Optional. Function that does any final
+    formatting.
+    :param limit_size: Int. Optional. Max number of chars in returned string.
+    :param null_value: Any. Optional. Value to set when parse conditions
+    aren't met. 
+    Default None.
+    :return: Str. Desired pattern in text.
+    """
+    # set default if no type converter func is provided
+    if not type_converter:
+        type_converter = lambda x: str(x)
+
+    # parse
+    logging.info("Attempting to extract charges from text with Regex...")
     try:
-        # PARSE
-        logging.info("Attempting to extract charges from text with Regex...")
-        pattern = re.compile(
-            r"(Grade Description\n)"  # look for 'Grade Description' first
-            r"((F\d?|M\d?|S)?\n)*"  # May be followed by multiple M, F1, etc.
-            r"(?P<charges_text>.*?)"  # our charges text - we capture this
-            r"(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled "
-            r"Date|\nM\d?\n|\nF\d?\n|\nS\n|\nBail Set:\n|\nPage |\n# "
-            r"Charge\n)",  # wide range of keywords proceed charges
-            re.DOTALL,  # matches all chars, including newlines
-        )
         match = pattern.search(text)
-        charges = match.group("charges_text")  # we used named capture group
-        logging.info(f"CHARGES, FIRST PASS: {charges}")
+        final_value = match.group(field)
+        logging.info(f"{field.upper()}, FIRST PASS: {final_value}")
 
-        # CLEAN UP
-        logging.info("Cleaning up charges text...")
-        charges = charges.replace(
-            "\n", "; "
-        )  # Replacing newline chars so data looks better in table
-        charges = charges[0:400]  # Limit size of captured text
+        # Options
+        if clean_up:
+            final_value = clean_up(final_value)
+        if limit_size:
+            final_value = final_value[0:limit_size]
 
-    # If something goes wrong with parsing, default to None
-    except AttributeError as e:
-        logging.info(
-            "Parsing failed or couldn't find target value - setting " "to None"
-        )
-        charges = None
+        # Type
+        final_value = type_converter(final_value)
 
-    logging.info(f"CHARGES, FINAL: {charges}")
-    return charges
-
-
-def extract_bail(text: str) -> int:
-
-    """ Returns bail amount from raw text, eg. '1200'. Note: unlike charges,
-    many dockets will have no bail set. Most values will return as None"""
-
-    # parsing text file for bail
-    try:
-        # PARSE
-        logging.info("Attempting to extract bail from text with Regex...")
-        pattern = re.compile(
-            r"(Amount\n)"  # first find 'Amount' and newline
-            r"\$"
-            r"((\d|,)*)"  # capture all digits and commas
-            r"\.00",  # end with '.00'
-            re.DOTALL,
-        )
-        match = pattern.search(text)
-        bail = match.group(2)
-        logging.info(f"BAIL, FIRST PASS: {bail}")
-
-        # CLEAN UP
-        bail = bail[0:15]  # limit size
-        bail = bail.replace("\n", "").replace(",", "")  # remove newlines,
-        # commas
-        bail = int(bail)  # return as int
-
-    # If something goes wrong with parsing, default to None. We could set to
-    # 0 here but we prefer None because not all offenses result in bail
-    # being set. Using '0' may imply a bail of $0 was set.
     except (AttributeError, ValueError) as e:
         logging.info(
             "Parsing failed or couldn't find target value - setting " "to None"
         )
-        bail = None
+        final_value = null_value
 
-    logging.info(f"BAIL, FINAL: {bail}")
-    return bail
-
-
-def extract_arresting_agency(text: str) -> str:
-
-    """ Returns bail amount from raw text, eg. '1200'. Note: unlike charges,
-    many dockets will have no bail set. Most values will return as None"""
-
-    # parsing text file for bail
-    try:
-        # PARSE
-        logging.info(
-            "Attempting to extract arresting agency from text with " "Regex..."
-        )
-        pattern = re.compile(
-            r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
-            r"\n(?P<agency>.*(Police|PSP|police|District "  # capture group
-            r"Attorney|district attorney).*)\n"
-        )
-        match = pattern.search(text)
-        agency = match.group("agency")
-        logging.info(f"ARRESTING AGENCY, FIRST PASS: {agency}")
-
-    # If something goes wrong with parsing, default to None
-    except AttributeError as e:
-        logging.info(
-            "Parsing failed or couldn't find target value - setting " "to None"
-        )
-        agency = None
-
-    logging.info(f"ARRESTING AGENCY, FINAL: {agency}")
-    return agency
+    logging.info(f"{field.upper()}, FINAL: {final_value}")
+    return final_value
