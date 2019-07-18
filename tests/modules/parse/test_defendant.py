@@ -22,8 +22,8 @@ class TestParseBail(unittest.TestCase):
         Test that extracted bail matches expected values.
         """
         dict_to_match = {
-            "MJ-09101-CR-0000362-2019": None,
-            "MJ-09301-CR-0000235-2019": 5000,
+            'MJ-02202-CR-0000202-2019': 'Charles Joseph Hargroves',
+            'MJ-02205-CR-0000138-2019': 'Tiffany Shirley'
         }
 
         # parse text
@@ -38,5 +38,5 @@ class TestParseBail(unittest.TestCase):
             parsed_dict[docketnum] = parser(text, **bail_recipe)
 
         # check that dict_to_match key-values are subset of parsed_dict
-        # self.assertTrue(dict_to_match.items() <= parsed_dict.items())
+        self.assertTrue(dict_to_match.items() <= parsed_dict.items())
         pp.pprint(parsed_dict)
