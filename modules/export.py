@@ -49,14 +49,14 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # ENV VAR - SET FIELDS
     # We've collected many fields from our scrape but they don't all fit nicely
     # in an emailed table. Here we limit them and rearrange their order.
-    fields = json.loads(os.getenv("FIELDS_FOR_EMAIL", None))
+    fields = os.getenv("FIELDS_FOR_EMAIL", None)
     if fields:
+        fields = json.loads(fields)
         fields = [x.lower().replace(' ', '_') for x in fields]
     else:
-        default_fields = ["case_caption", "dob", "arresting_agency",
+        fields = ["case_caption", "dob", "arresting_agency",
                           "township",
                           "charges", "bail", "url"]
-        fields = default_fields if fields is None else fields
     df = df[fields]
 
     # ENV VAR - SORT FIELDS
@@ -66,10 +66,14 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     sort_field, sort_order = sort_tuple
     if sort_field in df.columns:
         df = df.sort_values(by=sort_field, ascending=(sort_order == 'asc'))
+    else:
+        logging.warning(f"Desired sort value ({sort_field}) is not among "
+                        f"columns in df")
 
     # OTHER FORMATTING
     # We check whether column names are present before formatting because
-    # they may have been culled when fields were set.
+    # they may have been culled when fields were set. We'll get errors if we
+    # try to format a field that doesn't exist.
     if 'charges' in df.columns:
         df["charges"] = df["charges"].str.slice(0, 150)
     if 'case_caption' in df.columns:
