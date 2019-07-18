@@ -27,7 +27,7 @@ def parse_main(text: str = "") -> Dict:
     return {
         "charges": extract_charges(text),
         "bail": extract_bail(text),
-        "arresting_agency": extract_arresting_agency()
+        "arresting_agency": extract_arresting_agency(text)
     }
 
 

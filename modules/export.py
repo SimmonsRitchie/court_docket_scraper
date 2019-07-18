@@ -49,18 +49,15 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
     df = df.sort_values(by="bail", ascending=False)
 
-    # CULLING COLUMNS + REORDERING
+    # FORMATTING
     # Removing columns that aren't useful, like docket_num and county
-    df = df[["case_caption", "filing_date", "dob", "charges", "bail", "url"]]
-
-    # REDUCE SIZE OF CHARGES COL
+    df = df[["case_caption", "arresting_agency","filing_date", "dob",
+             "charges", "bail", "url"]]
     # Charges can be particularly long so trimming it for readability in email
     df["charges"] = df["charges"].str.slice(0, 150)
-    # REFORMAT COLUMN HEADS
     df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
-    df.columns = df.columns.str.replace(
-        "_", " "
-    )  # removing underscores for more human-readable format
+    # removing underscores for more human-readable format
+    df.columns = df.columns.str.replace("_", " ")
 
     # SET STYLES FOR EMAIL PAYLOAD
     df_styled = (
@@ -139,6 +136,7 @@ def convert_df_to_csv(df: pd.DataFrame) -> None:
     df["dob"] = pd.to_datetime(df["dob"]).dt.strftime("%Y-%m-%d")
     df["filing_date"] = pd.to_datetime(df["filing_date"]).dt.strftime("%Y-%m-%d")
     logging.info("Reformatting complete")
+
     # WRITE
     logging.info("Writing CSV file...")
     if csv_payload_path.is_file():

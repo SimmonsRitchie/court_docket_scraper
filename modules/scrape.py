@@ -34,7 +34,7 @@ def scrape(*args):
 
     try:
         driver = initialize_driver()
-        scrape_search_results(driver, *args)
+        docket_list = scrape_search_results(driver, *args)
     except:
         logging.error("Something went wrong during scrape")
         raise
@@ -42,6 +42,7 @@ def scrape(*args):
         logging.error("Quitting chrome driver")
         driver.quit() # it's important to quit driver otherwise we'll get
         # errors when we re-run scrape_search_results
+    return docket_list
 
 
 def scrape_search_results(driver: object, county: str, scrape_date: str) -> List:

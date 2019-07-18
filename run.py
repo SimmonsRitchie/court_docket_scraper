@@ -117,14 +117,10 @@ def main():
             html_df = export.convert_df_to_html(df)
             export.save_html_county_payload(county_intro, html_df)
 
-        # IF NO DATA RETURNED FROM SCRAPE...
         else:
-            county_intro = "No cases found for {} County.".format(
-                county
-            )  # count of cases in county
-            export.save_html_county_payload(
-                county_intro
-            )  # save html df + add extra html
+            logging.info(f"No cases were found for {county} County")
+            county_intro = f"No cases found for {county} County."
+            export.save_html_county_payload(county_intro)
 
     ########################################################################
     #                        EXPORT & EMAIL FINAL PAYLOAD
