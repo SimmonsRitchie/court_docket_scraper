@@ -3,10 +3,8 @@ This module downloads dockets as PDFs and stores them in a given directory
 """
 
 # Third party or inbuilt libs
-import os
 import time
 import logging
-
 # Project modules
 from modules.misc import pdf_path_gen
 from locations import dirs

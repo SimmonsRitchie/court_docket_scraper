@@ -10,6 +10,7 @@ from datetime import datetime
 import logging
 from typing import Dict, Optional, List, Union
 from pathlib import Path
+import os
 
 # project modules
 from modules import misc, style
@@ -44,23 +45,19 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     """
     logging.info("Converting Pandas DF into HTML table...")
 
+    # GET ENV VAR
+    default_fields = ["case_caption", "dob", "arresting_agency", "township",
+              "charges", "bail", "url"]
+    fields = os.getenv("FIELDS_FOR_EAMAIL", default_fields)
+
+
     # SORTING DATA
     # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
     df = df.sort_values(by="bail", ascending=False)
 
     # FORMATTING
     # Removing columns that aren't useful, like docket_num and county
-    df = df[
-        [
-            "case_caption",
-            "arresting_agency",
-            "filing_date",
-            "dob",
-            "charges",
-            "bail",
-            "url",
-        ]
-    ]
+    df = df[fields]
     # Charges can be particularly long so trimming it for readability in email
     df["charges"] = df["charges"].str.slice(0, 150)
     df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
