@@ -54,9 +54,8 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
         fields = json.loads(fields)
         fields = [x.lower().replace(' ', '_') for x in fields]
     else:
-        fields = ["case_caption", "dob", "arresting_agency",
-                          "township",
-                          "charges", "bail", "url"]
+        fields = ["case_caption", "dob", "arresting_agency", "charges",
+                  "bail", "url"]
     df = df[fields]
 
     # ENV VAR - SORT FIELDS

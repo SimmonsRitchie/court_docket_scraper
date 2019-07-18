@@ -54,15 +54,17 @@ parser_recipe = [
             r"CASE INFORMATION\n"
         ),
         "limit_size": 100,
-    }, {
-        "field": "arresting_officer",
+    },{
+        "field": "defendant",
         "pattern": re.compile(
-            r"Participant Name\n"
-            r".*\n" # typically defendant name
-            r"(?P<arresting_officer>.*)\n"
+            r"(?P<defendant>.*)\n"
+            r"(\d{2}\\\d{2}\\\d{4})\n"
+            r"DEFENDANT INFORMATION"
         ),
         "limit_size": 100,
     }
+
+
 ]
 
 
@@ -122,7 +124,8 @@ def parser(text: str, *,
             final_value = clean_up(final_value)
         if limit_size:
             final_value = final_value[0:limit_size]
-
+        # Trim
+        final_value = final_value.strip()
         # Type
         final_value = type_converter(final_value)
 
@@ -134,3 +137,5 @@ def parser(text: str, *,
 
     logging.info(f"{field.upper()}, FINAL: {final_value}")
     return final_value
+
+
