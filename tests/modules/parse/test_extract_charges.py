@@ -25,9 +25,9 @@ class TestParseCharges(unittest.TestCase):
             "MJ-12304-CR-0000259-2019": "Resist Arrest/Other Law Enforce; "
             "Int Poss Contr Subst By Per Not Reg; Marijuana-Small Amt Personal Use; Use/Poss Of Drug Paraph",
             "MJ-12301-CR-0000163-2019": "Endangering Welfare of Children - ; Parent/Guardian/Other Commits Offense;"
-                                        " DUI: Controlled Substance - Schedule 2 or 3 - 1st ; Offense; DUI: Controlled"
-                                        " Substance - Impaired Ability - 1st ; Offense; Endangering Welfare of Children"
-                                        " - ; Parent/Guardian/Other Commits Offense; Driving W/O A License",
+            " DUI: Controlled Substance - Schedule 2 or 3 - 1st ; Offense; DUI: Controlled"
+            " Substance - Impaired Ability - 1st ; Offense; Endangering Welfare of Children"
+            " - ; Parent/Guardian/Other Commits Offense; Driving W/O A License",
         }
 
         # parse text

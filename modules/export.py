@@ -16,8 +16,7 @@ from modules import misc, style
 from locations import dirs, paths
 
 
-def convert_dict_into_df(docketlist: List[Dict], county: str) -> \
-        pd.DataFrame:
+def convert_dict_into_df(docketlist: List[Dict], county: str) -> pd.DataFrame:
     # SET PANDAS OPTIONS FOR PRINT DISPLAY
     pd.set_option("display.max_columns", 20)
     pd.set_option("display.width", 2000)
@@ -51,8 +50,17 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
 
     # FORMATTING
     # Removing columns that aren't useful, like docket_num and county
-    df = df[["case_caption", "arresting_agency","filing_date", "dob",
-             "charges", "bail", "url"]]
+    df = df[
+        [
+            "case_caption",
+            "arresting_agency",
+            "filing_date",
+            "dob",
+            "charges",
+            "bail",
+            "url",
+        ]
+    ]
     # Charges can be particularly long so trimming it for readability in email
     df["charges"] = df["charges"].str.slice(0, 150)
     df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
@@ -73,8 +81,7 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     return df_styled.render()
 
 
-def save_html_county_payload(county_intro: str, df_styled:Optional[str]="") \
-        -> None:
+def save_html_county_payload(county_intro: str, df_styled: Optional[str] = "") -> None:
 
     """
     Here we load our pandas DF that's been rendered in HTML, add county_intro above it, wrap it an HTML table,
@@ -229,8 +236,9 @@ def convert_csv_to_json(county_list: List[str]) -> datetime:
     return date_and_time_of_scrape
 
 
-def save_copy_of_final_email(path_final_email: Union[str, Path],
-                             msg_content: str) -> None:
+def save_copy_of_final_email(
+    path_final_email: Union[str, Path], msg_content: str
+) -> None:
     with open(path_final_email, "w") as fout:
         logging.info("Saving copy of email for testing and debugging purposes")
         fout.write(msg_content)

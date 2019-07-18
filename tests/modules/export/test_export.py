@@ -74,7 +74,6 @@ class TestSaveHtmlPayload(unittest.TestCase):
         df = convert_dict_into_df(docket_list, "Dauphin")
         self.styled_df = convert_df_to_html(df)
 
-
     def tearDown(self) -> None:
         print(f"Deleting temp folder: {mock_dirs['payload_email']}")
         rmtree(mock_dirs["payload_email"])

@@ -17,14 +17,15 @@ import os
 import logging
 from typing import List
 from retry import retry
+
 # project modules
 from modules.misc import clean_list_of_dicts
 from modules.initialize import initialize_driver
 
 # GET ENV VARS
-RETRY_ATTEMPTS = float(os.getenv("RETRY_ATTEMPTS", 3)) # default 0 attempts
-RETRY_DELAY = float(os.getenv("RETRY_DELAY", 10)) # default 10 sec
-RETRY_BACKOFF = float(os.getenv("RETRY_BACKOFF", 5)) # default x5
+RETRY_ATTEMPTS = float(os.getenv("RETRY_ATTEMPTS", 3))  # default 0 attempts
+RETRY_DELAY = float(os.getenv("RETRY_DELAY", 10))  # default 10 sec
+RETRY_BACKOFF = float(os.getenv("RETRY_BACKOFF", 5))  # default x5
 
 
 @retry(Exception, tries=RETRY_ATTEMPTS, delay=RETRY_DELAY, backoff=RETRY_BACKOFF)
@@ -40,7 +41,7 @@ def scrape(*args):
         raise
     finally:
         logging.error("Quitting chrome driver")
-        driver.quit() # it's important to quit driver otherwise we'll get
+        driver.quit()  # it's important to quit driver otherwise we'll get
         # errors when we re-run scrape_search_results
     return docket_list
 
@@ -87,7 +88,6 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
 
         input_startdate.clear()
         input_startdate.send_keys(str(startdate))
-
 
         # selecting end date
         logging.info("Entering end date: {}".format(enddate))
@@ -158,7 +158,6 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                 court_count
             )  # this will return 'noSuchElement' exception when no more
             # courts are available, breaking search_courtloop
-
 
             # GET COURT NAME
             input_court_options = [court.text for court in input_court_select.options]

@@ -29,6 +29,7 @@ mock_paths = {
 # Load ENV vars
 dotenv.load_dotenv(root_dir / ".dev.env")
 
+
 class TestEmail(unittest.TestCase):
     def setUp(self) -> None:
         # vars

@@ -96,7 +96,9 @@ def main():
             # download and parse each PDF
             driver = initialize.initialize_driver()
             for docket in docket_list:
-                pdf_path = download.download_pdf(driver, docket["url"], docket["docketnum"])
+                pdf_path = download.download_pdf(
+                    driver, docket["url"], docket["docketnum"]
+                )
                 text = convert.convert_pdf_to_text(pdf_path, docket["docketnum"])
 
                 # PARSE PDF TEXT FOR EXTRA INFO

@@ -81,8 +81,9 @@ def email_error_notification(error_summary: str, full_error_msg: str) -> None:
     login_to_gmail_and_send(recipients, message, subject_line, attachments)
 
 
-def email_notification(date_and_time_of_scrape: object, target_scrape_day: str,
-                       county_list: List[str]) -> None:
+def email_notification(
+    date_and_time_of_scrape: object, target_scrape_day: str, county_list: List[str]
+) -> None:
 
     """ Assembles and sends our email notification after successful scrape """
 
@@ -145,9 +146,12 @@ def gen_mobile_tease_content(county_list: List[str]) -> str:
     return mobile_tease_content + ("&nbsp;&zwnj;" * 50)
 
 
-def gen_intro_content(county_list: List[str], target_scrape_day: str,
-                      formatted_time: str,
-                      yesterday_date: str) -> str:
+def gen_intro_content(
+    county_list: List[str],
+    target_scrape_day: str,
+    formatted_time: str,
+    yesterday_date: str,
+) -> str:
     # GENERATE INTRO
     # we create different intros based on conditions
     if len(county_list) == 1:
@@ -194,8 +198,9 @@ def gen_footer_content(formatted_time: str, formatted_date: str) -> str:
     )
 
 
-def insert_special_message(scraped_data_content: str, mobile_tease_content:
-str, subject_line: str) -> str:
+def insert_special_message(
+    scraped_data_content: str, mobile_tease_content: str, subject_line: str
+) -> str:
     # We first but give priority to murder if found.
     special_msg = ""
     if "homicide" in scraped_data_content.lower():
@@ -280,8 +285,10 @@ def create_final_email_payload(
 
 
 def create_subject_line(
-    target_scrape_date: str, formatted_date: str, yesterday_date: str,
-        county_list: List[str]
+    target_scrape_date: str,
+    formatted_date: str,
+    yesterday_date: str,
+    county_list: List[str],
 ) -> str:
 
     logging.info("Generating subject line...")
@@ -307,9 +314,12 @@ def create_subject_line(
     return subject
 
 
-def login_to_gmail_and_send(recipients: List[str], html_msg: str,
-                            subject_line: str,
-                            attachments: Optional[List[str]]=[]):
+def login_to_gmail_and_send(
+    recipients: List[str],
+    html_msg: str,
+    subject_line: str,
+    attachments: Optional[List[str]] = [],
+):
 
     """
     Takes a string (with HTML markup, if desired), converts to MIME, logs into gmail  and sends message.

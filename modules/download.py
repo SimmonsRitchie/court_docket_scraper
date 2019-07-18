@@ -40,8 +40,9 @@ def download_pdf(driver, docket_url, docketnum):
     counter = 0
     cycles = 120
     sleep_interval = 0.1
-    logging.info(f"Waiting max of {cycles * sleep_interval} seconds for file "
-                 f"to appear...")
+    logging.info(
+        f"Waiting max of {cycles * sleep_interval} seconds for file " f"to appear..."
+    )
     while counter < cycles and not path_downloaded_docket.is_file():
         logging.debug(
             f"cycle: {counter}, time: {round((counter * sleep_interval), 1)} sec"

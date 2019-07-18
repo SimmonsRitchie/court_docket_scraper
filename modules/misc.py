@@ -1,5 +1,6 @@
 """
-This module stores small, reusable functions used by other modules. Eg. getting dates, formatting dates, creating directory and file paths
+This module stores small, reusable functions used by other modules.
+Eg. getting dates, formatting dates, creating directory and file paths
 
 """
 
@@ -10,6 +11,7 @@ import pandas as pd
 import logging
 from typing import Union, Optional, List
 from pathlib import Path
+
 
 def print_title(program_name: str) -> None:
     print("----------------------------------------------------------------")
@@ -23,10 +25,12 @@ def get_datetime_now_formatted() -> str:
     return datetime.now().strftime("%b %d %Y, %-I:%M %p")
 
 
-def gen_unique_filename(directory: Path, filename: str, ext: str,
-                        counter:Optional[int] = 0) -> Path:
+def gen_unique_filename(
+    directory: Path, filename: str, ext: str, counter: Optional[int] = 0
+) -> Path:
     """
-    This func recursively determines if a filename already exists in a given directory. Returns a unique path.
+    This func recursively determines if a filename already exists in a given
+    directory. Returns a unique path.
     It expects directory to be a Path object.
     """
     full_filename = (
@@ -100,14 +104,16 @@ def create_folders(dirs: List[Path]):
     """
     logging.info("Generating temp directories:")
     for dir in dirs:
-        dir.mkdir(parents=True)  # creates folder and parent folders if they don't exist
+        dir.mkdir(parents=True)  # creates folder and parent folders if
+        # they don't exist
         logging.info(">> {}".format(dir))
     logging.info("Temp directories created")
 
 
 def clean_list_of_dicts(list_of_dicts):
     """
-    Take a list of dicts and returns a list of dicts. Any dict that had duplicate docketnums is removed. Retains the
+    Take a list of dicts and returns a list of dicts. Any dict that had
+    duplicate docketnums is removed. Retains the
     first record in a duplicated set.
     """
     df = pd.DataFrame(list_of_dicts)
@@ -117,8 +123,8 @@ def clean_list_of_dicts(list_of_dicts):
 
 def clean_df(df):
     """
-    Returns a df with NaN or NaTs replaced with None. Also removes any records with duplicate docketnums (
-    retains the first record of a set of duplicates)
+    Returns a df with NaN or NaTs replaced with None. Also removes any records
+    with duplicate docketnums (retains the first record of a set of duplicates)
     """
     if not df.empty:  # df must not be empty otherwise Pandas will throw error
         df = df[~df.duplicated(subset="docketnum", keep="first")]

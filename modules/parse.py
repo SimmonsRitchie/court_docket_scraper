@@ -1,5 +1,6 @@
 """
-This module uses regex to extract important information from text extracted from docket PDFs.
+This module uses regex to extract important information from text extracted
+from docket PDFs.
 """
 
 # in-built or third party libs
@@ -27,7 +28,7 @@ def parse_main(text: str = "") -> Dict:
     return {
         "charges": extract_charges(text),
         "bail": extract_bail(text),
-        "arresting_agency": extract_arresting_agency(text)
+        "arresting_agency": extract_arresting_agency(text),
     }
 
 
@@ -82,7 +83,8 @@ def extract_bail(text: str) -> int:
         logging.info("Attempting to extract bail from text with Regex...")
         pattern = re.compile(
             r"(Amount\n)"  # first find 'Amount' and newline
-            r"\$" r"((\d|,)*)"  # capture all digits and commas
+            r"\$"
+            r"((\d|,)*)"  # capture all digits and commas
             r"\.00",  # end with '.00'
             re.DOTALL,
         )
@@ -117,15 +119,17 @@ def extract_arresting_agency(text: str) -> str:
     # parsing text file for bail
     try:
         # PARSE
-        logging.info("Attempting to extract bail from text with Regex...")
+        logging.info(
+            "Attempting to extract arresting agency from text with " "Regex..."
+        )
         pattern = re.compile(
-            r"\n[A-Z]\s\d{4,}.*\n(?P<agency>.*(Police|PSP|police|District "
+            r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
+            r"\n(?P<agency>.*(Police|PSP|police|District "  # capture group
             r"Attorney|district attorney).*)\n"
         )
         match = pattern.search(text)
-        agency = match.group('agency')
+        agency = match.group("agency")
         logging.info(f"ARRESTING AGENCY, FIRST PASS: {agency}")
-
 
     # If something goes wrong with parsing, default to None
     except AttributeError as e:

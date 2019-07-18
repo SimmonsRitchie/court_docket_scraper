@@ -2,6 +2,7 @@ import unittest
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
 # project modules
 from modules.initialize import initialize_driver
 from modules.misc import yesterday_date
@@ -12,11 +13,11 @@ from locations import paths, root_dir
 
 load_dotenv(root_dir / ".dev.env")
 
+
 class TestScrape(unittest.TestCase):
     def setUp(self) -> None:
         self.driver = initialize_driver()
         logs_config(paths["logs_config_test"])
-
 
     def test_scrape_without_error(self):
         """
