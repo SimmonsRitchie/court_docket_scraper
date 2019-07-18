@@ -37,6 +37,7 @@ class TestConvertDictToDf(unittest.TestCase):
         df = convert_dict_into_df(docket_list, "Dauphin")
         self.assertIsInstance(df, pd.core.frame.DataFrame)
 
+
     def test_convert_empty_dict_into_df(self):
         """
         Test that result is a dataframe

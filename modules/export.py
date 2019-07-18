@@ -11,6 +11,7 @@ import logging
 from typing import Dict, Optional, List, Union
 from pathlib import Path
 import os
+from ast import literal_eval as make_tuple
 
 # project modules
 from modules import misc, style
@@ -41,26 +42,38 @@ def convert_dict_into_df(docketlist: List[Dict], county: str) -> pd.DataFrame:
 def convert_df_to_html(df: pd.DataFrame) -> str:
 
     """
-    Takes a Pandas DF, reformats slightly, returns a DF rendered in HTML.
+    Takes a Pandas DF, reformats slightly, returns a HTML formatted table as a string.
     """
     logging.info("Converting Pandas DF into HTML table...")
 
-    # GET ENV VAR
-    default_fields = ["case_caption", "dob", "arresting_agency", "township",
-              "charges", "bail", "url"]
-    fields = os.getenv("FIELDS_FOR_EAMAIL", default_fields)
-
-
-    # SORTING DATA
-    # Ordering by bail because cases with high bail amounts are likely to be serious crimes.
-    df = df.sort_values(by="bail", ascending=False)
-
-    # FORMATTING
-    # Removing columns that aren't useful, like docket_num and county
+    # ENV VAR - SET FIELDS
+    # We've collected many fields from our scrape but they don't all fit nicely
+    # in an emailed table. Here we limit them and rearrange their order.
+    fields = json.loads(os.getenv("FIELDS_FOR_EMAIL", None))
+    if fields:
+        fields = [x.lower().replace(' ', '_') for x in fields]
+    else:
+        default_fields = ["case_caption", "dob", "arresting_agency",
+                          "township",
+                          "charges", "bail", "url"]
+        fields = default_fields if fields is None else fields
     df = df[fields]
-    # Charges can be particularly long so trimming it for readability in email
-    df["charges"] = df["charges"].str.slice(0, 150)
-    df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
+
+    # ENV VAR - SORT FIELDS
+    sort_tuple = os.getenv("SORT_VALUE_FOR_EMAIL", None)
+    sort_tuple = make_tuple(sort_tuple) if sort_tuple else ("bail","desc")
+    sort_tuple = tuple(i.lower() for i in sort_tuple) # clean
+    sort_field, sort_order = sort_tuple
+    if sort_field in df.columns:
+        df = df.sort_values(by=sort_field, ascending=(sort_order == 'asc'))
+
+    # OTHER FORMATTING
+    # We check whether column names are present before formatting because
+    # they may have been culled when fields were set.
+    if 'charges' in df.columns:
+        df["charges"] = df["charges"].str.slice(0, 150)
+    if 'case_caption' in df.columns:
+        df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
     # removing underscores for more human-readable format
     df.columns = df.columns.str.replace("_", " ")
 
