@@ -6,6 +6,7 @@ import pandas as pd
 import requests
 import os
 import logging
+import json
 
 # project modules
 from modules.misc import clean_df
@@ -43,8 +44,8 @@ def upload_to_rest_api():
     csv_payload_path = paths["payload_csv"]
     logging.info("Path to CSV: {csv_payload_path}")
 
-    # CONVERT CSV TO JSON
-    logging.info("Converting CSV to JSON...")
+    # LOAD CSV + CLEAN
+    logging.info("Converting CSV from file...")
     df = pd.read_csv(
         csv_payload_path, dtype={"docketnum": str, "dob": str, "filing_date": str}
     )  # this is to ensure docketnum is str
@@ -53,7 +54,17 @@ def upload_to_rest_api():
     )  # remove cases with duplicate docketnums if they exists, converts NaN and NaT to None (will
     # appear as 'null' in json sent in Post request)
 
-    # conversion
+    # SELECT FIELDS
+    # Your API may expect certain fields and not others. Use ENV vars to
+    # customize field selection. Default is to use all fields available.
+    fields = os.getenv("FIELDS_FOR_UPLOAD", None)
+    if fields:
+        fields = json.loads(fields)
+        fields = [x.lower().replace(' ', '_') for x in fields] # cleaning
+        df = df[fields]
+
+    # CONVERT TO JSON
+    logging.info("Converting CSV to JSON...")
     cases_json = df.to_dict(orient="records")
     logging.debug(cases_json)
     logging.info("CSV converted to JSON")

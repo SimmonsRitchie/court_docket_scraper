@@ -18,7 +18,7 @@ parser_recipe = [
         "pattern": re.compile(
             r"(Grade Description\n)"  # look for 'Grade Description' first
             r"((F\d?|M\d?|S)?\n)*"  # May be followed by multiple M, F1...
-            r"(?P<charges>.*?)"  # we capture this
+            r"(?P<charges>.*?)" 
             r"(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled "
             r"Date|\nM\d?\n|\nF\d?\n|\nS\n|\nBail Set:\n|\nPage |\n# "
             r"Charge\n)",  # wide range of keywords proceed charges
@@ -42,8 +42,7 @@ parser_recipe = [
         "field": "arresting_agency",
         "pattern": re.compile(
             r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
-            r"\n(?P<arresting_agency>.*(Police|PSP|police|District "  # 
-            # capture group
+            r"\n(?P<arresting_agency>.*(Police|PSP|police|District "
             r"Attorney|district attorney|Detectives|detectives).*)\n"
         ),
         "limit_size": 100,
@@ -53,6 +52,14 @@ parser_recipe = [
             r"\w*\n"  # typically county name, eg. Dauphin
             r"(?P<township>[a-zA-Z ]*)\n"
             r"CASE INFORMATION\n"
+        ),
+        "limit_size": 100,
+    }, {
+        "field": "arresting_officer",
+        "pattern": re.compile(
+            r"Participant Name\n"
+            r".*\n" # typically defendant name
+            r"(?P<arresting_officer>.*)\n"
         ),
         "limit_size": 100,
     }
