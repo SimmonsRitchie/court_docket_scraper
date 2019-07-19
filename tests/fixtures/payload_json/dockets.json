@@ -1,0 +1,74 @@
+{
+    "scrapeDatetime": "2019-07-06T22:04:17",
+    "countiesSelectedForScrape": [
+        "Dauphin"
+    ],
+    "countiesReturnedFromScrape": [
+        "Dauphin"
+    ],
+    "cases": [
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Smith, Stephon Dwayne",
+            "filingDate": "2019-07-06",
+            "dob": "1998-02-06",
+            "charges": "Receiving Stolen Property; Driving W/O A License",
+            "bail": "$25,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12202-CR-0000226-2019&dnh=AlaaA5o4eosXbmCzI%2bWNiw%3d%3d"
+        },
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Casteel, Andrew",
+            "filingDate": "2019-07-06",
+            "dob": "1969-02-17",
+            "charges": "Simple Assault; Terroristic Threats W/ Int To Terrorize Another; M1",
+            "bail": "$20,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12104-CR-0000459-2019&dnh=4FQvXlqxCkvMjItRi7mWtA%3d%3d"
+        },
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Teachey, Julius",
+            "filingDate": "2019-07-06",
+            "dob": "1986-02-05",
+            "charges": "Simple Assault",
+            "bail": "$10,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12101-CR-0000439-2019&dnh=Daq1nXK2Ma8t2wwZcT1aTQ%3d%3d"
+        },
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Pena Marte, Enerolisa",
+            "filingDate": "2019-07-06",
+            "dob": "1982-05-20",
+            "charges": "Simple Assault",
+            "bail": "$10,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12201-CR-0000727-2019&dnh=lkRr3Jx1Qs9moccjXsk3Iw%3d%3d"
+        },
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Brown, Naim Hanif",
+            "filingDate": "2019-07-06",
+            "dob": "1993-09-26",
+            "charges": "Resist Arrest/Other Law Enforce; Tamper With/Fabricate Physical Evidence; Adulte Misbrand Any Contro",
+            "bail": "$10,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12202-CR-0000225-2019&dnh=hQ8%2b2q11s4JiR49yB9fF%2bA%3d%3d"
+        },
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Whartnaby, Stacey Dorothy",
+            "filingDate": "2019-07-06",
+            "dob": "1972-11-17",
+            "charges": "Use/Poss Of Drug Paraph",
+            "bail": "$10,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12302-CR-0000111-2019&dnh=oXJr01wQPU75dmDYzokr1A%3d%3d"
+        },
+        {
+            "county": "Dauphin",
+            "name": "Comm. v. Drogalis, Daniel Perry",
+            "filingDate": "2019-07-06",
+            "dob": "1960-04-02",
+            "charges": "Use/Poss Of Drug Paraph; DUI: Controlled Substance - Impaired Ability - 1st ; Offense; Driv While Op",
+            "bail": "$10,000",
+            "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12302-CR-0000110-2019&dnh=zj8BkxXzkOi23xMzscQ6hw%3d%3d"
+        }
+    ]
+}
