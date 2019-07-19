@@ -35,7 +35,7 @@ def convert_dict_into_df(docketlist: List[Dict], county: str) -> pd.DataFrame:
     if not df.empty:  # this is to avoid pandas error if df is empty
         logging.info("Convert bail column to integer type")
         df["bail"] = df["bail"].apply(pd.to_numeric, errors="coerce")
-        logging.debug(df)
+        logging.info(df)
     return df
 
 
@@ -49,14 +49,29 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # ENV VAR - SET FIELDS
     # We've collected many fields from our scrape but they don't all fit nicely
     # in an emailed table. Here we limit them and rearrange their order.
-    fields = os.getenv("FIELDS_FOR_EMAIL", None)
-    if fields:
-        fields = json.loads(fields)
-        fields = [x.lower().replace(' ', '_') for x in fields]
+    fields_env = os.getenv("FIELDS_FOR_EMAIL", None)
+    if fields_env:
+        logging.info("Using custom field schema from ENV var for email "
+                     "payload")
+        fields = json.loads(fields_env)
+        # clean
+        fields = [x.lower().replace(' ', '_') for x in fields] # clean
+        # check fields are valid
+        if len(fields) != len(set(fields)):
+            logging.warning("Duplicate field names were found - removing")
+            fields = set(fields)
+        if not (set(fields).issubset(set(df.columns))):
+            logging.error("Names in custom field schema don't match "
+                              "fields in scraped data")
+            raise
     else:
+        logging.info("Using default field schema for email payload")
         fields = ["case_caption", "dob", "arresting_agency", "charges",
                   "bail", "url"]
+    logging.info(f"Fields selected: {fields}")
     df = df[fields]
+    logging.info(df)
+
 
     # ENV VAR - SORT FIELDS
     sort_tuple = os.getenv("SORT_VALUE_FOR_EMAIL", None)
@@ -77,12 +92,14 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
         df["charges"] = df["charges"].str.slice(0, 150)
     if 'case_caption' in df.columns:
         df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
-    # removing underscores for more human-readable format
+    # removing underscores to create more human-readable format
     df.columns = df.columns.str.replace("_", " ")
+    logging.info(df)
 
     # SET STYLES FOR EMAIL PAYLOAD
     df_styled = (
-        df.style.set_table_styles(style.table_style)
+        df.reset_index(drop=True).style.set_table_styles(style.table_style)
+            #TODO: Fix value error bug
         .set_table_attributes(style.table_attribs)
         .format({"url": style.make_clickable, "bail": style.currency_convert})
     )

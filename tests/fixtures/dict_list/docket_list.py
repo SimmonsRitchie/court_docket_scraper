@@ -2,10 +2,13 @@
 def docket_list_gen(num_of_items):
     docket_list = []
     for count in range(num_of_items):
-        case_caption = "Commonwealth V. Zane, Zidane." if (count % 2 == 0) \
-            else "Commonwealth V. Adam, Applegate"
+        case_caption = "Commonwealth V. Zidane, Zane." if (count % 2 == 0) \
+            else "Commonwealth V. Applegate, Adam"
+        defendant = "Zne Zidane" if (count % 2 == 0) \
+            else "Adam Applegate"
         docket_list.append({
             "county": "Dauphin",
+            "defendant": defendant,
             "docketnum": count,
             "arresting_agency": "Harrisburg Police Dept",
             "township": "Harrisburg City",

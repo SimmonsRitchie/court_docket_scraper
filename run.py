@@ -109,6 +109,9 @@ def main():
             # CONVERT DICT LIST INTO PANDAS DF
             df = export.convert_dict_into_df(docket_list, county)
 
+            # SAVE BACKUP OF DF FOR DEBUGGING
+            df.to_pickle(dirs["df_pkl"] / "df.pkl")
+
             # CONVERT DF TO CSV
             export.convert_df_to_csv(df)
 
