@@ -9,15 +9,16 @@ import requests
 
 # modules to test
 from modules.upload import upload_to_rest_api, login, logout
-from locations import paths
+from locations import paths, root_dir
 
 
 # Path to normal CSV payload data
 mock_paths1 = {
-    "payload_csv": Path("../../fixtures/payload_csv/dockets.csv")
+    "payload_csv": root_dir / "tests/fixtures/payload_csv/dockets.csv"
 }  # dummy data
 # Path to bad CSV payload data that has a string in bail field
-mock_paths2 = {"payload_csv": Path("../../fixtures/payload_csv/dockets_bad1.csv")}
+mock_paths2 = {"payload_csv": root_dir /
+                              "tests/fixtures/payload_csv/dockets_bad1.csv"}
 
 # we set this to prevent error emails from sending during upload failure
 mock_env = os.environ
