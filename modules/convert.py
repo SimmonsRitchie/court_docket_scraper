@@ -1,10 +1,9 @@
 """
-This module converts PDFs to text and then extracts important docket info from that text.
-
+This module converts PDFs to text.
 """
 
 
-# load PDF miner imports
+# inbuilt or third party libs
 from pdfminer.pdfparser import PDFParser
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfpage import PDFPage
@@ -12,25 +11,23 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
+import logging
+from typing import Union
 
-# Other modules
-import re
-from collections import namedtuple
-
-# My modules
-from modules import misc
-
-# Collections
-ParsedData = namedtuple("ParsedData", ('charge','bail'))
+# project modules
+from modules.misc import extracted_text_path_gen
+from locations import dirs
 
 
+def convert_pdf_to_text(pdf_path: Union[object, str], docketnum: str) -> str:
 
+    """ Takes path (or pathlib Path object) to a PDF file, docketnum and
+    returns text inside PDF"""
 
-def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
-    print("Converting pdf to text...")
-    pdf_path = misc.pdf_path_generator(base_folder_pdfs, docket_num)
-    extracted_text_path = misc.extracted_text_path_generator(base_folder_text, docket_num)
+    # SET PATHS
+    extracted_text_path = extracted_text_path_gen(dirs["extracted_text"], docketnum)
 
+    logging.info(f"Converting pdf to text for docket {docketnum}...")
     password = ""
     extracted_text = ""
 
@@ -43,10 +40,10 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
     # Store the parsed content in PDFDocument object
     try:
         document = PDFDocument(parser, password)
-    except:
-        print("/\/\/\/\/\/\/\/\/")
-        print("ERROR: Something went wrong when attempting to convert PDF - file may be damaged or corrupted")
-        print("Returning no extracted text for docket {}".format(docket_num))
+    except Exception as e:
+        logging.error("Something went wrong during conversion")
+        logging.exception(e)
+        logging.info("Returning no extracted text for docket {}".format(docketnum))
         return extracted_text
 
     # Check if document is extractable, if not abort
@@ -59,10 +56,8 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
     # set parameters for analysis
     laparams = LAParams()
 
-    # Create a PDFDevice object which translates interpreted information into desired format
+    # Create a device object which translates interpreted information into desired format
     # Device needs to be connected to resource manager to store shared resources
-    # device = PDFDevice(rsrcmgr)
-    # Extract the decive to page aggregator to get LT object elements
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
 
     # Create interpreter object to process page content from PDFDocument
@@ -82,48 +77,7 @@ def convert_pdf_to_text(docket_num, base_folder_pdfs, base_folder_text):
     # close the pdf file
     fp.close()
 
-    # print (extracted_text.encode("utf-8"))
-    # This commented line formerly saved the file. It's no longer necessary
     with open(extracted_text_path, "wb") as fout:
         fout.write(extracted_text.encode("utf-8"))
-    print("Text extracted succesfully")
+    logging.info("Text extracted successfully")
     return extracted_text
-
-
-def parse_extracted_text(text):
-        try:
-            print("Attempting to extract charges from text with Regex...")
-            pattern = re.compile(
-                r'(Grade Description\n)((F|F1|F2|F3|M|M1|M2|M3|S)?\n)*(.*?)(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled Date)',
-                re.DOTALL)
-            match = pattern.search(text)
-            charges = match.group(4)
-            print("Charges found:")
-            print()
-            print(charges)
-            print()
-            #Replacing newline characters
-            charges = charges.replace("\n", "; ")
-            charges = charges[0:100]
-        except AttributeError:
-            print("Error: Something went wrong with charge parsing for that docket")
-            charges = "None found (check docket)"
-        try:
-            print("Attempting to extract bail from text with Regex...")
-            pattern = re.compile(r'(Amount\n)\$(.*)\.00', re.DOTALL)
-            match = pattern.search(text)
-            bail = match.group(2)
-            print("Bail found:")
-            print()
-            print(bail)
-            print()
-            # Removing newline characters
-            bail = bail[0:15]
-            bail = bail.replace("\n", "").replace(",", "")
-        except AttributeError:
-            print("Error: None found or something went wrong with bail parsing for that docket")
-            bail = "None found"
-        except ValueError:
-            print("Error: None found or something went wrong with bail parsing for that docket")
-            bail = "None found"
-        return ParsedData(charges,bail)
