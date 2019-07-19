@@ -1,23 +1,24 @@
 import unittest
-import os
-from pathlib import Path
 from dotenv import load_dotenv
 
 # project modules
 from modules.initialize import initialize_driver
 from modules.misc import yesterday_date
-from logs.config.logging import logs_config
-from modules.scrape import scrape_search_results, scrape
-import logging
+from modules.scrape import scrape
 from locations import paths, root_dir
+from logs.config.logging import logs_config
+import logging
 
+# LOGGING
+logs_config(paths["logs_config_test"])
+
+# ENV
 load_dotenv(root_dir / ".dev.env")
 
 
 class TestScrape(unittest.TestCase):
     def setUp(self) -> None:
         self.driver = initialize_driver()
-        logs_config(paths["logs_config_test"])
 
     def test_scrape_without_error(self):
         """

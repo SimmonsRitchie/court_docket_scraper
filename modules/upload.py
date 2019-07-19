@@ -38,8 +38,9 @@ def upload_to_rest_api():
             logging.error(ABORTING_UPLOAD)
             return
 
-    logging.info(f"*** Uploading CSV to REST API at host: "
-                 f"{rest_api['hostname']} ***")
+    logging.info(
+        f"*** Uploading CSV to REST API at host: " f"{rest_api['hostname']} ***"
+    )
 
     # GET PATH TO CSV
     csv_payload_path = paths["payload_csv"]
@@ -61,7 +62,7 @@ def upload_to_rest_api():
     fields = os.getenv("FIELDS_FOR_UPLOAD", None)
     if fields:
         fields = json.loads(fields)
-        fields = [x.lower().replace(' ', '_') for x in fields] # cleaning
+        fields = [x.lower().replace(" ", "_") for x in fields]  # cleaning
         df = df[fields]
 
     # CONVERT TO JSON
@@ -85,8 +86,7 @@ def upload_to_rest_api():
             return
 
     # success
-    logging.info("*** Data succesfully uploaded to {} ***".format(rest_api[
-                                                               "hostname"]))
+    logging.info("*** Data succesfully uploaded to {} ***".format(rest_api["hostname"]))
 
 
 def login(s, rest_api):

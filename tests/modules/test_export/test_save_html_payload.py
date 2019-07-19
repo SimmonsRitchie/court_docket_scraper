@@ -54,7 +54,6 @@ class TestSaveHtmlPayload(unittest.TestCase):
         # GET PROBLEMATIC DF
         self.df = pd.read_pickle(root_dir / "tests/fixtures/df_pkl/df.pkl")
 
-
     # def tearDown(self) -> None:
     #     print(f"Deleting temp folder: {mock_dirs['payload_email']}")
     #     rmtree(mock_dirs["payload_email"])

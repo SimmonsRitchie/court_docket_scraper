@@ -1,27 +1,25 @@
 import unittest
 from unittest import mock
 from shutil import rmtree
-from pathlib import Path
 
-# fixtures
-from locations import paths, dirs
-
-# modules to test
+# project modules
+from locations import dirs, root_dir, test_dir
 from modules.convert import convert_pdf_to_text
 
 mock_dirs = {
-    "pdfs": Path("../../fixtures/pdfs/"),
-    "extracted_text": Path("../../output/extracted_text/"),
+    'pdfs': test_dir / 'fixtures/pdfs/',
+    'extracted_text': test_dir / 'fixtures/extracted_text/'
 }
 
 
 class TestConvertPdfToText(unittest.TestCase):
     def setUp(self) -> None:
+        rmtree(mock_dirs["extracted_text"])
         # create directory
         mock_dirs["extracted_text"].mkdir(parents=True, exist_ok=True)
 
     def tearDown(self) -> None:
-        rmtree(mock_dirs["extracted_text"])
+        pass
 
     @mock.patch.dict(dirs, mock_dirs, clear=True)
     def test_text_file_is_generated(self):

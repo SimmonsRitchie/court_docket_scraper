@@ -3,12 +3,12 @@ from unittest import mock
 import pandas as pd
 from shutil import rmtree
 from pathlib import Path
+import dotenv
 
-# fixtures
+# project modules
 from tests.fixtures.dict_list.docket_list import docket_list
-from locations import paths, dirs
-
-# modules to test
+from locations import paths, dirs, root_dir, test_dir
+from logs.config.logging import logs_config
 from modules.export import (
     convert_dict_into_df,
     convert_df_to_csv,
@@ -16,9 +16,16 @@ from modules.export import (
     convert_df_to_html,
 )
 
+# LOGGING
+logs_config(paths["logs_config_test"])
+
+# ENV VARS
+dotenv.load_dotenv(root_dir / ".dev.env")
+
+# MOCK VARS
 mock_dirs = {
-    "payload_csv": Path("../../output/csv_converted_from_df/"),
-    "payload_email": Path("../../output/payload_email/"),
+    "payload_csv": test_dir / "output/csv_converted_from_df/",
+    "payload_email": test_dir / "output/payload_email",
     "email_template": dirs["email_template"],  # using actual directory
 }
 
@@ -36,7 +43,6 @@ class TestConvertDictToDf(unittest.TestCase):
 
         df = convert_dict_into_df(docket_list, "Dauphin")
         self.assertIsInstance(df, pd.core.frame.DataFrame)
-
 
     def test_convert_empty_dict_into_df(self):
         """

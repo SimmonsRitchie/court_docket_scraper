@@ -3,24 +3,22 @@ from unittest import mock
 
 # in-built or third party libs
 import os
-from pathlib import Path
 import pandas as pd
 import requests
 
 # modules to test
 from modules.upload import upload_to_rest_api, login, logout
-from locations import paths, root_dir
+from locations import paths, root_dir, test_dir
+from logs.config.logging import logs_config
 
+# LOGGING
+logs_config(paths["logs_config_test"])
 
-# Path to normal CSV payload data
+# MOCK VARS
 mock_paths1 = {
-    "payload_csv": root_dir / "tests/fixtures/payload_csv/dockets.csv"
-}  # dummy data
-# Path to bad CSV payload data that has a string in bail field
-mock_paths2 = {"payload_csv": root_dir /
-                              "tests/fixtures/payload_csv/dockets_bad1.csv"}
-
-# we set this to prevent error emails from sending during upload failure
+    "payload_csv": test_dir / "fixtures/payload_csv/dockets.csv"
+}
+mock_paths2 = {"payload_csv": test_dir / "fixtures/payload_csv/dockets_bad1.csv"}
 mock_env = os.environ
 mock_env["ERROR_EMAILS"] = "FALSE"
 

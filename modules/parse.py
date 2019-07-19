@@ -18,27 +18,29 @@ parser_recipe = [
         "pattern": re.compile(
             r"(Grade Description\n)"  # look for 'Grade Description' first
             r"((F\d?|M\d?|S)?\n)*"  # May be followed by multiple M, F1...
-            r"(?P<charges>.*?)" 
+            r"(?P<charges>.*?)"
             r"(\nOffense Dt|\nCHARGES|\nDISPOSITION|\nDisposition|\nFiled "
             r"Date|\nM\d?\n|\nF\d?\n|\nS\n|\nBail Set:\n|\nPage |\n# "
             r"Charge\n)",  # wide range of keywords proceed charges
-            re.DOTALL  # matches all chars, including newlines
+            re.DOTALL,  # matches all chars, including newlines
         ),
         "clean_up": lambda x: x.replace("\n", "; "),
         "limit_size": 400,
-    }, {
+    },
+    {
         "field": "bail",
         "pattern": re.compile(
             r"(Amount\n)"  # first find 'Amount' and newline
             r"\$"
             r"(?P<bail>(\d|,)*)"  # capture all digits and commas
             r"\.00",  # end with '.00'
-            re.DOTALL
+            re.DOTALL,
         ),
         "type_converter": lambda x: int(x),
         "clean_up": lambda x: x.replace(",", ""),
         "limit_size": 15,
-    }, {
+    },
+    {
         "field": "arresting_agency",
         "pattern": re.compile(
             r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
@@ -46,7 +48,8 @@ parser_recipe = [
             r"Attorney|district attorney|Detectives|detectives).*)\n"
         ),
         "limit_size": 100,
-    }, {
+    },
+    {
         "field": "township",
         "pattern": re.compile(
             r"\w*\n"  # typically county name, eg. Dauphin
@@ -54,7 +57,8 @@ parser_recipe = [
             r"CASE INFORMATION\n"
         ),
         "limit_size": 100,
-    },{
+    },
+    {
         "field": "defendant",
         "pattern": re.compile(
             r"Commonwealth of Pennsylvania\n"
@@ -62,7 +66,7 @@ parser_recipe = [
             r"(?P<defendant>.*)\n"
         ),
         "limit_size": 100,
-    }
+    },
 ]
 
 
@@ -81,15 +85,16 @@ def parse_main(text: str = "") -> Dict:
     return parsed_data
 
 
-
-def parser(text: str, *,
-           field: str,
-           pattern: Pattern[str],
-           type_converter: Optional[Callable] = None,
-           clean_up: Optional[Callable] = None,
-           limit_size: Optional[int] = None,
-           null_value: Optional[Union[str, int, bool, None]] = None
-           ) -> str:
+def parser(
+    text: str,
+    *,
+    field: str,
+    pattern: Pattern[str],
+    type_converter: Optional[Callable] = None,
+    clean_up: Optional[Callable] = None,
+    limit_size: Optional[int] = None,
+    null_value: Optional[Union[str, int, bool, None]] = None,
+) -> str:
     """
     Returns text based on regex pattern and other provided conditions.
 
@@ -135,5 +140,3 @@ def parser(text: str, *,
 
     logging.info(f"{field.upper()}, FINAL: {final_value}")
     return final_value
-
-

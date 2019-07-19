@@ -1,21 +1,20 @@
 import unittest
-import os
-from datetime import datetime
-from pathlib import Path
-import json
-from time import sleep
-from unittest import mock
+import dotenv
+
+# project modules
+from modules.email import email_error_notification
+from locations import paths, root_dir, test_dir
 from logs.config.logging import logs_config
 
+# LOGGING
+logs_config(paths["logs_config_test"])
 
-# modules to test
-from modules.email import email_error_notification
-from locations import paths
-
+# ENV VARS
+dotenv.load_dotenv(root_dir / ".dev.env")
 
 class TestEmailError(unittest.TestCase):
     def setUp(self) -> None:
-        logs_config(paths["logs_config_test"])
+        pass
 
     def tearDown(self) -> None:
         pass

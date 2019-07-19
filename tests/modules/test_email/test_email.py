@@ -1,23 +1,28 @@
 import unittest
 from unittest import mock
 from datetime import datetime
-from pathlib import Path
 from shutil import rmtree
 import os
 import json
 import dotenv
 
-# modules to mock
-from locations import paths, dirs, root_dir
-
-# modules to test
+# project modules
+from logs.config.logging import logs_config
+from locations import paths, dirs, root_dir, test_dir
 from modules.email import email_notification, login_to_gmail_and_send
 
+# LOGGING
+logs_config(paths["logs_config_test"])
+
+# ENV VARS
+dotenv.load_dotenv(root_dir / ".dev.env")
+
+# MOCK VARS
 mock_dirs = {
-    "payload_email": Path("../../fixtures/payload_email"),
+    "payload_email": test_dir / "fixtures/payload_email/",
     "email_template": dirs["email_template"],
-    "email_final": Path("../../output/email_final"),
-    "payload_csv": Path("../../fixtures/payload_csv"),
+    "email_final": test_dir / "output/email_final/",
+    "payload_csv": test_dir / "fixtures/payload_csv/"
 }
 
 mock_paths = {
@@ -26,21 +31,20 @@ mock_paths = {
     "payload_csv": mock_dirs["payload_csv"] / "dockets.csv",
 }
 
-# Load ENV vars
-dotenv.load_dotenv(root_dir / ".dev.env")
-
-
 class TestEmail(unittest.TestCase):
     def setUp(self) -> None:
+        # clean up
+        if mock_dirs["email_final"].is_dir():
+            rmtree(mock_dirs["email_final"])
+        mock_dirs["email_final"].mkdir(parents=True, exist_ok=True)
+
         # vars
         self.date_and_time_of_scrape = datetime.now().replace(microsecond=0).isoformat()
         self.target_scrape_day = "yesterday"
         self.county_list = ["Cumberland", "Perry", "York", "Lancaster"]
-        # build temp directory
-        mock_dirs["email_final"].mkdir(parents=True, exist_ok=True)
 
     def tearDown(self) -> None:
-        rmtree(mock_dirs["email_final"])
+        pass
 
     @mock.patch.dict(paths, mock_paths, clear=True)
     @mock.patch.dict(dirs, mock_dirs, clear=True)

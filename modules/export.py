@@ -51,46 +51,45 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # in an emailed table. Here we limit them and rearrange their order.
     fields_env = os.getenv("FIELDS_FOR_EMAIL", None)
     if fields_env:
-        logging.info("Using custom field schema from ENV var for email "
-                     "payload")
+        logging.info("Using custom field schema from ENV var for email " "payload")
         fields = json.loads(fields_env)
         # clean
-        fields = [x.lower().replace(' ', '_') for x in fields] # clean
+        fields = [x.lower().replace(" ", "_") for x in fields]  # clean
         # check fields are valid
         if len(fields) != len(set(fields)):
             logging.warning("Duplicate field names were found - removing")
             fields = set(fields)
         if not (set(fields).issubset(set(df.columns))):
-            logging.error("Names in custom field schema don't match "
-                              "fields in scraped data")
+            logging.error(
+                "Names in custom field schema don't match " "fields in scraped data"
+            )
             raise
     else:
         logging.info("Using default field schema for email payload")
-        fields = ["case_caption", "dob", "arresting_agency", "charges",
-                  "bail", "url"]
+        fields = ["case_caption", "dob", "arresting_agency", "charges", "bail", "url"]
     logging.info(f"Fields selected: {fields}")
     df = df[fields]
     logging.info(df)
 
-
     # ENV VAR - SORT FIELDS
     sort_tuple = os.getenv("SORT_VALUE_FOR_EMAIL", None)
-    sort_tuple = make_tuple(sort_tuple) if sort_tuple else ("bail","desc")
-    sort_tuple = tuple(i.lower() for i in sort_tuple) # clean
+    sort_tuple = make_tuple(sort_tuple) if sort_tuple else ("bail", "desc")
+    sort_tuple = tuple(i.lower() for i in sort_tuple)  # clean
     sort_field, sort_order = sort_tuple
     if sort_field in df.columns:
-        df = df.sort_values(by=sort_field, ascending=(sort_order == 'asc'))
+        df = df.sort_values(by=sort_field, ascending=(sort_order == "asc"))
     else:
-        logging.warning(f"Desired sort value ({sort_field}) is not among "
-                        f"columns in df")
+        logging.warning(
+            f"Desired sort value ({sort_field}) is not among " f"columns in df"
+        )
 
     # OTHER FORMATTING
     # We check whether column names are present before formatting because
     # they may have been culled when fields were set. We'll get errors if we
     # try to format a field that doesn't exist.
-    if 'charges' in df.columns:
+    if "charges" in df.columns:
         df["charges"] = df["charges"].str.slice(0, 150)
-    if 'case_caption' in df.columns:
+    if "case_caption" in df.columns:
         df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
     # removing underscores to create more human-readable format
     df.columns = df.columns.str.replace("_", " ")
@@ -98,8 +97,9 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
 
     # SET STYLES FOR EMAIL PAYLOAD
     df_styled = (
-        df.reset_index(drop=True).style.set_table_styles(style.table_style)
-            #TODO: Fix value error bug
+        df.reset_index(drop=True)
+        .style.set_table_styles(style.table_style)
+        # TODO: Fix value error bug
         .set_table_attributes(style.table_attribs)
         .format({"url": style.make_clickable, "bail": style.currency_convert})
     )
