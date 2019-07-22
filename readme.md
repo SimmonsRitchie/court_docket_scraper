@@ -46,7 +46,7 @@ etc):
     chromedriver on your system (included with this repo) and not it's relative path.
 
 7. After you've saved and closed .env, you're ready to run the program. From
- the project directory, enter:
+ the project directory, enter: 
 
     `pipenv run python run.py`
     
