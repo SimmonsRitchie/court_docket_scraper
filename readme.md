@@ -29,17 +29,22 @@ Note: ChromeDriver is included in this repo and should work on Mac without any a
 
     `nano .env`
 
-    Note1: In order for the program to send emails with scrape output, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under gmail's security settings.
+    Note: In order for the program to send emails with scrape output, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under gmail's security settings.
     
     If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
     
-    Note2: Make sure you include the full path of chromedriver on your system (included with this repo) and not it's relative path.
+    Also make sure you include the full path of chromedriver on your system 
+    (included with this repo) and not it's relative path.
 
 5. After you've saved and closed .env, you're ready to run the program. From the project directory, enter:
 
     `pipenv run python run.py`
     
     Depending on how many counties you've selected to scrape, it may take an hour or more for the program to finish.
+    
+6. Optional: If you use Linux, I recommend setting a cron job so that the 
+scraper runs at a specific time each day, each week, etc. Here's [a guide](https://www.liquidweb.com/kb/create-a-cron-task-in-ubuntu-16-04/) on 
+how to set up a cron job for Ubuntu 16.04.
 
 
 ## Motivation
