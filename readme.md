@@ -61,8 +61,7 @@ configuration settings. Eg. you might like to have one cron job that scrapes
  certain counties in the morning and another cron job that runs the scraper 
  later in the day to scrape different counties.
  
-    To do this, first make a copy of the existing .env file and give it a 
-    different name (e.g. '
+   To do this, first make a copy of the existing .env file and give it a different name (e.g. '
  .morning.env', '.afternoon.env'). Adjust the settings as you like. You can 
  then create a shell script that 
  tells pipenv to run that specific .env file. You can do this by first 
