@@ -1,5 +1,5 @@
 """
-This module uses regex to extract important information from text extracted
+This module uses regex to find important information from text extracted
 from docket PDFs.
 """
 
