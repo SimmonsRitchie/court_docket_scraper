@@ -96,7 +96,8 @@ charges for a criminal case, a user must download a PDF of that case.
 Searching every new case in several counties can potentially take 
 hours.
 
-This program takes the work out of that task. It parses all of the PDFs for selected counties, extracts particular fields of interest (eg. charges, bail amount, DOB of individual), and then emails a list of that info to a selected email address (or addresses). The list includes links to the original PDF dockets for easy reference.
+This program takes the work out of that task: It parses all of the PDFs for 
+selected counties, extracts particular fields of interest (eg. charges, bail amount, DOB of individual), and then emails a list of that info to a selected email address (or addresses). The list includes links to the original PDF dockets for easy reference.
 
 If any person has been charged with homicide, that will be noted in the email's subject line.
 
