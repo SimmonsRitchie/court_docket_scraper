@@ -6,46 +6,87 @@ This program scrapes court data from Pennsylvania's Unified Judicial System [web
 
 - Python 3.6+
 
-Note: ChromeDriver is included in this repo and should work on Mac without any additional setup. However, for Linux, you will likely need to install Chrome Driver yourself. Here's [a guide](https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/) to installing ChromeDriver on Ubuntu 16.04 and 18.04
+- ChromeDriver is included in this repo and should work on Mac without any 
+additional setup. However, for Linux, you will likely need to install Chrome Driver yourself. Here's [a guide](https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/) to installing ChromeDriver on Ubuntu 16.04 and 18.04
+
+- In order for the program to send emails with scrape output, you'll need a 
+gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under gmail's security settings. If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
 
 ### Install
 
-1. Clone this repo.
+1. Clone this repo by either clicking Github's 'clone or download' button or,
+ in the terminal, navigating to where you would like the 
+scraper to exist on your system and running:
 
-2. If you don't have pipenv already installed, open the terminal and run:
+    `git clone https://github.com/SimmonsRitchie/court_docket_scraper.git`
+
+2. If you don't have pipenv already installed, run:
 
     `pip install pipenv`
 
-3.  From the terminal, cd into the project directory. Create a virtual environment using pipenv and install the project dependencies by running:
+3. Navigate into the project directory:
 
-    `pipenv install
-    `
+    `cd court_docket_scraper`
+     
+4. Use pipenv to create a virtual environment and install the project 
+dependencies. Run:
 
-3. You now need to configure the program to your specifications. Rename .env.example to .env:
+    `pipenv install`
+
+5. You now need to configure the program. Rename .env.example to .env:
 
     `mv .env.example .env`
 
-4. Edit .env to your desired values:
+6. Edit .env to your desired values (eg. counties you would like to scrape, 
+etc):
 
     `nano .env`
 
-    Note: In order for the program to send emails with scrape output, you'll need a gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under gmail's security settings.
-    
-    If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
-    
-    Also make sure you include the full path of chromedriver on your system 
-    (included with this repo) and not it's relative path.
+    Note: for CHROME_DRIVER_PATH, make sure you include the full path of 
+    chromedriver on your system (included with this repo) and not it's relative path.
 
-5. After you've saved and closed .env, you're ready to run the program. From the project directory, enter:
+7. After you've saved and closed .env, you're ready to run the program. From
+ the project directory, enter:
 
     `pipenv run python run.py`
     
     Depending on how many counties you've selected to scrape, it may take an hour or more for the program to finish.
     
-6. Optional: If you use Linux, I recommend setting a cron job so that the 
+8. OPTIONAL: If you use Linux, I recommend setting a cron job so that the 
 scraper runs at a specific time each day, each week, etc. Here's [a guide](https://www.liquidweb.com/kb/create-a-cron-task-in-ubuntu-16-04/) on 
 how to set up a cron job for Ubuntu 16.04.
 
+    You can also configure pipenv to run the scraper using specific 
+configuration settings. Eg. you might like to have one cron job that scrapes
+ certain counties in the morning and another cron job that runs the scraper 
+ later in the day to scrape different counties.
+ 
+    To do this, first make a copy of the existing .env file and give it a 
+    different name (e.g. '
+ .morning.env', '.afternoon.env'). Adjust the settings as you like. You can 
+ then create a shell script that 
+ tells pipenv to run that specific .env file. You can do this by first 
+ running: `nano 
+ morning.sh` and then 
+ saving something like:
+ 
+
+```
+# Morning scraper script
+
+# This tells pipenv to use this .env file
+export PIPENV_DOTENV_LOCATION="/home/MyName/court_docket_scraper/.morning.env"
+# Navigate to scraper project directory
+cd /home/MyName/court_docket_scraper/
+# Run scraper
+pipenv run python run.py`
+```
+
+Then, in your cron tab, you can enter something like this to run the script 
+each day at 8:01am:
+
+```1 8 * * * sh /home/MyName/court_docket_sraper/morning.sh```
+ 
 
 ## Motivation
 
