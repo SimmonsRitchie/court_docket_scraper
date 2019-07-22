@@ -20,7 +20,7 @@ scraper to exist on your system and running:
 
     `git clone https://github.com/SimmonsRitchie/court_docket_scraper.git`
 
-2. If you don't have pipenv already installed, run:
+2. If you don't have pipenv installed, run:
 
     `pip install pipenv`
 
