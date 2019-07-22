@@ -23,10 +23,13 @@ from modules.misc import clean_list_of_dicts
 from modules.initialize import initialize_driver
 
 # GET ENV VARS
-RETRY_ATTEMPTS = int(os.environ.get("RETRY_ATTEMPTS", 3))  # default 0 attempts
-RETRY_DELAY = float(os.environ.get("RETRY_DELAY", 10.0))  # default 10 sec
-RETRY_BACKOFF = float(os.environ.get("RETRY_BACKOFF", 5.0))  # default x5
+RETRY_ATTEMPTS = os.environ.get("RETRY_ATTEMPTS")  # default 3 attempts
+RETRY_DELAY = os.environ.get("RETRY_DELAY")  # default 10.0 sec
+RETRY_BACKOFF = os.environ.get("RETRY_BACKOFF")  # default x5
 
+RETRY_ATTEMPTS = int(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 3
+RETRY_DELAY = float(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 10.0
+RETRY_BACKOFF = float(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 5.0
 
 @retry(Exception, tries=RETRY_ATTEMPTS, delay=RETRY_DELAY, backoff=RETRY_BACKOFF)
 def scrape(*args):

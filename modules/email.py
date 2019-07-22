@@ -73,10 +73,14 @@ def email_error_notification(error_summary: str, full_error_msg: str) -> None:
     )
 
     # SEND
-    default_recipients = json.loads(os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
-    recipients = json.loads(
-        os.environ.get("DESTINATION_EMAIL_ADDRESS_FOR_ERRORS", default_recipients)
-    )
+    recipients = os.environ.get("DESTINATION_EMAIL_ADDRESS_FOR_ERRORS")
+    if recipients:
+        recipients = json.loads(recipients)
+    else:
+        # default recipients are the recipients who would normally receive
+        # full scrape output
+        recipients = json.loads(
+            os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
 
     login_to_gmail_and_send(recipients, message, subject_line, attachments)
 
