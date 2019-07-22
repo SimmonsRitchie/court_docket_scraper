@@ -4,7 +4,7 @@ This program scrapes court data from Pennsylvania's Unified Judicial System [web
 
 ### Prerequistes
 
-- Python 3.6+
+- Python 3.7+
 
 - ChromeDriver is included in this repo and should work on Mac without any 
 additional setup. However, for Linux, you will likely need to install Chrome Driver yourself. Here's [a guide](https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/) to installing ChromeDriver on Ubuntu 16.04 and 18.04
@@ -32,6 +32,11 @@ scraper to exist on your system and running:
 dependencies. Run:
 
     `pipenv install`
+    
+    Note: if you are setting up the scraper on Ubuntu and encounter an error
+     involving numpy after running this command, you may be missing 
+     python3.7-dev. Run: `sudo apt-get install python3.7-dev` and then try 
+     running `pipenv install` again.
 
 5. You now need to configure the program. Rename .env.example to .env:
 
