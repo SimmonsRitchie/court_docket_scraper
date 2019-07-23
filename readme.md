@@ -81,6 +81,8 @@ configuration settings. Eg. you might like to have one cron job that scrapes
 export PIPENV_DOTENV_LOCATION="/home/MyName/court_docket_scraper/.morning.env"
 # Navigate to scraper project directory
 cd /home/MyName/court_docket_scraper/
+# This is needed to ensure pipenv runs when used from cron
+PATH=/usr/local/bin:$PATH
 # Run scraper
 pipenv run python run.py`
 ```
