@@ -6,8 +6,10 @@ This program scrapes court data from Pennsylvania's Unified Judicial System [web
 
 - Python 3.7+
 
-- ChromeDriver is included in this repo and should work on Mac without any 
-additional setup. However, for Linux, you will likely need to install Chrome Driver yourself. Here's [a guide](https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/) to installing ChromeDriver on Ubuntu 16.04 and 18.04
+- Chrome installed and located in your applications folder.
+
+- Chromedriver. Here's a guide for [installing on Mac](http://jonathansoma.com/lede/foundations-2017/classes/more-scraping/selenium/) (pretty easy) and 
+here's a guide for [installing on Ubuntu 16.04 or 18.04](https://tecadmin.net/setup-selenium-chromedriver-on-ubuntu/) (a little trickier but not too bad).
 
 - In order for the program to send emails with scrape output, you'll need a 
 gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under gmail's security settings. If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
@@ -38,20 +40,20 @@ dependencies. Run:
      python3.7-dev. Run: `sudo apt-get install python3.7-dev` and then try 
      running `pipenv install` again.
 
-5. You now need to configure the program. Rename .env.example to .env:
+5. You now need to configure the program to set which counties you would 
+like to scrape, etc. First, rename .env.example to .env:
 
     `mv .env.example .env`
 
-6. Edit .env to your desired values (eg. counties you would like to scrape, 
-etc):
+6. Now edit the file to your desired values:
 
     `nano .env`
 
-    Note: for CHROME_DRIVER_PATH, make sure you include the full path of 
-    chromedriver on your system (included with this repo) and not it's relative path.
+    Note: If you followed the Chromedriver installation guide links above, 
+    your CHROME_DRIVER_PATH should be: '/usr/bin/chromedriver'
 
-7. After you've saved and closed .env, you're ready to run the program. From
- the project directory, enter: 
+7. After you've saved and closed .env, you're ready to run the program. 
+From the project directory, enter: 
 
     `pipenv run python run.py`
     
