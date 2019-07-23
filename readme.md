@@ -70,11 +70,8 @@ configuration settings. Eg. you might like to have one cron job that scrapes
  
    To do this, first make a copy of the existing .env file and give it a different name (e.g. '
  .morning.env', '.afternoon.env'). Adjust the settings as you like. You can 
- then create a shell script that 
- tells pipenv to run that specific .env file. You can do this by first 
- running: `nano 
- morning.sh` and then 
- saving something like:
+ then create a shell script that tells pipenv to run that specific .env file. You can do this by first 
+ running: `nano morning.sh` and then saving something like:
  
 
 ```
