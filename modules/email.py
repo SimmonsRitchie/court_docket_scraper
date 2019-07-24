@@ -13,10 +13,11 @@ import os
 import json
 import logging
 from typing import List, Union, Optional
+import pandas as pd
 
 # Load my modules
 from modules import export
-from modules.misc import get_datetime_now_formatted
+from modules.misc import get_datetime_now_formatted, detect_keyword_in_df
 from locations import dirs, paths
 
 
@@ -209,20 +210,30 @@ def gen_footer_content(formatted_time: str, formatted_date: str) -> str:
 
 def insert_special_message(
     scraped_data_content: str, mobile_tease_content: str, subject_line: str
-) -> str:
+) -> tuple:
     """Detects whether homicide or murder is included in email content and
-    then returns an updated version of subject line and mobile tease"""
+    then returns a tuple with an updated version of subject line and mobile
+    tease"""
 
-    # We first but give priority to murder if found.
-    special_msg = ""
-    if "homicide" in scraped_data_content.lower():
-        special_msg = "HOMICIDE detected"
-    if "murder" in scraped_data_content.lower():
-        special_msg = "MURDER detected"
-    # change subject line + mobile tease accordingly
-    if special_msg:
-        subject_line = subject_line + f" ({special_msg})"
-        mobile_tease_content = special_msg
+    df = pd.read_csv(paths["payload_csv"])
+    keyword_list = ["murder", "homicide"]
+    keywords_found = []
+    logging.info(f"Detecting whether the following keywords are in payload "
+                 "csv: {keyword_list}")
+    for keyword in keyword_list:
+        keyword_found = detect_keyword_in_df(df, "charges", keyword)
+        if keyword_found:
+            keywords_found.append(keyword_found)
+    if keywords_found:
+        special_msg = keywords_found[0] if len(keywords_found) == 1 else "; " \
+                                                                          "".join(
+            keywords_found)
+        logging.info(f"Keywords {keyword_list} found in CSV")
+        logging.info(f"Updating subject line and mobile tease to include: {special_msg}")
+        subject_line = subject_line + f", ALERT: {special_msg}"
+        mobile_tease_content = "Detected: " + special_msg
+    else:
+        logging.info(f"Keywords {keyword_list} not found in CSV")
     return subject_line, mobile_tease_content
 
 
@@ -258,7 +269,7 @@ def create_final_email_payload(
         path_to_component = dir_email_template / "{}.html".format(component)
         parts[component] = path_to_component.read_text()
 
-    ##########################  HTML HEAD + A BIT OF BODY TOP  ##########################################
+    ############  HTML HEAD + A BIT OF BODY TOP  #################
 
     # COMBINE HTML
     mobile_tease = (
@@ -268,26 +279,26 @@ def create_final_email_payload(
         parts["html_head"] + parts["html_body_top"] + mobile_tease + parts["table_top"]
     )
 
-    #################################  BODY: REST OF TOP  ##########################################
+    ############  BODY: REST OF TOP  #############################
 
     intro_container_bottom = "</div></td></tr>"
     intro = (
         parts["header"] + parts["intro_top"] + intro_content + intro_container_bottom
     )
 
-    #################################  BODY: MIDDLE  ##########################################
+    ##################### BODY: MIDDLE  ############################
 
     # This is where we insert our main payload. eg. scraped data.
     email_body_bottom = "</td></tr>"
     email_body = parts["email_body_top"] + body_content + email_body_bottom
 
-    #################################  BODY: BOTTOM  ##########################################
+    #####################  BODY: BOTTOM  #########################
 
     footer_bottom = "</td></tr>"
     html_bottom = "</div></center></table></body></html>"
     footer = parts["footer_top"] + footer_content + footer_bottom + html_bottom
 
-    #################################  COMBINE  ##########################################
+    #########################  COMBINE  ##############################
 
     # JOIN IT ALL TOGETHER
     message = html_top + intro + email_body + footer
@@ -357,12 +368,12 @@ def login_to_gmail_and_send(
     mime_msg["Subject"] = subject_line
 
     # OPTIONAL: ADD ATTACHMENTS
-    logging.info(f"Attaching files: {attachments}")
     if attachments:
+        logging.info(f"Attaching files: {attachments}")
         for attachment_path in attachments:
             with open(attachment_path, "rb") as attachment:
                 p = MIMEBase("application", "octet-stream")
-                p.set_payload((attachment).read())
+                p.set_payload(attachment.read())
                 encoders.encode_base64(p)
                 p.add_header(
                     "Content-Disposition",

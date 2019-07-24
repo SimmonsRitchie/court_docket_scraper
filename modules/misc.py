@@ -11,6 +11,7 @@ import pandas as pd
 import logging
 from typing import Union, Optional, List
 from pathlib import Path
+import re
 
 
 def print_title(program_name: str) -> None:
@@ -134,3 +135,22 @@ def clean_df(df):
             {"NaT": None}
         )  # Replace NaT values with None
     return df
+
+
+def detect_keyword_in_df(df: pd.DataFrame, column: str, keyword: str) -> str:
+    """ Detects whether a word/phrase exists in a particular column of a
+    Pandas df and then returns a string identifying how many times that
+    keyword was detected for each county in the df"""
+
+    # DETECT KEYWORD
+    df = df[df[column].str.contains(keyword, flags=re.IGNORECASE)]
+    df = df.groupby(['county']).size().reset_index(name='counts')
+    counties = df['county'].unique()
+    if len(counties) > 0:
+        counties = [county.capitalize() for county in counties]
+        if len(counties) == 1:
+            counties_formatted = "{} County".format(counties[0])
+        else:
+            counties_formatted = "{} Counties".format(", ".join(counties))
+        return ("{} ({})".format(keyword.capitalize(),
+                                      counties_formatted))
