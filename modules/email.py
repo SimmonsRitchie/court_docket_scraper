@@ -43,7 +43,7 @@ def email_error_notification(error_summary: str, full_error_msg: str) -> None:
     target_scrape_day = os.environ.get("TARGET_SCRAPE_DATE", "yesterday").lower()
 
     pluralize_county = "county" if len(county_list) == 1 else "counties"
-    mobile_tease_content = error_summary + ("&nbsp;&zwnj;" * 50)
+    mobile_tease_content = error_summary
     intro_content = (
         f"<p>{error_summary}</p>"
         f"<p>SETTINGS: Scraping {target_scrape_day}'s cases for {', '.join(county_list)} {pluralize_county}"
@@ -102,6 +102,8 @@ def email_notification(
     yesterday_date = (datetime.now() - timedelta(1)).strftime("%a, %b %-d %Y")
 
     # GENERATE CUSTOM MESSAGES
+    # Note: we add trailing white space in mobile test content so that actual
+    # email content isn't included in tease.
     mobile_tease_content = gen_mobile_tease_content(county_list)
     intro_content = gen_intro_content(
         county_list, target_scrape_day, formatted_date, yesterday_date
@@ -138,6 +140,9 @@ def email_notification(
 
 
 def gen_mobile_tease_content(county_list: List[str]) -> str:
+    """This create a hidden message that appears as a preview in most email
+    clients"""
+
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
     if len(county_list) == 1:
         mobile_tease_content = "Here are the latest criminal cases filed in {} County".format(
@@ -147,7 +152,7 @@ def gen_mobile_tease_content(county_list: List[str]) -> str:
         mobile_tease_content = (
             "Here are the latest criminal cases filed in central Pa. courts."
         )
-    return mobile_tease_content + ("&nbsp;&zwnj;" * 50)
+    return mobile_tease_content
 
 
 def gen_intro_content(
@@ -205,6 +210,9 @@ def gen_footer_content(formatted_time: str, formatted_date: str) -> str:
 def insert_special_message(
     scraped_data_content: str, mobile_tease_content: str, subject_line: str
 ) -> str:
+    """Detects whether homicide or murder is included in email content and
+    then returns an updated version of subject line and mobile tease"""
+
     # We first but give priority to murder if found.
     special_msg = ""
     if "homicide" in scraped_data_content.lower():
