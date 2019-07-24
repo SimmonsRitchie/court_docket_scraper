@@ -88,8 +88,10 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # they may have been culled when fields were set. We'll get errors if we
     # try to format a field that doesn't exist.
     if "charges" in df.columns:
+        # long charges will be truncated
         df["charges"] = df["charges"].apply(truncate_charges)
     if "dob" in df.columns:
+        # converting to human-friendly format, eg. Sept 9, 2019
         df["dob"] = df["dob"].astype('datetime64[ns]')
         df["dob"] = df["dob"].dt.strftime('%b %-m, %Y')
     if "case_caption" in df.columns:
@@ -102,7 +104,6 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     df_styled = (
         df.reset_index(drop=True)
         .style.set_table_styles(style.table_style)
-        # TODO: Fix value error bug
         .set_table_attributes(style.table_attribs)
         .format({"url": style.make_clickable, "bail": style.currency_convert})
     )
