@@ -8,6 +8,16 @@ import re
 import logging
 from typing import Dict, Pattern, Callable, Any, Optional, Union
 
+
+def charges_clean_up(charges):
+    """ Returns cleaned charges. Charges are typically separated by newlines
+    and can often be in all caps, which we want to avoid."""
+
+    charges = charges.split("\n")
+    charges = [charge.capitalize() for charge in charges]
+    return "; ".join(charges)
+
+
 """
 PARSER RECIPE
 We set how different text fields will be parsed here.
@@ -24,7 +34,7 @@ parser_recipe = [
             r"Charge\n)",  # wide range of keywords proceed charges
             re.DOTALL,  # matches all chars, including newlines
         ),
-        "clean_up": lambda x: x.replace("\n", "; "),
+        "clean_up": charges_clean_up,
         "limit_size": 400,
     },
     {
@@ -68,6 +78,8 @@ parser_recipe = [
         "limit_size": 100,
     },
 ]
+
+
 
 
 def parse_main(text: str = "") -> Dict:
@@ -140,3 +152,4 @@ def parser(
 
     logging.info(f"{field.upper()}, FINAL: {final_value}")
     return final_value
+

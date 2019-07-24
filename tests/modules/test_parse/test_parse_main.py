@@ -34,3 +34,4 @@ class TestParseMain(unittest.TestCase):
             parsed_dict[docketnum] = parse_main(text)
 
         pp.pprint(parsed_dict)
+        print(parsed_dict)
