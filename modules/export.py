@@ -116,7 +116,8 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
 
 
 def truncate_charges(charges):
-    return charges if len(charges) < 147 else charges[0:147] + "..."
+    return charges if len(charges) < 147 else "{}..."\
+        .format(charges[0:147].rstrip())
 
 
 def save_html_county_payload(county_intro: str, df_styled: Optional[str] = "") -> None:

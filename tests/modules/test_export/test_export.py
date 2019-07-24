@@ -2,7 +2,6 @@ import unittest
 from unittest import mock
 import pandas as pd
 from shutil import rmtree
-from pathlib import Path
 import dotenv
 
 # project modules

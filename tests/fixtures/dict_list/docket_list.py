@@ -6,17 +6,12 @@ def docket_list_gen(num_of_items):
             if (count % 2 == 0)
             else "Commonwealth V. Applegate, Adam"
         )
-        charges = "Murder most foul" if (count % 2 == 0) else "Receiving " \
-                                                              "Stolen Property; Driving W/O A "\
-                           "License; Receiving Stolen Property; Driving W/O "\
-                           "A License; Receiving Stolen Property; Driving "\
-                           "W/O A License; Receiving Stolen Property; "\
-                           "Driving W/O A License; Receiving Stolen "\
-                           "Property; Driving W/O A License; Receiving "\
-                           "Stolen Property; Driving W/O A License; "\
-                           "Receiving Stolen Property; Driving W/O A "\
-                           "License; Receiving Stolen Property; Driving W/O " \
-                                                              "A License"\
+        charges = "Murder most foul" if (count % 2 == 0) else\
+            "Receiving Stolen Property; Receiving Stolen " \
+            "Property; Receiving Stolen Property; Receiving Stolen " \
+            "Property; Receiving Stolen Property; Receiving S  "
+
+
 
         defendant = "Zne Zidane" if (count % 2 == 0) else "Adam Applegate"
         docket_list.append(
