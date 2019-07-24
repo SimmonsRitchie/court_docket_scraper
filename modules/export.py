@@ -1,5 +1,5 @@
 """
-This module handles the conversion of docket data to JSON.
+This module handles the conversion of scraped data to different formats.
 
 """
 
@@ -51,7 +51,7 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # in an emailed table. Here we limit them and rearrange their order.
     fields_env = os.getenv("FIELDS_FOR_EMAIL", None)
     if fields_env:
-        logging.info("Using custom field schema from ENV var for email " "payload")
+        logging.info("Using custom field schema from ENV var for email payload")
         fields = json.loads(fields_env)
         # clean
         fields = [x.lower().replace(" ", "_") for x in fields]  # clean
@@ -88,7 +88,10 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     # they may have been culled when fields were set. We'll get errors if we
     # try to format a field that doesn't exist.
     if "charges" in df.columns:
-        df["charges"] = df["charges"].str.slice(0, 150)
+        df["charges"] = df["charges"].apply(truncate_charges)
+    if "dob" in df.columns:
+        df["dob"] = df["dob"].astype('datetime64[ns]')
+        df["dob"] = df["dob"].dt.strftime('%b %-m, %Y')
     if "case_caption" in df.columns:
         df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
     # removing underscores to create more human-readable format
@@ -109,6 +112,10 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
     logging.info("...DF converted into HTML")
 
     return df_styled.render()
+
+
+def truncate_charges(charges):
+    return charges if len(charges) < 147 else charges[0:147] + "..."
 
 
 def save_html_county_payload(county_intro: str, df_styled: Optional[str] = "") -> None:

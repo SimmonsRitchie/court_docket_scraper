@@ -6,6 +6,18 @@ def docket_list_gen(num_of_items):
             if (count % 2 == 0)
             else "Commonwealth V. Applegate, Adam"
         )
+        charges = "Murder most foul" if (count % 2 == 0) else "Receiving " \
+                                                              "Stolen Property; Driving W/O A "\
+                           "License; Receiving Stolen Property; Driving W/O "\
+                           "A License; Receiving Stolen Property; Driving "\
+                           "W/O A License; Receiving Stolen Property; "\
+                           "Driving W/O A License; Receiving Stolen "\
+                           "Property; Driving W/O A License; Receiving "\
+                           "Stolen Property; Driving W/O A License; "\
+                           "Receiving Stolen Property; Driving W/O A "\
+                           "License; Receiving Stolen Property; Driving W/O " \
+                                                              "A License"\
+
         defendant = "Zne Zidane" if (count % 2 == 0) else "Adam Applegate"
         docket_list.append(
             {
@@ -17,7 +29,7 @@ def docket_list_gen(num_of_items):
                 "case_caption": case_caption,
                 "dob": "01/01/1986",
                 "filing_date": "03/03/2019",
-                "charges": "Receiving Stolen Property; Driving W/O A License",
+                "charges": charges,
                 "bail": count * 100,
                 "url": "https://ujsportal.pacourts.us/DocketSheets/MDJReport.ashx?docketNumber=MJ-12302-CR-0000110-2019&dnh=zj8BkxXzkOi23xMzscQ6hw%3d%3d",
             }
