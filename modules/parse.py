@@ -15,6 +15,8 @@ def charges_clean_up(charges):
 
     charges = charges.split("\n")
     charges = [charge.capitalize() for charge in charges]
+    # we want some acronyms to be in caps for readability
+    charges = re.sub("(?i)dui","DUI", charges)
     return "; ".join(charges)
 
 
