@@ -165,9 +165,6 @@ def gen_intro_content(
     # GENERATE INTRO
     # we create different intros based on conditions
     if len(county_list) == 1:
-        intro_subheading = '<span class="subheading">{} county scrape</span>'.format(
-            county_list[0]
-        )
         if target_scrape_day == "today":
             intro_description = "<p>The following criminal cases were filed in {} County today as of {}.</p>\
                              <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
