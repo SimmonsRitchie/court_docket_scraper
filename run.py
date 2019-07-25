@@ -47,6 +47,7 @@ def main():
     target_scrape_date = (
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
+    scrape_name = os.getenv("SCRAPE_NAME","Cases Scrape")
     run_env = os.environ.get("ENV_FILE", "DEV")  # defaults to 'DEV'
     rest_api_enabled = os.getenv("REST_API_ENABLED")
     rest_api_enabled = True if rest_api_enabled == "TRUE" else False
@@ -62,6 +63,7 @@ def main():
 
     misc.print_title("pa court report")
     logging.info("##### PROGRAM START #####")
+    logging.info(f"Scrape: {scrape_name}")
     logging.info(f"Running in {run_env} environment\n")
 
     ########################################################################
