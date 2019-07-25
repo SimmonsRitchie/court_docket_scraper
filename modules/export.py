@@ -96,6 +96,11 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
         df["dob"] = df["dob"].dt.strftime("%b %-m, %Y")
     if "case_caption" in df.columns:
         df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
+    if "defendant_gender" in df.columns:
+        df.rename(index=str, columns={"defendant_gender": "sex"}, inplace=True)
+    if "defendant_race" in df.columns:
+        df.rename(index=str, columns={"defendant_race": "race"},
+                  inplace=True)
     # removing underscores to create more human-readable format
     df.columns = df.columns.str.replace("_", " ")
     logging.info(df)
