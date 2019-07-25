@@ -96,6 +96,7 @@ parser_recipe = [
             r"Race:\n"
             r".*\n"
             r"(?P<defendant_race>.*)\n"
+            r"(Name:|Confinement Location)\n"
         ),
         "limit_size": 20,
     },
