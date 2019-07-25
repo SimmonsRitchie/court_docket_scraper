@@ -58,7 +58,8 @@ parser_recipe = [
         "pattern": re.compile(
             r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
             r"\n(?P<arresting_agency>.*(Police|PSP|police|District "
-            r"Attorney|district attorney|Detectives|detectives| PD).*)\n"
+            r"Attorney|district attorney|Detectives|detectives| "
+            r"PD|Inspector General).*)\n"
         ),
         "limit_size": 100,
     },
