@@ -76,10 +76,28 @@ parser_recipe = [
         "field": "defendant",
         "pattern": re.compile(
             r"Commonwealth of Pennsylvania\n"
-            r"v.\n"  # typically defendant name
+            r"v.\n"
             r"(?P<defendant>.*)\n"
         ),
         "limit_size": 100,
+    },
+    {
+        "field": "defendant_gender",
+        "pattern": re.compile(
+            r"Sex:\n"
+            r"Race:\n"
+            r"(?P<defendant_gender>.*)\n"
+        ),
+        "limit_size": 20,
+    },    {
+        "field": "defendant_race",
+        "pattern": re.compile(
+            r"Sex:\n"
+            r"Race:\n"
+            r".*\n"
+            r"(?P<defendant_race>.*)\n"
+        ),
+        "limit_size": 20,
     },
 ]
 
