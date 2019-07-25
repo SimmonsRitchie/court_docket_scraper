@@ -180,19 +180,19 @@ def gen_intro_content(
             )
     else:
         if target_scrape_day == "today":
-            intro_subheading = '<span class="subheading">afternoon scrape</span>'
             intro_description = "<p>The following criminal cases were filed in district courts today as of {}.</p>\
                              <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
                 formatted_time
             )
         elif target_scrape_day == "yesterday":
-            intro_subheading = '<span class="subheading">Morning scrape</span>'
             intro_description = "<p>The following criminal cases were filed in district courts yesterday ({}).</p>\
                         <p>You can also view a searchable list of these cases\
                         <a href='https://s3.amazonaws.com/court-dockets/index.html'>here</a>.</p>\
                     ".format(
                 yesterday_date
             )
+    scrape_name = os.getenv("SCRAPE_NAME", "Case Scrape")
+    intro_subheading = f'<span class="subheading">{scrape_name}</span>'
     return intro_subheading + intro_description
 
 
