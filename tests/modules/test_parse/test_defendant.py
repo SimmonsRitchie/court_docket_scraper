@@ -17,7 +17,6 @@ load_dotenv(root_dir / ".dev.env")
 mock_dirs = {"extracted_text": test_dir / "fixtures/extracted_text/"}
 
 
-
 class TestParseBail(unittest.TestCase):
     # def setUp(self) -> None:
     #     logs_config(paths["logs_config_test"])

@@ -7,8 +7,8 @@ from locations import dirs, root_dir, test_dir
 from modules.convert import convert_pdf_to_text
 
 mock_dirs = {
-    'pdfs': test_dir / 'fixtures/pdfs/',
-    'extracted_text': test_dir / 'fixtures/extracted_text/'
+    "pdfs": test_dir / "fixtures/pdfs/",
+    "extracted_text": test_dir / "fixtures/extracted_text/",
 }
 
 

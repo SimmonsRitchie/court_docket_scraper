@@ -18,7 +18,6 @@ mock_dirs = {"extracted_text": test_dir / "fixtures/extracted_text/"}
 
 
 class TestParseMain(unittest.TestCase):
-
     def test_parse_main_runs_without_error(self):
         """
         Test that function runs without error.

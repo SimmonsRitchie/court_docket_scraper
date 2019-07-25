@@ -28,6 +28,7 @@ def initialize_test_driver():
     test/output/pdfs as default download directory """
     return initialize_driver()
 
+
 # TESTS
 class TestPdfDownload(unittest.TestCase):
     def setUp(self) -> None:
@@ -37,7 +38,6 @@ class TestPdfDownload(unittest.TestCase):
         mock_dirs["pdfs"].mkdir(parents=True, exist_ok=True)
         # init driver
         self.driver = initialize_test_driver()
-
 
     def tearDown(self) -> None:
         pass

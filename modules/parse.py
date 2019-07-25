@@ -17,7 +17,7 @@ def charges_clean_up(charges):
     charges = [charge.capitalize() for charge in charges]
     charges = "; ".join(charges)
     # we want some acronyms to be in caps for readability
-    charges = re.sub("(?i)dui","DUI", charges)
+    charges = re.sub("(?i)dui", "DUI", charges)
     return charges
 
 
@@ -82,8 +82,6 @@ parser_recipe = [
         "limit_size": 100,
     },
 ]
-
-
 
 
 def parse_main(text: str = "") -> Dict:
@@ -156,4 +154,3 @@ def parser(
 
     logging.info(f"{field.upper()}, FINAL: {final_value}")
     return final_value
-

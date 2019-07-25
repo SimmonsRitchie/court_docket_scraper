@@ -31,6 +31,7 @@ RETRY_ATTEMPTS = int(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 3
 RETRY_DELAY = float(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 10.0
 RETRY_BACKOFF = float(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 5.0
 
+
 @retry(Exception, tries=RETRY_ATTEMPTS, delay=RETRY_DELAY, backoff=RETRY_BACKOFF)
 def scrape(*args):
     """Because scraping can fail unexpectedly we use retry decorator to

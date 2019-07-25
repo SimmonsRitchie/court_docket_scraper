@@ -47,7 +47,6 @@ class TestSaveHtmlPayload(unittest.TestCase):
         pd.set_option("display.width", 2000)
         pd.set_option("display.max_rows", 700)
 
-
     @mock.patch.dict(paths, mock_paths, clear=True)
     def test_html_file_is_created(self):
         """
@@ -58,8 +57,7 @@ class TestSaveHtmlPayload(unittest.TestCase):
         # create styled df
         styled_df = convert_df_to_html(df)
         # wrap styled df with more html
-        save_html_county_payload("This is an introduction for the email",
-                                  styled_df)
+        save_html_county_payload("This is an introduction for the email", styled_df)
         # Check html file has been created
         self.assertTrue(mock_paths["payload_email"].is_file())
 

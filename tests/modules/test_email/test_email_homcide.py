@@ -22,7 +22,7 @@ mock_dirs = {
     "payload_email": test_dir / "fixtures/payload_email/",
     "email_template": dirs["email_template"],
     "email_final": test_dir / "output/email_final/",
-    "payload_csv": test_dir / "fixtures/payload_csv/"
+    "payload_csv": test_dir / "fixtures/payload_csv/",
 }
 
 mock_paths = {
@@ -46,7 +46,6 @@ class TestEmailHomicide(unittest.TestCase):
 
     def tearDown(self) -> None:
         pass
-
 
     @mock.patch.dict(paths, mock_paths, clear=True)
     @mock.patch.dict(dirs, mock_dirs, clear=True)

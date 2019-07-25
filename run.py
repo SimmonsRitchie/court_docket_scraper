@@ -6,7 +6,6 @@ ABOUT:
 This file is the entrypoint. From main(), the program performs the following actions:
 
     -DELETE + CREATE: temp folders from earlier scrapes are deleted and recreated
-    -INITIALIZE: Selenium webdriver is initialized.
     -SCRAPE: UJS website is accessed and basic info on district dockets are scraped from search results
     -DOWNLOAD: After initial scrape, PDFs with more info for each docket are downloaded.
     -CONVERT: PDFs are converted into text and other info is extracted for that county's dockets.
@@ -14,7 +13,8 @@ This file is the entrypoint. From main(), the program performs the following act
     -UPLOAD (OPTIONAL): If REST API settings are given in .env, data will be uploaded to REST API
     -EMAIL: A summary of data is emailed to desired recipients.
 
-NOTE: Due to the way ChromeDriver downloads PDFs, it was designed to run in headless mode (set as default).
+NOTE: Due to the way ChromeDriver downloads PDFs in this program, it was
+designed to run in headless mode (set as default).
 Attempting to run it in non-headless mode may cause it to crash.
 
 """
@@ -47,7 +47,7 @@ def main():
     target_scrape_date = (
         misc.today_date() if target_scrape_day == "today" else misc.yesterday_date()
     )  # convert to date
-    scrape_name = os.getenv("SCRAPE_NAME","Cases Scrape")
+    scrape_name = os.getenv("SCRAPE_NAME", "Cases Scrape")
     run_env = os.environ.get("ENV_FILE", "DEV")  # defaults to 'DEV'
     rest_api_enabled = os.getenv("REST_API_ENABLED")
     rest_api_enabled = True if rest_api_enabled == "TRUE" else False

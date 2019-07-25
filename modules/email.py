@@ -80,8 +80,7 @@ def email_error_notification(error_summary: str, full_error_msg: str) -> None:
     else:
         # default recipients are the recipients who would normally receive
         # full scrape output
-        recipients = json.loads(
-            os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
+        recipients = json.loads(os.environ.get("DESTINATION_EMAIL_ADDRESSES"))
 
     login_to_gmail_and_send(recipients, message, subject_line, attachments)
 
@@ -215,18 +214,24 @@ def insert_special_message(
     df = pd.read_csv(paths["payload_csv"])
     keyword_list = ["murder", "homicide"]
     keywords_found = []
-    logging.info(f"Detecting whether the following keywords are in payload "
-                 "csv: {keyword_list}")
+    logging.info(
+        f"Detecting whether the following keywords are in payload "
+        "csv: {keyword_list}"
+    )
     for keyword in keyword_list:
         keyword_found = detect_keyword_in_df(df, "charges", keyword)
         if keyword_found:
             keywords_found.append(keyword_found)
     if keywords_found:
-        special_msg = keywords_found[0] if len(keywords_found) == 1 else "; " \
-                                                                          "".join(
-            keywords_found)
+        special_msg = (
+            keywords_found[0]
+            if len(keywords_found) == 1
+            else "; " "".join(keywords_found)
+        )
         logging.info(f"Keywords {keyword_list} found in CSV")
-        logging.info(f"Updating subject line and mobile tease to include: {special_msg}")
+        logging.info(
+            f"Updating subject line and mobile tease to include: {special_msg}"
+        )
         subject_line = subject_line + f", ALERT: {special_msg}"
         mobile_tease_content = "Detected: " + special_msg
     else:

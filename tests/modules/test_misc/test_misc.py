@@ -18,16 +18,15 @@ dotenv.load_dotenv(root_dir / ".dev.env")
 # MOCK DIRS
 mock_dir = {
     "pdfs": test_dir / "output/pdfs/",
-    "create_dirs": test_dir / "output/create_dirs/"
-
+    "create_dirs": test_dir / "output/create_dirs/",
 }
+
 
 class TestPdfPathGen(unittest.TestCase):
     def setUp(self) -> None:
         if mock_dir["pdfs"].is_dir():
             rmtree(mock_dir["pdfs"])
         mock_dir["pdfs"].mkdir(exist_ok=True, parents=True)
-
 
     def tearDown(self) -> None:
         pass

@@ -22,7 +22,7 @@ mock_dirs = {
     "payload_email": test_dir / "fixtures/payload_email/",
     "email_template": dirs["email_template"],
     "email_final": test_dir / "output/email_final/",
-    "payload_csv": test_dir / "fixtures/payload_csv/"
+    "payload_csv": test_dir / "fixtures/payload_csv/",
 }
 
 mock_paths = {
@@ -30,6 +30,7 @@ mock_paths = {
     "email_final": mock_dirs["email_final"] / "email.html",
     "payload_csv": mock_dirs["payload_csv"] / "dockets.csv",
 }
+
 
 class TestEmail(unittest.TestCase):
     def setUp(self) -> None:

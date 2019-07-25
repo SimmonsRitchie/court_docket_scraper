@@ -17,20 +17,15 @@ logs_config(paths["logs_config_test"])
 load_dotenv(root_dir / ".dev.env")
 
 # MOCK VARS
-mock_dirs = {"extracted_text": test_dir /
-                               "fixtures/extracted_text_bail_difficult/"}
+mock_dirs = {"extracted_text": test_dir / "fixtures/extracted_text_bail_difficult/"}
 
 
 class TestParseBail(unittest.TestCase):
-
-
     def test_parsed_bail_matches_expected_values(self):
         """
         Test that extracted bail matches expected values.
         """
-        dict_to_match = {
-            "MJ-12104-CR-0000480-2019": 1
-        }
+        dict_to_match = {"MJ-12104-CR-0000480-2019": 1}
 
         # parse text
         parsed_dict = {}

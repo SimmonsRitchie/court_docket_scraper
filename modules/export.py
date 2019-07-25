@@ -92,8 +92,8 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
         df["charges"] = df["charges"].apply(truncate_charges)
     if "dob" in df.columns:
         # converting to human-friendly format, eg. Sept 9, 2019
-        df["dob"] = df["dob"].astype('datetime64[ns]')
-        df["dob"] = df["dob"].dt.strftime('%b %-m, %Y')
+        df["dob"] = df["dob"].astype("datetime64[ns]")
+        df["dob"] = df["dob"].dt.strftime("%b %-m, %Y")
     if "case_caption" in df.columns:
         df.rename(index=str, columns={"case_caption": "case"}, inplace=True)
     # removing underscores to create more human-readable format
@@ -116,8 +116,7 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
 
 
 def truncate_charges(charges):
-    return charges if len(charges) < 147 else "{}..."\
-        .format(charges[0:147].rstrip())
+    return charges if len(charges) < 147 else "{}...".format(charges[0:147].rstrip())
 
 
 def save_html_county_payload(county_intro: str, df_styled: Optional[str] = "") -> None:

@@ -42,8 +42,9 @@ def initialize_driver() -> webdriver:
             executable_path=chrome_driver_path, options=options
         )  # Optional argument, if not specified will search path.
     except Exception as e:
-        logging.error("Something went wrong when attempting to initialize "
-                      "chromedriver")
+        logging.error(
+            "Something went wrong when attempting to initialize " "chromedriver"
+        )
         logging.exception(e)
         raise
 

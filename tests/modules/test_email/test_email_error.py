@@ -12,6 +12,7 @@ logs_config(paths["logs_config_test"])
 # ENV VARS
 dotenv.load_dotenv(root_dir / ".dev.env")
 
+
 class TestEmailError(unittest.TestCase):
     def setUp(self) -> None:
         pass

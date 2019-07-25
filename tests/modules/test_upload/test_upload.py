@@ -15,9 +15,7 @@ from logs.config.logging import logs_config
 logs_config(paths["logs_config_test"])
 
 # MOCK VARS
-mock_paths1 = {
-    "payload_csv": test_dir / "fixtures/payload_csv/dockets.csv"
-}
+mock_paths1 = {"payload_csv": test_dir / "fixtures/payload_csv/dockets.csv"}
 mock_paths2 = {"payload_csv": test_dir / "fixtures/payload_csv/dockets_bad1.csv"}
 mock_env = os.environ
 mock_env["ERROR_EMAILS"] = "FALSE"
