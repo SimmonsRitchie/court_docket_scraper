@@ -79,10 +79,10 @@ def upload_to_rest_api():
             s = login(s, rest_api)
             s = add_cases(s, rest_api, cases_json)
             logout(s, rest_api)
-        except Exception as full_error:
-            print(full_error)
-            email_error_notification(ERROR_SUMMARY, full_error)
+        except Exception as e:
+            logging.exception(e)
             logging.error(ABORTING_UPLOAD)
+            email_error_notification(ERROR_SUMMARY, e)
             return
 
     # success
