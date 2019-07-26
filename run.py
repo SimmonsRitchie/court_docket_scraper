@@ -146,8 +146,7 @@ def main():
     # START TIME
     scrape_end_time = datetime.now()
 
-    # CREATE JSON FILE FROM CSV
-    # We save a json file with some metadata about scrape.
+    # OPTIONAL: MOVE JSON FILE TO S3
     if move_to_s3_enabled:
         export.convert_csv_to_json(scrape_end_time, county_list)
         copy_file_to_s3_bucket()
