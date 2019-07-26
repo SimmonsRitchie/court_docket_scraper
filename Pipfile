@@ -31,7 +31,6 @@ PySocks = "==1.6.8"
 python-dotenv = "*"
 retry = "*"
 pyyaml = "*"
-boto = "*"
 boto3 = "*"
 
 [requires]
