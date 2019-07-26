@@ -40,23 +40,23 @@ class TestUpload(unittest.TestCase):
         print(df)
         self.list_of_docketnums_to_be_uploaded = df["docketnum"].to_list()
 
-    # def tearDown(self) -> None:
-    #     """
-    #     Deleting cases added to database
-    #     """
-    #     print("TEARDOWN")
-    #     # START REQUEST SESSION
-    #     s = requests.Session()
-    #     try:
-    #         # LOGIN
-    #         s = login(s, self.rest_api)
-    #         # DELETE
-    #         s = helper_delete(s, self.rest_api, self.list_of_docketnums_to_be_uploaded)
-    #         # LOGOUT
-    #         logout(s, self.rest_api)
-    #     except Exception as error:
-    #         print(error)
-    #     s.close()
+    def tearDown(self) -> None:
+        """
+        Deleting cases added to database
+        """
+        print("TEARDOWN")
+        # START REQUEST SESSION
+        s = requests.Session()
+        try:
+            # LOGIN
+            s = login(s, self.rest_api)
+            # DELETE
+            s = helper_delete(s, self.rest_api, self.list_of_docketnums_to_be_uploaded)
+            # LOGOUT
+            logout(s, self.rest_api)
+        except Exception as error:
+            print(error)
+        s.close()
 
     @mock.patch.dict(paths, mock_paths, clear=True)
     @mock.patch.dict(
