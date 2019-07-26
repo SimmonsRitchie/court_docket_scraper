@@ -84,21 +84,21 @@ parser_recipe = [
     {
         "field": "defendant_gender",
         "pattern": re.compile(
-            r"Sex:\n"
-            r"Race:\n"
-            r"(?P<defendant_gender>.*)\n"
+            r"(Sex:\n)?"  # often precedes gender but not always
+            r"(Race:\n)?"  # often precedes gender but not always
+            r"(?P<defendant_gender>Male|Female)\n"
         ),
         "limit_size": 20,
     },    {
         "field": "defendant_race",
         "pattern": re.compile(
-            r"Sex:\n"
-            r"Race:\n"
-            r".*\n"
-            r"(?P<defendant_race>.*)\n"
-            r"(Name:|Confinement Location)\n"
+            r"(Sex:\n)?" # often precedes race but not always
+            r"(Race:\n)?" # often precedes race but not always
+            r"(Male|Female)\n"
+            r"(?P<defendant_race>White|Black|Hispanic|Asian|Native "
+            r"American|Unknown/Unreported)\n"
         ),
-        "limit_size": 20,
+        "limit_size": 50,
     },
 ]
 
