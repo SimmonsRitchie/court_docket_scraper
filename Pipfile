@@ -32,6 +32,7 @@ python-dotenv = "*"
 retry = "*"
 pyyaml = "*"
 boto = "*"
+boto3 = "*"
 
 [requires]
 python_version = "3.7"

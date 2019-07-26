@@ -203,7 +203,8 @@ def convert_df_to_csv(df: pd.DataFrame) -> None:
         logging.info("CSV created")
 
 
-def convert_csv_to_json(county_list: List[str]) -> datetime:
+def convert_csv_to_json(scrape_end_time: object, county_list: List[str]) -> \
+        datetime:
 
     """
     We transform our CSV into JSON and add a few extra fields of meta data. Returned JSON uses camelcase instead of
@@ -217,9 +218,7 @@ def convert_csv_to_json(county_list: List[str]) -> datetime:
     json_payload_path = paths["payload_json"]
 
     # GENERATE METADATA FOR JSON OUTPUT
-    date_and_time_of_scrape = (
-        datetime.now().replace(microsecond=0).isoformat()
-    )  # Metadata field: current time
+    date_and_time_of_scrape = scrape_end_time.isoformat()
     selected_counties = (
         county_list
     )  # Metadata field: list of all counties that were SELECTED by user to be scraped

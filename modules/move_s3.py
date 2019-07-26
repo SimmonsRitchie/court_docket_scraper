@@ -1,26 +1,34 @@
 """
 This module moves files to an s3 bucket from an ec2 instance
 """
-import boto
-from boto.s3.key import Key
-import time
+# inbuilt or third party libs
+import boto3
 import logging
+import os
 
-def move_file_to_s3_bucket():
+# project modules
+from locations import paths
 
-    file_name = "bokchoy.txt"
-    bucket_name = "penn-playground"
-    file = open(file_name)
+def copy_file_to_s3_bucket():
 
-    conn = boto.connect_s3()
-    bucket = conn.get_bucket(bucket_name)
+    # GET ENV VARS
+    bucket_name = os.environ.get("BUCKET_NAME")
+    keyID = os.environ.get("KEY_ID")
+    sKeyID = os.environ.get("SECRET_KEY_ID")
+    source_path = str(paths["payload_json"].resolve())
+    destination_path = os.environ.get("DESTINATION_PATH")
 
-    print("Moving file...")
-    #Get the Key object of the bucket
-    k = Key(bucket)
-    #Crete a new key with id as the name of the file
-    k.key=file_name
-    #Upload the file
-    result = k.set_contents_from_file(file)
-    #result contains the size of the file uploaded
-    print("file moved")
+    # LOGGING
+    logging.info(f"Moving {source_path} to S3 bucker {bucket_name}...")
+    logging.info(f"File will be saved in: {destination_path}")
+
+    # CONNECT TO S3
+    session = boto3.Session(
+        aws_access_key_id=keyID,
+        aws_secret_access_key=sKeyID,
+    )
+    s3 = session.resource('s3')
+
+    # UPLOAD
+    s3.Bucket(bucket_name).upload_file(source_path, destination_path)
+    logging.info(f"file uploaded to {destination_path}")
