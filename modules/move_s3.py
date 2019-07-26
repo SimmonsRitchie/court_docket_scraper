@@ -35,7 +35,7 @@ def copy_file_to_s3_bucket():
         s3.Bucket(bucket_name).upload_file(source_path, destination_path)
         logging.info(f"file uploaded to {destination_path}")
     except Exception as e:
-        error_summary = "Someething went wrong when attempting to copy file" \
+        error_summary = "Something went wrong when attempting to copy file" \
                         " to S3 bucket"
         logging.exception(e)
         email_error_notification(error_summary, e)
