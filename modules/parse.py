@@ -64,10 +64,10 @@ parser_recipe = [
         "limit_size": 100,
     },
     {
-        "field": "township",
+        "field": "municipality",
         "pattern": re.compile(
             r"\w*\n"  # typically county name, eg. Dauphin
-            r"(?P<township>[a-zA-Z ]*)\n"
+            r"(?P<municipality>[a-zA-Z ]*)\n"
             r"CASE INFORMATION\n"
         ),
         "limit_size": 100,
