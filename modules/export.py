@@ -275,7 +275,6 @@ def convert_csv_to_json(scrape_end_time: object, county_list: List[str]) -> \
     with open(json_payload_path, "w") as write_file:
         json.dump(final_dict, write_file, indent=4)
     logging.info("Export complete")
-    return date_and_time_of_scrape
 
 
 def save_copy_of_final_email(

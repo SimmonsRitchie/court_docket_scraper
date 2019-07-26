@@ -13,6 +13,12 @@ from modules.email import email_error_notification
 def copy_file_to_s3_bucket():
 
     try:
+        # CHECK JSON PAYLOAD EXISTS
+        if not paths["payload_json"].is_file():
+            logging.error(f"No file found at {paths['payload_json']},"
+            "aborting attempt to move file to S3.")
+            raise
+
         # GET ENV VARS
         bucket_name = os.environ.get("BUCKET_NAME")
         keyID = os.environ.get("KEY_ID")

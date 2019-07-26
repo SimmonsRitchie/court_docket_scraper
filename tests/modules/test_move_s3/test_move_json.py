@@ -32,7 +32,7 @@ mock_paths = {
 # different bucket and folder than defined in our .env
 mock_env = os.environ
 mock_env["BUCKET_NAME"] = "penn-playground"
-mock_env["DESTINATION_PATH"] = "test_data/dockets.json"
+mock_env["DESTINATION_PATH"] = "test_data_test/dockets.json"
 
 class TestMoveS3(unittest.TestCase):
     def setUp(self) -> None:
