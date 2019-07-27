@@ -100,12 +100,20 @@ def email_notification(
     scrape_end_date = scrape_end_datetime.strftime("%a, %b %-d %Y")
     yesterday_date = (datetime.now() - timedelta(1)).strftime("%a, %b %-d %Y")
 
+    # GET NUM OF CASES
+    if paths["payload_csv"].is_file():
+        df = pd.read_csv(paths["payload_csv"])
+        num_of_cases = len(df.index)
+    else:
+        num_of_cases = 0
+
     # GENERATE CUSTOM MESSAGES
     # Note: we add trailing white space in mobile test content so that actual
     # email content isn't included in tease.
-    mobile_tease_content = gen_mobile_tease_content(county_list)
+    mobile_tease_content = gen_mobile_tease_content(county_list, num_of_cases)
     intro_content = gen_intro_content(
-        county_list, target_scrape_day, scrape_end_date, yesterday_date
+        county_list, num_of_cases, target_scrape_day, scrape_end_date,
+        yesterday_date
     )
     footer_content = gen_footer_content(scrape_start_datetime,
                                         scrape_end_datetime, county_list)
@@ -139,55 +147,62 @@ def email_notification(
     login_to_gmail_and_send(recipients, message, subject_line)
 
 
-def gen_mobile_tease_content(county_list: List[str]) -> str:
+def gen_mobile_tease_content(county_list: List[str], num_of_cases) -> str:
     """This create a hidden message that appears as a preview in most email
     clients"""
 
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
     if len(county_list) == 1:
-        mobile_tease_content = "Here are the latest criminal cases filed in {} County".format(
-            county_list[0]
-        )
+        mobile_tease_content = f"{num_of_cases} cases filed " \
+                               f"in {county_list[0]} County"
     else:
         mobile_tease_content = (
-            "Here are the latest criminal cases filed in central Pa. courts."
+            f"{num_of_cases} cases filed "
+            f"in {', '.join(county_list)} counties"
         )
     return mobile_tease_content
 
 
 def gen_intro_content(
     county_list: List[str],
+    num_of_cases: int,
     target_scrape_day: str,
     formatted_time: str,
     yesterday_date: str,
 ) -> str:
-    # GET STATS
-    # TODO: Get num of crim cases in csv payload
+    """This returns text that greets the email viewer when they open the
+    email. It's positioned below the main header "Pa Court Report" but above
+    the tables of scraped data"""
+
+    # CUSTOMIZE TEXT FRAGMENT BASED ON NUM OF CASES
+    if num_of_cases == 0:
+        num_cases_text = "No criminal cases were"
+    elif num_of_cases == 1:
+        num_cases_text = "One criminal case was"
+    else:
+        num_cases_text = f"The following {num_of_cases} criminal cases " \
+            f"were"
 
     # GENERATE INTRO
     # we create different intros based on conditions
     if len(county_list) == 1:
         if target_scrape_day == "today":
-            intro_description = f"<p>The following criminal cases were filed " \
-                f"in {county_list[0]} County today as of {formatted_time}.</p>\
-
+            intro_description = f"<p>{num_cases_text} filed " \
+                f"in {county_list[0]} County today as of {formatted_time}.</p>"
         elif target_scrape_day == "yesterday":
-            intro_description = "<p>The following criminal cases were filed in {} County yesterday ({}).</p>\
-                            ".format(
-                county_list[0], yesterday_date
-            )
+            intro_description = f"<p>{num_cases_text} filed in {county_list[0]} County " \
+                                 f"yesterday ({yesterday_date}).</p>"
     else:
         if target_scrape_day == "today":
-            intro_description = f"<p>The following criminal cases were filed " \
+            intro_description = f"<p>{num_cases_text} filed " \
                 f"in district courts today as of {formatted_time}.</p>"\
 
         elif target_scrape_day == "yesterday":
-            intro_description = "<p>The following criminal cases were filed in district courts yesterday ({}).</p>\
+            intro_description = f"<p>{num_cases_text} filed in district " \
+                                f"courts yesterday ({yesterday_date}).</p>\
                         <p>You can also view a searchable list of these cases\
                         <a href='https://s3.amazonaws.com/court-dockets/index.html'>here</a>.</p>\
-                    ".format(
-                yesterday_date
-            )
+                    "
     scrape_name = os.getenv("SCRAPE_NAME", "Case Scrape")
     intro_subheading = f'<span class="subheading">{scrape_name}</span>'
     return intro_subheading + intro_description
