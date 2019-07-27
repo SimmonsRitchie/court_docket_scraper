@@ -119,7 +119,7 @@ def email_notification(
     # CHECK FOR MURDER/HOMICIDE
     # Add a special message to subject line and mobile tease if either condition is met
     subject_line, mobile_tease_content = insert_special_message(
-        scraped_data_content, mobile_tease_content, subject_line
+        mobile_tease_content, subject_line
     )
     # GENERATE EMAIL HTML
     # We take our HTML payload of docket data and wrap it in more HTML to make it look nice.
@@ -226,13 +226,18 @@ def gen_footer_content(scrape_start_datetime: object, scrape_end_datetime:
         f"dsimmons-ritchie@spotlight.org</p>"
 
 
-def insert_special_message(
-    scraped_data_content: str, mobile_tease_content: str, subject_line: str
+def insert_special_message(mobile_tease_content: str, subject_line: str
 ) -> tuple:
-    """Detects whether homicide or murder is included in email content and
-    then returns a tuple with an updated version of subject line and mobile
-    tease"""
+    """Detects whether specific keywords (eg. homicide, murder) is included
+    in email content and then returns a tuple with an updated version of
+    subject line and mobile tease"""
 
+    logging.info("Checking whether special message should be insert in email "
+                 "preview and subject line...")
+    if not paths["payload_csv"].is_file():
+        logging.info("No payload CSV detected - no special message will be "
+                     "inserted")
+        return
     df = pd.read_csv(paths["payload_csv"])
     keyword_list = ["murder", "homicide"]
     keywords_found = []
