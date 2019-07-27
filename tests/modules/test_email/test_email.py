@@ -9,7 +9,7 @@ import dotenv
 # project modules
 from logs.config.logging import logs_config
 from locations import paths, dirs, root_dir, test_dir
-from modules.email import email_notification, login_to_gmail_and_send
+from modules.email import email_notification
 
 # LOGGING
 logs_config(paths["logs_config_test"])
