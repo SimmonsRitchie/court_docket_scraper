@@ -42,7 +42,7 @@ class TestEmail(unittest.TestCase):
         # vars
         self.scrape_start_time = (datetime.now() - timedelta(hours=1.3))
         self.scrape_end_time = datetime.now()
-        self.target_scrape_day = "yesterday"
+        self.target_scrape_day = "today"
         self.county_list = ["Cumberland", "Perry", "York", "Lancaster"]
 
     def tearDown(self) -> None:

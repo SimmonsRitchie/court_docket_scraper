@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from datetime import datetime
+from datetime import datetime,timedelta
 from shutil import rmtree
 import os
 import json
@@ -40,7 +40,8 @@ class TestEmailHomicideAndMurder(unittest.TestCase):
         mock_dirs["email_final"].mkdir(parents=True, exist_ok=True)
 
         # vars
-        self.date_and_time_of_scrape = datetime.now().replace(microsecond=0).isoformat()
+        self.scrape_start_datetime = datetime.now() - timedelta(hours=1)
+        self.scrape_end_datetime = datetime.now()
         self.target_scrape_day = "yesterday"
         self.county_list = ["Cumberland", "Perry", "York", "Lancaster"]
 
@@ -55,7 +56,8 @@ class TestEmailHomicideAndMurder(unittest.TestCase):
         and murder is included in CSV payload and responds accordingly.
         """
         email_notification(
-            self.date_and_time_of_scrape, self.target_scrape_day, self.county_list
+            self.scrape_start_datetime, self.scrape_end_datetime,
+            self.target_scrape_day, self.county_list
         )
 
 
