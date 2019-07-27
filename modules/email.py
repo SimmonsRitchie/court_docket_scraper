@@ -168,10 +168,9 @@ def gen_intro_content(
     # we create different intros based on conditions
     if len(county_list) == 1:
         if target_scrape_day == "today":
-            intro_description = "<p>The following criminal cases were filed in {} County today as of {}.</p>\
-                             <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
-                county_list[0], formatted_time
-            )
+            intro_description = f"<p>The following criminal cases were filed " \
+                f"in {county_list[0]} County today as of {formatted_time}.</p>\
+
         elif target_scrape_day == "yesterday":
             intro_description = "<p>The following criminal cases were filed in {} County yesterday ({}).</p>\
                             ".format(
@@ -179,10 +178,9 @@ def gen_intro_content(
             )
     else:
         if target_scrape_day == "today":
-            intro_description = "<p>The following criminal cases were filed in district courts today as of {}.</p>\
-                             <p>Check tomorrow morning's email to see all cases filed today.</p>".format(
-                formatted_time
-            )
+            intro_description = f"<p>The following criminal cases were filed " \
+                f"in district courts today as of {formatted_time}.</p>"\
+
         elif target_scrape_day == "yesterday":
             intro_description = "<p>The following criminal cases were filed in district courts yesterday ({}).</p>\
                         <p>You can also view a searchable list of these cases\
