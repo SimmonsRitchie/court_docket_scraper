@@ -9,7 +9,7 @@ import dotenv
 # project modules
 from logs.config.logging import logs_config
 from locations import paths, dirs, root_dir, test_dir
-from modules.email import email_notification, login_to_gmail_and_send
+from modules.email import login_to_gmail_and_send
 
 # LOGGING
 logs_config(paths["logs_config_test"])
@@ -50,15 +50,17 @@ class TestEmail(unittest.TestCase):
 
     @mock.patch.dict(paths, mock_paths, clear=True)
     @mock.patch.dict(dirs, mock_dirs, clear=True)
-    def test_email_sends(self):
+    def test_email_with_attachments_sends(self):
         """
-        Test that email successfully sends without error
+        Test that email with attachments successfully sends without error
         """
-        email_notification(
-            self.scrape_start_time, self.scrape_end_time,
-            self.target_scrape_day,
-            self.county_list
-        )
+        email_args = {
+            "recipients": json.loads(os.getenv("DESTINATION_EMAIL_ADDRESSES")),
+            "html_msg": "<p>This is a test to see that an email with attachments can be sent without error.</p>",
+            "subject_line": "this is a test - with attachments",
+            "attachments": [mock_paths["payload_csv"]],
+        }
+        login_to_gmail_and_send(**email_args)
 
 
 if __name__ == "__main__":

@@ -161,6 +161,9 @@ def gen_intro_content(
     formatted_time: str,
     yesterday_date: str,
 ) -> str:
+    # GET STATS
+    # TODO: Get num of crim cases in csv payload
+
     # GENERATE INTRO
     # we create different intros based on conditions
     if len(county_list) == 1:
@@ -237,7 +240,7 @@ def insert_special_message(mobile_tease_content: str, subject_line: str
     if not paths["payload_csv"].is_file():
         logging.info("No payload CSV detected - no special message will be "
                      "inserted")
-        return
+        return subject_line, mobile_tease_content
     df = pd.read_csv(paths["payload_csv"])
     keyword_list = ["murder", "homicide"]
     keywords_found = []
