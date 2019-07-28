@@ -248,14 +248,26 @@ def insert_special_message(mobile_tease_content: str, subject_line: str
     in email content and then returns a tuple with an updated version of
     subject line and mobile tease"""
 
-    logging.info("Checking whether special message should be insert in email "
-                 "preview and subject line...")
+    # CHECKING ENV VAR PRESENT
+    keyword_list = os.getenv("KEYWORD_ALERTS")
+    if not keyword_list:
+        logging.info("No KEYWORD_ALERTS have been specified in .env file, "
+                     "no special message will be inserted")
+        return subject_line, mobile_tease_content
+    else:
+        keyword_list = json.loads(keyword_list)
+        logging.info(f"KEYWORD_ALERTS {keyword_list} are set in .env file")
+    logging.info("Checking whether special message should be inserted in "
+                 "email preview and subject line...")
+
+    # CHECKING WHETHER CSV IS PRESENT
     if not paths["payload_csv"].is_file():
         logging.info("No payload CSV detected - no special message will be "
                      "inserted")
         return subject_line, mobile_tease_content
+
+    # CHECK WHETHER KEYWORDS ARE IN DF
     df = pd.read_csv(paths["payload_csv"])
-    keyword_list = ["murder", "homicide"]
     keywords_found = []
     logging.info(
         f"Detecting whether the following keywords are in payload "
@@ -269,7 +281,7 @@ def insert_special_message(mobile_tease_content: str, subject_line: str
         special_msg = (
             keywords_found[0]
             if len(keywords_found) == 1
-            else "; " "".join(keywords_found)
+            else ", " "".join(keywords_found)
         )
         logging.info(f"Keywords {keyword_list} found in CSV")
         logging.info(

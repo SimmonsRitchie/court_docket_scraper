@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from datetime import datetime
+from datetime import datetime, timedelta
 from shutil import rmtree
 import os
 import json
@@ -9,7 +9,7 @@ import dotenv
 # project modules
 from logs.config.logging import logs_config
 from locations import paths, dirs, root_dir, test_dir
-from modules.email import email_notification, login_to_gmail_and_send
+from modules.email import email_notification
 
 # LOGGING
 logs_config(paths["logs_config_test"])
@@ -40,7 +40,8 @@ class TestEmailHomicide(unittest.TestCase):
         mock_dirs["email_final"].mkdir(parents=True, exist_ok=True)
 
         # vars
-        self.date_and_time_of_scrape = datetime.now().replace(microsecond=0).isoformat()
+        self.scrape_start_time = (datetime.now() - timedelta(hours=1.3))
+        self.scrape_end_time = datetime.now()
         self.target_scrape_day = "yesterday"
         self.county_list = ["Cumberland", "Perry", "York", "Lancaster"]
 
@@ -54,7 +55,8 @@ class TestEmailHomicide(unittest.TestCase):
         Test that email notification successfully detects that a homicide is included in CSV payload and responds accordingly.
         """
         email_notification(
-            self.date_and_time_of_scrape, self.target_scrape_day, self.county_list
+            self.scrape_start_time, self.scrape_end_time,
+            self.target_scrape_day, self.county_list
         )
 
 

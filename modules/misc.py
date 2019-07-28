@@ -153,3 +153,25 @@ def detect_keyword_in_df(df: pd.DataFrame, column: str, keyword: str) -> str:
         else:
             counties_formatted = "{} Counties".format(", ".join(counties))
         return "{} ({})".format(keyword.capitalize(), counties_formatted)
+
+
+def highlight_row_in_df(s, keyword_list, column):
+    """
+    Highlights a row of a pandas dataframe if a selected column (or columns)
+    contains a keyword (or keywords)
+
+    :param s: Obj. Dataframe.
+    :param keyword_list: List of strings. Keywords that you want to search.
+    :param column: List of strings. Columns you want to search
+    :return: Returns formatting for row if selected column contains selected keyword.
+    """
+    # cwe first convert list into 'safe' form in case it has '!' or '?' or
+    # other
+    # special regex chars
+    safe_keyword_list = [re.escape(m) for m in keyword_list]
+    keyword_regex = "|".join(safe_keyword_list)
+    is_max = pd.Series(data=False, index=s.index)
+    is_max[column] = s.loc[column].str.contains(keyword_regex,
+                                                flags=re.IGNORECASE)
+    return ['background-color: #fccc8d' if is_max.any() else ''
+            for v in is_max]

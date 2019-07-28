@@ -4,29 +4,30 @@ import pandas as pd
 from shutil import rmtree
 from pathlib import Path
 import logging
+import dotenv
 
 # fixtures
-from tests.fixtures.dict_list.docket_list import docket_list
+from tests.fixtures.dict_list.docket_list_with_homicide import docket_list
 
 # project modules
 from modules.export import (
     convert_dict_into_df,
-    convert_df_to_csv,
     save_html_county_payload,
     convert_df_to_html,
 )
 from logs.config.logging import logs_config
 from locations import paths, dirs, root_dir, test_dir
 
+# ENV VARS
+dotenv.load_dotenv(root_dir / ".dev.env")
 
+# MOCK DIRS/PATHS
 mock_dirs = {
-    "payload_csv": test_dir / "output/csv_converted_from_df/",
     "payload_email": test_dir / "output/payload_email/",
     "email_template": dirs["email_template"],  # using actual directory
 }
 
 mock_paths = {
-    "payload_csv": mock_dirs["payload_csv"] / "dockets.csv",
     "payload_email": mock_dirs["payload_email"] / "email.html",
 }
 

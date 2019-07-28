@@ -83,6 +83,8 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
             f"Desired sort value ({sort_field}) is not among " f"columns in df"
         )
 
+
+
     # OTHER FORMATTING
     # We check whether column names are present before formatting because
     # they may have been culled when fields were set. We'll get errors if we
@@ -110,8 +112,25 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
         df.reset_index(drop=True)
         .style.set_table_styles(style.table_style)
         .set_table_attributes(style.table_attribs)
-        .format({"url": style.make_clickable, "bail": style.currency_convert})
     )
+
+    # OPTIONAL: HIGHLIGHT ROWS IF KEYWORDS PRESENT
+    keyword_list = os.getenv("KEYWORD_ALERTS")
+    if not keyword_list:
+        logging.info("No KEYWORD_ALERTS have been specified in .env file, "
+                     "rows will not be highlighted")
+    else:
+        keyword_list = json.loads(keyword_list)
+        logging.info(f"KEYWORD_ALERTS {keyword_list} are set in .env file, "
+                     "rows will be highlighted if present in charges field")
+        df_styled = df_styled.apply(misc.highlight_row_in_df,
+                                    keyword_list=keyword_list,
+              column=['charges'], axis=1)
+
+    # FORMAT
+    # highlights rows if these keywords are contained
+    df_styled = df_styled\
+        .format({"url": style.make_clickable, "bail": style.currency_convert})
 
     # RENDER DATAFRAME AS HTML
     df_styled = df_styled.hide_index()
