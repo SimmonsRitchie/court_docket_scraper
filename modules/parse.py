@@ -59,7 +59,7 @@ parser_recipe = [
             r"\n[A-Z]\s\d{4,}.*"  # OTN number, eg. U 725538-2
             r"\n(?P<arresting_agency>.*(Police|PSP|police|District "
             r"Attorney|district attorney|Detectives|detectives| "
-            r"PD|Inspector General|Attorney General|Sheriff).*)\n"
+            r"PD|Inspector General|Attorney General|Sheriff|Amtrak).*)\n"
         ),
         "limit_size": 100,
     },
