@@ -12,7 +12,7 @@ This file is the entrypoint. From main(), the program performs the following act
     -DATA EXPORT: Scraped data is turned into different formats for export,
     eg html, csv.
     -MOVE (OPTIONAL): If enabled, data will be moved to an AWS S3 bucket.
-    -UPLOAD (OPTIONAL): If enabled, data will be uploaded to REST API
+    -UPLOAD (OPTIONAL): If enabled, data will be uploaded to a REST API
     -EMAIL: A summary of data is emailed to desired recipients.
 
 NOTE: Due to the way ChromeDriver downloads PDFs in this program, it was
