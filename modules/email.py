@@ -225,7 +225,7 @@ def gen_footer_content(scrape_start_datetime: object, scrape_end_datetime:
     scrape_end_time = scrape_end_datetime.strftime("%I:%M %p")
     scrape_duration = int(int(time.mktime(scrape_end_datetime.timetuple()) -
                               time.mktime(scrape_start_datetime.timetuple()))/ 60)
-    duration_per_county = scrape_duration / len(county_list)
+    duration_per_county = round(scrape_duration / len(county_list), 2)
 
     if scrape_start_datetime.date() == scrape_end_datetime.date():
         date_text = f"{scrape_start_time} and {scrape_end_time} on {scrape_end_date}"
