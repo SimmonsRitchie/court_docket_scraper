@@ -43,7 +43,7 @@ class TestEmail(unittest.TestCase):
         self.scrape_start_time = (datetime.now() - timedelta(hours=1.3))
         self.scrape_end_time = datetime.now()
         self.target_scrape_day = "today"
-        self.county_list = ["Cumberland", "Perry", "York", "Lancaster"]
+        self.county_list = ["Cumberland"]
 
     def tearDown(self) -> None:
         pass
@@ -55,7 +55,8 @@ class TestEmail(unittest.TestCase):
         Test that email successfully sends without error
         """
         email_notification(
-            self.scrape_start_time, self.scrape_end_time,
+            self.scrape_start_time,
+            self.scrape_end_time,
             self.target_scrape_day,
             self.county_list
         )

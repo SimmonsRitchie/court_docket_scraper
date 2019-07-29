@@ -112,7 +112,7 @@ def email_notification(
     # email content isn't included in tease.
     mobile_tease_content = gen_mobile_tease_content(county_list, num_of_cases)
     intro_content = gen_intro_content(
-        county_list, num_of_cases, target_scrape_day, scrape_end_date,
+        county_list, num_of_cases, target_scrape_day, scrape_end_datetime,
         yesterday_date
     )
     footer_content = gen_footer_content(scrape_start_datetime,
@@ -151,13 +151,16 @@ def gen_mobile_tease_content(county_list: List[str], num_of_cases) -> str:
     """This create a hidden message that appears as a preview in most email
     clients"""
 
+    # CREATE TEXT FRAGMENT
+    case_plural = "case" if num_of_cases == 1 else "cases"
+
     # GENERATE HIDDEN MESSAGE FOR MOBILE TEASE
     if len(county_list) == 1:
-        mobile_tease_content = f"{num_of_cases} cases filed " \
+        mobile_tease_content = f"{num_of_cases} {case_plural} filed " \
                                f"in {county_list[0]} County."
     else:
         mobile_tease_content = (
-            f"{num_of_cases} cases filed "
+            f"{num_of_cases} {case_plural} filed "
             f"in {', '.join(county_list)} counties."
         )
     return mobile_tease_content
@@ -167,12 +170,15 @@ def gen_intro_content(
     county_list: List[str],
     num_of_cases: int,
     target_scrape_day: str,
-    formatted_time: str,
+    scrape_end_datetime: object,
     yesterday_date: str,
 ) -> str:
     """This returns text that greets the email viewer when they open the
     email. It's positioned below the main header "Pa Court Report" but above
     the tables of scraped data"""
+
+    formatted_date = scrape_end_datetime.strftime("%a, %b %-d %Y")
+    formatted_time = scrape_end_datetime.strftime("%-I:%-M %p")
 
     # CUSTOMIZE TEXT FRAGMENT BASED ON NUM OF CASES
     if num_of_cases == 0:
@@ -188,15 +194,16 @@ def gen_intro_content(
     if len(county_list) == 1:
         if target_scrape_day == "today":
             intro_description = f"<p>{num_cases_text} filed " \
-                f"in {county_list[0]} County today as of {formatted_time}.</p>"
+                f"in {county_list[0]} County today ({formatted_date}) " \
+                f"as of {formatted_time}.</p>"
         elif target_scrape_day == "yesterday":
             intro_description = f"<p>{num_cases_text} filed in {county_list[0]} County " \
                                  f"yesterday ({yesterday_date}).</p>"
     else:
         if target_scrape_day == "today":
             intro_description = f"<p>{num_cases_text} filed " \
-                f"in district courts today as of {formatted_time}.</p>"\
-
+                f"in district courts today ({formatted_date}) as " \
+                f"of {formatted_time}.</p>"
         elif target_scrape_day == "yesterday":
             intro_description = f"<p>{num_cases_text} filed in district " \
                                 f"courts yesterday ({yesterday_date}).</p>\
