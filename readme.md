@@ -4,9 +4,13 @@ This program scrapes court data from Pennsylvania's Unified Judicial System [web
 
 If any person has been charged with homicide, that will be noted in the email's subject line.
 
-To make it easier to analyze scraped dockets or to use it in a web app, the program will also generate CSV and JSON files.
+To make it easier to analyze scraped dockets or to use it in a web app, the 
+program will also generate CSV and JSON files. It can also be configured to 
+upload data to a REST API.
 
-You can easily modify the program to scrape dockets for any Pennsylvania county you would like. If you have access to a Linux system, you can also use crontabs to run this program automatically each day or several times per day.
+You see an example of data scraped by this program [here](https://s3.amazonaws.com/penn-charges/index.html)
+
+You can modify the program to scrape dockets for any Pennsylvania county you would like. If you have access to a Linux system, you can also use crontabs to run this program automatically each day or several times per day.
 
 ### Prerequistes
 
