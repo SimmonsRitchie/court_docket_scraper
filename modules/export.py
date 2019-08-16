@@ -83,8 +83,6 @@ def convert_df_to_html(df: pd.DataFrame) -> str:
             f"Desired sort value ({sort_field}) is not among " f"columns in df"
         )
 
-
-
     # OTHER FORMATTING
     # We check whether column names are present before formatting because
     # they may have been culled when fields were set. We'll get errors if we
