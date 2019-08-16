@@ -206,10 +206,8 @@ def gen_intro_content(
                 f"of {formatted_time}.</p>"
         elif target_scrape_day == "yesterday":
             intro_description = f"<p>{num_cases_text} filed in district " \
-                                f"courts yesterday ({yesterday_date}).</p>\
-                        <p>You can also view a searchable list of these cases\
-                        <a href='https://s3.amazonaws.com/court-dockets/index.html'>here</a>.</p>\
-                    "
+                                f"courts yesterday ({yesterday_date}).</p>"\
+
     scrape_name = os.getenv("SCRAPE_NAME", "Case Scrape")
     intro_subheading = f'<span class="subheading">{scrape_name}</span>'
     return intro_subheading + intro_description
