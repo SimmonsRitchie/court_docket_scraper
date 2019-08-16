@@ -8,7 +8,8 @@ To make it easier to analyze scraped dockets or to use it in a web app, the
 program will also generate CSV and JSON files. It can also be configured to 
 upload data to a REST API.
 
-You see an example of data scraped by this program [here](https://s3.amazonaws.com/penn-charges/index.html)
+You see an example of data scraped by this program [here](https://s3
+.amazonaws.com/penn-charges/index.html).
 
 You can modify the program to scrape dockets for any Pennsylvania county you would like. If you have access to a Linux system, you can also use crontabs to run this program automatically each day or several times per day.
 
