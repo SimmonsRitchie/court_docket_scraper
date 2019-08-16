@@ -1,8 +1,14 @@
-### Pa. court docket scraper
+###Pa. court docket scraper
 
 This program scrapes court data from Pennsylvania's Unified Judicial System [web portal](https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx) and emails summarized info to selected email addresses.
 
-### Prerequistes
+If any person has been charged with homicide, that will be noted in the email's subject line.
+
+To make it easier to analyze scraped dockets or to use it in a web app, the program will also generate CSV and JSON files.
+
+You can easily modify the program to scrape dockets for any Pennsylvania county you would like. If you have access to a Linux system, you can also use crontabs to run this program automatically each day or several times per day.
+
+###Prerequistes
 
 - Python 3.7+
 
@@ -14,7 +20,7 @@ here's a guide for [installing on Ubuntu 16.04 or 18.04](https://tecadmin.net/se
 - In order for the program to send emails with scrape output, you'll need a 
 gmail account. The program will log into this account to do the actual sending. You'll likely need to make sure that your gmail settings allow "less secure app access". You can find this under gmail's security settings. If you don't feel comfortable adjusting this setting on your personal gmail address, I suggest creating a new one. 
 
-### Install
+###Install
 
 1. Clone this repo by either clicking Github's 'clone or download' button or,
  in the terminal, navigating to where you would like the 
@@ -93,7 +99,7 @@ each day at 8:01am:
 ```1 8 * * * sh /home/MyName/court_docket_sraper/morning.sh```
  
 
-## Motivation
+###Motivation
 
 Thousands of district court dockets are uploaded to Pennsylvania's UJS portal each day. For researchers and journalists, there is a treasure trove of information on this website.
 
@@ -105,12 +111,4 @@ hours.
 This program takes the work out of that task: It parses all of the PDFs for 
 selected counties, extracts particular fields of interest (eg. charges, bail amount, DOB of individual), and then emails a list of that info to a selected email address (or addresses). The list includes links to the original PDF dockets for easy reference.
 
-If any person has been charged with homicide, that will be noted in the email's subject line.
 
-To make it easier to analyze scraped dockets or to use it in a web app, the program will also generate CSV and JSON files.
-
-You can easily modify the program to scrape dockets for any Pennsylvania county you would like. If you have access to a Linux system, you can also use crontabs to run this program automatically each day or several times per day.
-
-### Author
-
-Daniel Simmons-Ritchie
