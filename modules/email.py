@@ -245,7 +245,7 @@ def gen_footer_content(scrape_start_datetime: object, scrape_end_datetime:
         f"Daniel Simmons-Ritchie. \
         If you don't wish to receive these emails or you see errors in this " \
         f"email, contact him at \
-        <a href='mailto:dsimmons-ritchie@spotlight.org'>" \
+        <a href='mailto:dsimmons-ritchie@spotlightpa.org'>" \
         f"dsimmons-ritchie@spotlight.org</p>"
 
 
