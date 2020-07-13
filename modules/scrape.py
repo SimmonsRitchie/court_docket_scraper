@@ -191,8 +191,10 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             search_pages_loop = True
             page_count = 1  # page result counter
 
-            logging.info("Sleeping for a second in order to not overload UJS server...")
-            time.sleep(7)
+            page_sleep = 7
+            logging.info(f"Sleeping {page_sleep} for a second in order to not overload UJS server...")
+            time.sleep(page_sleep)
+
             logging.info("Beginning page search loop")
             while search_pages_loop:
 
