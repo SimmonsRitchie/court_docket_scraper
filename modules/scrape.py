@@ -28,8 +28,8 @@ RETRY_DELAY = os.environ.get("RETRY_DELAY")  # default 10.0 sec
 RETRY_BACKOFF = os.environ.get("RETRY_BACKOFF")  # default x5
 
 RETRY_ATTEMPTS = int(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 3
-RETRY_DELAY = float(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 10.0
-RETRY_BACKOFF = float(RETRY_ATTEMPTS) if RETRY_ATTEMPTS else 5.0
+RETRY_DELAY = float(RETRY_DELAY) if RETRY_DELAY else 10.0
+RETRY_BACKOFF = float(RETRY_BACKOFF) if RETRY_BACKOFF else 5.0
 
 
 @retry(Exception, tries=RETRY_ATTEMPTS, delay=RETRY_DELAY, backoff=RETRY_BACKOFF)
@@ -190,6 +190,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             # LOOP 2: RESULTS PAGES FOR EACH COURT
             search_pages_loop = True
             page_count = 1  # page result counter
+
+            logging.info("Sleeping for a second in order to not overload UJS server...")
+            time.sleep(7)
             logging.info("Beginning page search loop")
             while search_pages_loop:
 
