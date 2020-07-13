@@ -43,6 +43,7 @@ import os
 import json
 import logging
 from datetime import datetime
+import time
 
 # Project modules
 from modules import initialize, scrape, download, convert, email, export, upload, misc
@@ -156,6 +157,7 @@ def main():
                 sleep_after_scrape = 65
                 logging.info(f"Sleeping for {sleep_after_scrape} seconds after scrape in order to prevent overloading "
                              f"UJS server")
+                time.sleep(sleep_after_scrape)
 
         else:
             logging.info(f"No cases were found for {county} County")
