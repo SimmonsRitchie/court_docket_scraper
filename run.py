@@ -113,7 +113,7 @@ def main():
     #                                 SCRAPE
     ########################################################################
 
-    for county in county_list:
+    for count, county in enumerate(county_list):
 
         # SCRAPE UJS SEARCH RESULTS
         # We first get basic docket data from search results, like docket
@@ -151,6 +151,11 @@ def main():
             )  # count of cases
             html_df = export.convert_df_to_html(df)
             export.save_html_county_payload(county_intro, html_df)
+
+            if not count == (len(county_list) - 1):
+                sleep_after_scrape = 65
+                logging.info(f"Sleeping for {sleep_after_scrape} seconds after scrape in order to prevent overloading "
+                             f"UJS server")
 
         else:
             logging.info(f"No cases were found for {county} County")
