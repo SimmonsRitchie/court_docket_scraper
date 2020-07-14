@@ -12,6 +12,8 @@ import logging
 from typing import Union, Optional, List
 from pathlib import Path
 import re
+import random
+import time
 
 
 def print_title(program_name: str) -> None:
@@ -171,7 +173,26 @@ def highlight_row_in_df(s, keyword_list, column):
     safe_keyword_list = [re.escape(m) for m in keyword_list]
     keyword_regex = "|".join(safe_keyword_list)
     is_max = pd.Series(data=False, index=s.index)
-    is_max[column] = s.loc[column].str.contains(keyword_regex,
-                                                flags=re.IGNORECASE)
-    return ['background-color: #fccc8d' if is_max.any() else ''
-            for v in is_max]
+    is_max[column] = s.loc[column].str.contains(keyword_regex, flags=re.IGNORECASE)
+    return ["background-color: #fccc8d" if is_max.any() else "" for v in is_max]
+
+
+def random_sleep(
+    rangeStart: int = 0, rangeEnd: int = 10, *, custom_message=None
+) -> None:
+    """
+    Sleeps for random period of time.
+
+    :param rangeStart: int. Start of random number range.  Default 3
+    :param rangeEnd: int. Start of random number range. Default 6
+    :param custom_message: str. optional. Custom message to display
+    :return: None
+    """
+    page_sleep = random.randint(rangeStart, rangeEnd)
+    if custom_message:
+        logging.info(custom_message)
+    else:
+        logging.info(
+            f"Sleeping {page_sleep} seconds in order to not overload UJS server..."
+        )
+    time.sleep(page_sleep)

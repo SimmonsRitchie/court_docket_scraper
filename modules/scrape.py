@@ -20,7 +20,7 @@ from retry import retry
 import random
 
 # project modules
-from modules.misc import clean_list_of_dicts
+from modules.misc import clean_list_of_dicts, random_sleep
 from modules.initialize import initialize_driver
 
 # GET ENV VARS
@@ -192,15 +192,8 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             search_pages_loop = True
             page_count = 1  # page result counter
 
-
-
             logging.info("Beginning page search loop")
             while search_pages_loop:
-
-                # add sleep
-                page_sleep = random.randint(5, 15)
-                logging.info(f"Sleeping {page_sleep} seconds in order to not overload UJS server...")
-                time.sleep(page_sleep)
 
                 # LOOP 3: ROWS FOR EACH RESULTS PAGE
                 search_rows_loop = True
@@ -211,9 +204,7 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                     logging.info(
                         f"Checking whether row {row_count} exists...".format(row_count)
                     )
-                    row_count += (
-                        1
-                    )  # Be wary of moving this counter, it plays an important part in finding
+                    row_count += 1  # Be wary of moving this counter, it plays an important part in finding
                     # row elements in this loop
                     xpath_substring = str(
                         "%02d" % (row_count,)
@@ -295,6 +286,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                         logging.exception(e)
                         raise
 
+                # sleep before going to next page
+                random_sleep(7, 15)
+
                 # Checking whether there are more pages
                 try:
                     logging.info("Checking if there are more pages...")
@@ -329,6 +323,9 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
                     logging.info("No further pages found")
                     logging.info("Ending page search loop")
                     break
+
+            # sleep before going to next court
+            random_sleep(3, 6)
 
         # BREAK LOOP 1: No further district courts found
         except NoSuchElementException:
