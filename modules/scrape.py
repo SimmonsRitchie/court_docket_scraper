@@ -17,6 +17,7 @@ import os
 import logging
 from typing import List
 from retry import retry
+import random
 
 # project modules
 from modules.misc import clean_list_of_dicts
@@ -191,15 +192,15 @@ def scrape_search_results(driver: object, county: str, scrape_date: str) -> List
             search_pages_loop = True
             page_count = 1  # page result counter
 
-            page_sleep = 7
-            logging.info(f"Sleeping {page_sleep} for a second in order to not overload UJS server...")
-            time.sleep(page_sleep)
+
 
             logging.info("Beginning page search loop")
             while search_pages_loop:
 
-                # time.sleep(4) This was formerly in place because of page loading issues, replaced by explicit wait
-                # above
+                # add sleep
+                page_sleep = random.randint(5, 15)
+                logging.info(f"Sleeping {page_sleep} seconds in order to not overload UJS server...")
+                time.sleep(page_sleep)
 
                 # LOOP 3: ROWS FOR EACH RESULTS PAGE
                 search_rows_loop = True
